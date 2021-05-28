@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="content">
-            <b-button class="is-primary" outlined expanded @click="isOpenBook = true">{{ title }}/第{{index}}件
+            <b-button class="is-primary" outlined expanded @click="isOpenBook = true">{{ title }}
             </b-button>
         </div>
         <b-modal v-model="isOpenBook" :width="1000" scroll="keep">
