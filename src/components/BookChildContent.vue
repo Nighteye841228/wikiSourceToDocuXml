@@ -9,19 +9,28 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <p class="title is-4">獲取的WikiSource文本內容</p>
+                            <p class="title is-4">獲取的WikiSource文本內容｜</p>
+                            <b-button type="is-success" @click="getViewArray" outlined>檢視分段結果</b-button>
                         </div>
                     </div>
     
-                    <textarea class="textarea" placeholder="10 lines of textarea" v-model.lazy="pureText" rows="20"></textarea>
+                    <div v-if="!isPreview">
+                        <textarea class="textarea" placeholder="10 lines of textarea" v-model.lazy="pureText" rows="20"></textarea>
+                    </div>
+                    <div class="content" v-if="isPreview">
+                        <div v-for="(content, index) in viewContents" :key="index">
+                            <p>{{ content }}</p>
+                            <div class="is-divider"></div>
+                        </div>
+                    </div>
     
                 </div>
                 <footer class="modal-card-foot">
                     <section>
                         <label class="checkbox">
-                                            <input type="checkbox" v-model="isUrlAllow">
-                                            是否保存超連結
-                                        </label>
+                                                            <input type="checkbox" v-model="isUrlAllow">
+                                                            是否保存超連結
+                                                        </label>
                         <div class="block">
                             <b-radio name="name" native-value="1" v-model.number="paragraphCutWay">
                                 以此卷作為一件
@@ -61,6 +70,8 @@ export default {
             },
             isUrlAllow: false,
             isViewed: false,
+            viewContents: [],
+            isPreview: false
         };
     },
     props: ["value", "wikiBook", "order"],
@@ -79,6 +90,28 @@ export default {
             this.isOpenBook = false;
             this.isViewed = true;
         },
+        getViewArray: function() {
+            if (this.isPreview) {
+                this.isPreview = false;
+                return;
+            }
+            this.viewContents = [];
+            let useContent =
+                this.isUrlAllow === true ?
+                this.wikiText.hyperlinks :
+                this.pureText;
+            let re = ``;
+            if (this.paragraphCutWay === 2) {
+                re = /\n/;
+            } else if (this.paragraphCutWay === 3) {
+                re = /####/;
+            }
+            let cutParas =
+                re === `` ? [useContent] :
+                useContent.split(re).filter((text) => text);
+            this.viewContents = cutParas;
+            this.isPreview = !this.isPreview;
+        }
     },
     computed: {
         pureText: {
