@@ -9,8 +9,7 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <p class="title is-4">獲取的WikiSource文本內容｜</p>
-                            <b-button type="is-success" @click="getViewArray" outlined>檢視分段結果</b-button>
+                            <p class="title is-4">獲取的WikiSource文本內容｜<b-button type="is-success is-small" @click="getViewArray(1)" outlined>檢視分段結果</b-button></p>
                         </div>
                     </div>
     
@@ -19,7 +18,7 @@
                     </div>
                     <div class="content" v-if="isPreview">
                         <div v-for="(content, index) in viewContents" :key="index">
-                            <p>{{ content }}</p>
+                            <textarea class="textarea" placeholder="10 lines of textarea" v-text="content" rows="5" readonly></textarea>
                             <div class="is-divider"></div>
                         </div>
                     </div>
@@ -32,13 +31,13 @@
                                                             是否保存超連結
                                                         </label>
                         <div class="block">
-                            <b-radio name="name" native-value="1" v-model.number="paragraphCutWay">
+                            <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
                                 以此卷作為一件
                             </b-radio>
-                            <b-radio name="name" native-value="2" v-model.number="paragraphCutWay">
+                            <b-radio name="name" native-value="2" v-model.number="paragraphCutWay" @change="getViewArray">
                                 以段落切開作為一件
                             </b-radio>
-                            <b-radio name="name" native-value="3" v-model.number="paragraphCutWay">
+                            <b-radio name="name" native-value="3" v-model.number="paragraphCutWay" @change="getViewArray">
                                 以自由分段作為分件（以####作為語法輸入）
                             </b-radio>
                             <b-button type="is-success" outlined @click="sendWikiCutObj">確認分段</b-button>
@@ -90,11 +89,7 @@ export default {
             this.isOpenBook = false;
             this.isViewed = true;
         },
-        getViewArray: function() {
-            if (this.isPreview) {
-                this.isPreview = false;
-                return;
-            }
+        getViewArray: function(param = 0) {
             this.viewContents = [];
             let useContent =
                 this.isUrlAllow === true ?
@@ -110,14 +105,14 @@ export default {
                 re === `` ? [useContent] :
                 useContent.split(re).filter((text) => text);
             this.viewContents = cutParas;
-            this.isPreview = !this.isPreview;
+            if(param === 1) this.isPreview = !this.isPreview;
         }
     },
     computed: {
         pureText: {
             get: function() {
                 return this.wikiText.hyperlinks.replace(
-                    /\n*<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n*/gm,
+                    /\n{0,1}<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
                     "$1"
                 );
             },

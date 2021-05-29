@@ -36,9 +36,8 @@
         </div>
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-success" @click="confirmAdd(1)">Save
-          changes</button>
-        <button class="button" @click="confirmAdd(0)">Cancel</button>
+        <button class="button is-success" @click="confirmAdd(1)">保存結果</button>
+        <button class="button" @click="confirmAdd(0)">取消</button>
       </footer>
     </b-modal>
     <b-modal v-model="isCheckBook" :width="1000" scroll="keep">
@@ -105,10 +104,9 @@
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success" @click="addSelectedMenuItem">Save
-            changes</button>
+          <button class="button is-success" @click="addSelectedMenuItem">保存結果</button>
           <button class="button"
-            @click="isAddMenuToDownload = false">Cancel</button>
+            @click="isAddMenuToDownload = false">取消</button>
         </footer>
       </div>
     </div>
