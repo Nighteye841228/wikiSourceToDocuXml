@@ -9,7 +9,7 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <p class="title is-4">獲取的WikiSource文本內容｜<b-button type="is-success is-small" @click="getViewArray(1)" outlined>檢視分段結果</b-button></p>
+                            <label class="label is-large">獲取的WikiSource文本內容<b-button type="is-success is-small" @click="getViewArray(1)" outlined>檢視分段結果</b-button></label>
                         </div>
                     </div>
     
