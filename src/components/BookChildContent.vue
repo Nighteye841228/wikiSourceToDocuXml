@@ -28,7 +28,7 @@
                     <section>
                         <label class="checkbox">
                                                             <input type="checkbox" v-model="isUrlAllow">
-                                                            保存超連結
+                                                            保存維基超連結
                                                         </label>
                         <div class="block">
                             <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
