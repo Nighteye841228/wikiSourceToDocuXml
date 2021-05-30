@@ -1,227 +1,243 @@
 <template>
-  <div id="app">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-end">
-        <a class="navbar-item" target="_blank"
-          href="../../../index2_20181204.html">
-          首頁
-        </a>
-        <a class="navbar-item" target="_blank" href="../../userMain/">
-          我的資料庫
-        </a>
-        <a class="navbar-item" target="_blank"
-          href="https://imgur.com/a/or62eEO">
-          教學（暫）
-        </a>
-        <a role="button" class="navbar-burger" aria-label="menu"
-          aria-expanded="false">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-    </nav>
-    <b-modal v-model="isAddExtendedLinks" :width="1000" scroll="keep">
-      <header class="modal-card-head">
-        <p class="modal-card-title">選擇需要的關鍵字</p>
-        <button class="delete" aria-label="close"
-          @click="confirmAdd(0)"></button>
-      </header>
-      <section class="modal-card-body">
-        <div v-for="(link,index) in refLinks" :key="index">
-          <label class="checkbox">
-            <input type="checkbox" :value="link"
-              v-model="selectRefLinks">{{ link }}
-          </label>
-        </div>
-      </section>
-      <footer class="modal-card-foot">
-        <button class="button is-success" @click="confirmAdd(1)">保存結果</button>
-        <button class="button" @click="confirmAdd(0)">取消</button>
-      </footer>
-    </b-modal>
-    <b-modal v-model="isCheckBook" :width="1000" scroll="keep">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">目前已選書籍</p>
-          <button class="delete" aria-label="close"
-            @click="isCheckBook = false"></button>
-        </header>
-        <section class="modal-card-body">
-          <div class="content">
-            <ul v-for="(book,count) in selectedBookMenuPool" :key="count">
-              <li>第{{ count+1 }}本</li>
-              <ul v-for="(chap,ind) in book.menu" :key="ind">
-                <li><a href="#"
-                    @click="deleteChapter(count, ind)">{{ chap }}</a>
-                </li>
-              </ul>
-            </ul>
-          </div>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success"
-            @click="isCheckBook = false">返回</button>
-        </footer>
-      </div>
-    </b-modal>
-    <div class="modal" :class="{ 'is-active':isAddMenuToDownload}">
-      <div class="modal-background"></div>
-      <div class="modal-card" style="min-width: 1000px;">
-        <header class="modal-card-head">
-          <p class="modal-card-title">選擇需要的關鍵字</p>
-          <button class="delete" aria-label="close"
-            @click="isAddMenuToDownload = false"></button>
-        </header>
-        <section class="modal-card-body is-large">
-          <div class="modal-box">
-            <div class="modal-box-select-content">
-              <treeselect v-model="tempSelectMenu" :multiple="true"
-                :options="treeShowMenu" :sort-value-by="sortValueBy"
-                :value-consists-of="valueConsistsOf"
-                :auto-select-descendants="true" :limit="10" :always-open="true"
-                :default-expand-level="1" :max-height="530" />
-            </div>
-            <div class="modal-box-snippet">
-              <div class="content">
-                <h4>簡介</h4>
-                <p v-text="wikiContentSnippet"></p>
-              </div>
-            </div>
-            <hr>
-            <div class="modal-box-extend-link">
-              <div class="content">
-                <h4>可參考延伸資料</h4>
-              </div>
-              <div v-for="(refLink, index) in refLinks" :key="index">
-                <label class="checkbox">
-                  <input type="checkbox" :value="refLink"
-                    v-model="selectRefLinks"> {{ refLink }}
-                </label>
-              </div>
-            </div>
-          </div>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success" @click="addSelectedMenuItem">保存結果</button>
-          <button class="button"
-            @click="isAddMenuToDownload = false">取消</button>
-        </footer>
-      </div>
-    </div>
-
-    <section class="hero is-info">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title">
-            Wiki2DocuXML
-          </h1>
-          <h2 class="subtitle">
-            DocuSky-維基文庫轉DocuXML
-          </h2>
-        </div>
-      </div>
-    </section>
-
-    <div class="section">
-      <div class="container">
-        <label class="label is-large" title="不需完整標題">文本關鍵字搜索
-        </label>
-        <div class="field has-addons">
-          <div class="control">
-            <input v-model="sourceWord" class="input" type="text"
-              placeholder="鄭氏紀事" @keypress.enter="getQueryResult">
-          </div>
-          <div class="control">
-            <a class="button is-link" @click="getQueryResult">
-              搜尋
+    <div id="app">
+        <nav class="navbar" role="navigation" aria-label="main navigation">
+            <div class="navbar-end">
+            <a class="navbar-item" target="_blank"
+                href="../../../index2_20181204.html">
+                首頁
             </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section" v-if="isInputDataValid">
-      <div class="container">
-        <label class="label is-large">搜索關鍵字結果｜<b-button class="is-primary"
-            @click="openSelectBookList" outlined>
-            察看目前已選章節
-          </b-button></label>
-        <div class="is-divider"></div>
-        <div class="field">
-          <div class="control">
-
-            <div class="columns is-multiline">
-              <div class="column is-half"
-                v-for="(extendedLink, index) in extendedLinks" :key="index">
-                <div class="columns"
-                  style="box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);">
-                  <div class="column">
-                    <div class="content"
-                      style="padding-top: 15px;padding-left: 10px;">
-                      <h4>{{ extendedLink }}</h4>
-                    </div>
-                  </div>
-                  <div class="column" style="margin-top: 7px">
-                    <b-button type="is-primary" outlined
-                      @click="getMenuOfContent(index)">
-                      我需要這本書</b-button>
-                  </div>
-                </div>
-              </div>
+            <a class="navbar-item" target="_blank" href="../../userMain/">
+                我的資料庫
+            </a>
+            <a class="navbar-item" target="_blank" href="https://imgur.com/a/or62eEO">
+                教學（暫）
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu"
+                aria-expanded="false">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
             </div>
-          </div>
+        </nav>
+        <b-modal v-model="isAddExtendedLinks" :width="1000" scroll="keep">
+            <header class="modal-card-head">
+            <p class="modal-card-title">選擇需要的關鍵字</p>
+            <button class="delete" aria-label="close" @click="confirmAdd(0)"></button>
+            </header>
+            <section class="modal-card-body">
+            <div v-for="(link,index) in refLinks" :key="index">
+                <label class="checkbox">
+                <input type="checkbox" :value="link"
+                    v-model="selectRefLinks">{{ link }}
+                </label>
+            </div>
+            </section>
+            <footer class="modal-card-foot">
+            <button class="button is-success" @click="confirmAdd(1)">保存結果</button>
+            <button class="button" @click="confirmAdd(0)">取消</button>
+            </footer>
+        </b-modal>
+        <b-modal v-model="isCheckBook" :width="1000" scroll="keep">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">目前已選書籍</p>
+                <button class="delete" aria-label="close"
+                @click="isCheckBook = false"></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content">
+                <ul v-for="(book,count) in selectedBookMenuPool" :key="count">
+                    <li>第{{ count+1 }}本</li>
+                    <ul v-for="(chap,ind) in book.menu" :key="ind">
+                    <li><a href="#" @click="deleteChapter(count, ind)">{{ chap }}</a>
+                    </li>
+                    </ul>
+                </ul>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success"
+                @click="isCheckBook = false">返回</button>
+            </footer>
+            </div>
+        </b-modal>
+        <div class="modal" :class="{ 'is-active':isAddMenuToDownload}">
+            <div class="modal-background"></div>
+            <div class="modal-card" style="min-width: 1000px;">
+            <header class="modal-card-head">
+                <p class="modal-card-title">選擇需要的關鍵字</p>
+                <button class="delete" aria-label="close"
+                @click="isAddMenuToDownload = false"></button>
+            </header>
+            <section class="modal-card-body is-large">
+                <div class="modal-box">
+                <div class="modal-box-select-content">
+                    <treeselect v-model="tempSelectMenu" :multiple="true"
+                    :options="treeShowMenu" :sort-value-by="sortValueBy"
+                    :value-consists-of="valueConsistsOf"
+                    :auto-select-descendants="true" :limit="10" :always-open="true"
+                    :default-expand-level="1" :max-height="530" />
+                </div>
+                <div class="modal-box-snippet">
+                    <div class="content">
+                    <h4>簡介</h4>
+                    <p v-text="wikiContentSnippet"></p>
+                    </div>
+                </div>
+                <hr>
+                <div class="modal-box-extend-link">
+                    <div class="content">
+                    <h4>可參考延伸資料</h4>
+                    </div>
+                    <div v-for="(refLink, index) in refLinks" :key="index">
+                    <label class="checkbox">
+                        <input type="checkbox" :value="refLink"
+                        v-model="selectRefLinks"> {{ refLink }}
+                    </label>
+                    </div>
+                </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success"
+                @click="addSelectedMenuItem">保存結果</button>
+                <button class="button" @click="isAddMenuToDownload = false">取消</button>
+            </footer>
+            </div>
         </div>
-      </div>
-    </div>
-    <div class="section">
-      <div class="container">
-        <label class="label is-large">目前已下載卷數檢視</label>
-        <div class="is-divider"></div>
-        <div class="columns is-multiline"
-          v-for="(book, index) in selectedBookMenuPool" :key="index">
-          <div class="column is-one-quarter"
-            v-for="(chap, chapCount) in book.menu" :key="chapCount">
-            <BookChildContent @handle-wiki="handleWikiCutObj" ref="contentTable"
-              :wiki-book.sync="chap" :order="chapCount"></BookChildContent>
-          </div>
+
+        <section class="hero is-info">
+            <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                Wiki2DocuXML
+                </h1>
+                <h2 class="subtitle">
+                DocuSky-維基文庫轉DocuXML
+                </h2>
+            </div>
+            </div>
+        </section>
+
+        <div class="section">
+            <div class="container">
+            <label class="label is-large" title="不需完整標題">文本關鍵字搜索
+            </label>
+            <div class="field has-addons">
+                <div class="control">
+                <input v-model="sourceWord" class="input" type="text"
+                    placeholder="鄭氏紀事" @keypress.enter="getQueryResult">
+                </div>
+                <div class="control">
+                <a class="button is-link" @click="getQueryResult">
+                    搜尋
+                </a>
+                </div>
+            </div>
+            </div>
         </div>
-        <div class="is-divider"></div>
-        <b-tooltip label="下一步編輯Metadata與Tag！" position="is-bottom"
-          :animated="false" size="is-small">
-          <b-button class="is-primary" @click="splitWikiContents" outlined>確認輸出
-          </b-button>
-        </b-tooltip>
 
-      </div>
-    </div>
-    <div class="section">
-      <div class="container">
-        <label class="label is-large">分段完成編輯metadata區域</label>
-        <div class="is-divider"></div>
-        <div class="columns is-multiline">
-          <div class="column is-one-quarter"
-            v-for="(document, order) in splitCompleteWikiContents" :key="order">
-            <SplitCompleteContent :title="document.title"
-              :document="document.doc_content" :index="order">
-            </SplitCompleteContent>
-          </div>
+        <div class="section" v-if="isInputDataValid">
+            <div class="container">
+            <label class="label is-large">搜索關鍵字結果｜<b-button class="is-primary"
+                @click="openSelectBookList" outlined>
+                察看目前已選章節
+                </b-button></label>
+            <div class="is-divider"></div>
+            <div class="field">
+                <div class="control">
+
+                <div class="columns is-multiline">
+                    <div class="column is-half"
+                    v-for="(extendedLink, index) in extendedLinks" :key="index">
+                    <div class="columns"
+                        style="box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);">
+                        <div class="column">
+                        <div class="content"
+                            style="padding-top: 15px;padding-left: 10px;">
+                            <h4>{{ extendedLink }}</h4>
+                        </div>
+                        </div>
+                        <div class="column" style="margin-top: 7px">
+                        <b-button type="is-primary" outlined
+                            @click="getMenuOfContent(index)">
+                            我需要這本書</b-button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
         </div>
-      </div>
-    </div>
+        <div class="section">
+            <div class="container">
+            <label class="label is-large">目前已下載卷數檢視</label>
+            <div class="is-divider"></div>
+            <div class="columns is-multiline"
+                v-for="(book, index) in selectedBookMenuPool" :key="index">
+                <div class="column is-one-quarter"
+                v-for="(chap, chapCount) in book.menu" :key="chapCount">
+                <BookChildContent @handle-wiki="handleWikiCutObj" ref="contentTable"
+                    :wiki-book.sync="chap" :order="chapCount"></BookChildContent>
+                </div>
+            </div>
+            <div class="is-divider"></div>
+            <b-tooltip label="下一步編輯Metadata與Tag！" position="is-bottom"
+                :animated="false" size="is-small">
+                <b-button class="is-primary" @click="splitWikiContents" outlined>確認輸出
+                </b-button>
+            </b-tooltip>
+
+            </div>
+        </div>
+        <div class="section">
+            <div class="container">
+            <label class="label is-large">分段完成編輯metadata區域</label>
+            <div class="is-divider"></div>
+            <div class="columns is-multiline">
+                <div class="column is-one-quarter"
+                v-for="(document, order) in splitCompleteWikiContents" :key="order">
+                <SplitCompleteContent :title="document.title"
+                    :document="document.doc_content" :index="order">
+                </SplitCompleteContent>
+                </div>
+            </div>
+            </div>
+        </div>
 
 
-    <div class="section" v-if="isEditMetadata">
-      <div class="container">
-        <hot-table :data.sync="getSplitSheet" :rowHeaders="true"
-          :licenseKey="licenseKey" width="100%" height="600" :autoRowSize="true"
-          :colHeaders="colHeaders" :dataSchema="dataSchema"
-          :manualRowResize="true" :manualColumnResize="true" :columns="columns">
-        </hot-table>
-      </div>
+        <div class="section" v-if="isEditMetadata">
+            <div class="container">
+            <hot-table :data.sync="getSplitSheet" :rowHeaders="true"
+                :licenseKey="licenseKey" width="100%" height="600" :autoRowSize="true"
+                :colHeaders="colHeaders" :dataSchema="dataSchema"
+                :manualRowResize="true" :manualColumnResize="true" :columns="columns">
+            </hot-table>
+            </div>
+        </div>
+
+        <div class="section" v-if="false">
+            <div>
+            <label class="label">Simple select / dropdown</label>
+            <multiselect v-model="selectedMetaDataColumn"
+                :options="selectMetaDataColumns" :multiple="true"
+                :close-on-select="false" :clear-on-select="false"
+                :preserve-search="true" placeholder="Pick some" label="headerName"
+                track-by="headerName" :preselect-first="true">
+                <template slot="selection" slot-scope="{ values, search, isOpen }">
+                <span class="multiselect__single"
+                    v-if="values.length &amp;&amp; !isOpen">
+                    {{ values.length }} options selected
+                </span>
+                </template>
+            </multiselect>
+            <pre class="language-json"><code>{{ selectedMetaDataColumn }}</code></pre>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -232,6 +248,8 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { HotTable } from '@handsontable/vue';
 import 'handsontable/dist/handsontable.full.css';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 import {
     dt,
     $,
@@ -252,7 +270,8 @@ export default {
         SplitCompleteContent,
         BookChildContent,
         Treeselect,
-        HotTable
+        HotTable,
+        Multiselect
     },
     data: function() {
         return {
@@ -291,18 +310,13 @@ export default {
             wikiContentWaitCut: [],
             splitCompleteWikiContents: [],
             testSelCut: 1,
-            columnDefs: columnDefinition,
-            jsondata: [
-                ["", "Ford", "Volvo", "Toyota", "Honda"],
-                ["2016", 10, 11, 12, 13],
-                ["2017", 20, 11, 14, 13],
-                ["2018", 30, 15, 12, 13]
-            ],
+            selectMetaDataColumns: columnDefinition,
+            selectedMetaDataColumn: [],
             licenseKey: 'non-commercial-and-evaluation',
             isEditMetadata: false,
             getSplitSheet: [],
             colHeaders: colHeader,
-            columns:columns,
+            columns: columns,
             dataSchema: {
                 title: "",
                 corpus: "",
@@ -420,7 +434,7 @@ export default {
                 console.log(element);
                 let x = [];
                 for (const value of Object.values(element)) {
-                    x.push(value); 
+                    x.push(value);
                 }
                 this.getSplitSheet.push(x);
             });
@@ -537,6 +551,7 @@ export default {
     created: function() {}
 };
 </script>
+
 
 <style scoped>
 [v-cloak] {
