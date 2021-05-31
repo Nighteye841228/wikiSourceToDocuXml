@@ -27,9 +27,9 @@
                 <footer class="modal-card-foot">
                     <section>
                         <label class="checkbox">
-                                                            <input type="checkbox" v-model="isUrlAllow">
-                                                            保存超連結
-                                                        </label>
+                            <input type="checkbox" v-model="isUrlAllow">
+                            保存超連結
+                        </label>
                         <div class="block">
                             <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
                                 以此卷作為一件
@@ -62,10 +62,11 @@ export default {
         return {
             isOpenBook: false,
             paragraphCutWay: 1,
-            wikiObj: {},
+            wikiObj: {
+            },
             wikiText: {
-                paragraphs: "",
-                hyperlinks: "",
+                paragraphs: '',
+                hyperlinks: '',
             },
             isUrlAllow: false,
             isViewed: false,
@@ -73,10 +74,10 @@ export default {
             isPreview: false
         };
     },
-    props: ["value", "wikiBook", "order"],
+    props: ['value', 'wikiBook', 'order'],
     methods: {
         sendWikiCutObj: function() {
-            this.$emit("handle-wiki", {
+            this.$emit('handle-wiki', {
                 title: this.wikiBook,
                 order: this.order,
                 paragraphCutWay: this.paragraphCutWay,
@@ -93,17 +94,17 @@ export default {
             this.viewContents = [];
             let useContent =
                 this.isUrlAllow === true ?
-                this.wikiText.hyperlinks :
-                this.pureText;
-            let re = ``;
+                    this.wikiText.hyperlinks :
+                    this.pureText;
+            let re = '';
             if (this.paragraphCutWay === 2) {
                 re = /\n/;
             } else if (this.paragraphCutWay === 3) {
                 re = /####/;
             }
             let cutParas =
-                re === `` ? [useContent] :
-                useContent.split(re).filter((text) => text);
+                re === '' ? [useContent] :
+                    useContent.split(re).filter((text) => text);
             this.viewContents = cutParas;
             if(param === 1) this.isPreview = !this.isPreview;
         }
@@ -113,7 +114,7 @@ export default {
             get: function() {
                 return this.wikiText.hyperlinks.replace(
                     /\n{0,1}<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
-                    "$1"
+                    '$1'
                 );
             },
             set: function(val) {
@@ -125,11 +126,11 @@ export default {
         },
     },
     created: async function() {
-        console.log("進入偵測！");
+        console.log('進入偵測！');
         this.wikiObj = await getWikiPage(this.wikiBook);
-        this.wikiText = parseHtmlText(this.wikiObj.text["*"]);
+        this.wikiText = parseHtmlText(this.wikiObj.text['*']);
     },
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

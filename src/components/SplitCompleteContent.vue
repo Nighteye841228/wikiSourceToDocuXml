@@ -30,8 +30,8 @@ export default {
             isOpenBook: false,
         };
     },
-    props: ["document", "index", "title"],
-}
+    props: ['document', 'index', 'title'],
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
