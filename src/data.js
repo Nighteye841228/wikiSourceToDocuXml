@@ -1,9 +1,5 @@
 const columnDefinition = [ 
     {
-        field: 'corpus',
-        headerName: '文獻集名稱',
-    },
-    {
         field: 'author',
         headerName: '文件作者',
     },

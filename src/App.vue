@@ -300,6 +300,12 @@
                 <label class="label">選擇需要的metadata欄位</label>
             </header>
             <section class="modal-card-body">
+                <b-field label="檔案名稱前綴（EX：輸入X則會顯示為X_01.txt）">
+                    <b-input v-model="fileNameMeta"></b-input>
+                </b-field>
+                <b-field label="文獻集名稱取名">
+                    <b-input v-model="corpusNameMeta"></b-input>
+                </b-field>
                 <multiselect
                     v-model="selectedMetaDataColumns"
                     :options="selectMetaDataColumns"
@@ -461,6 +467,8 @@ export default {
             colHeaders: colHeader,
             columns: columns,
             isEditMetaTable: false,
+            fileNameMeta: 'file',
+            corpusNameMeta: '我的文獻集',
             dataSchema: {
                 title: '',
                 corpus: '',
@@ -586,12 +594,15 @@ export default {
                 this.wikiContentWaitCut
             );
             this.splitCompleteWikiContents = createMetadataRows(
-                this.splitCompleteWikiContents, this.selectedMetaDataColumns
+                this.splitCompleteWikiContents, 
+                this.selectedMetaDataColumns,
+                this.fileNameMeta,
+                this.corpusNameMeta
             );
             this.$nextTick(function () {
                 this.$refs.hotTableComponent.hotInstance.loadData(this.splitCompleteWikiContents);
             });
-            this.colHeaders = ['文件標題', '文本內容'];
+            this.colHeaders = ['文件標題', '文本內容', '檔案名稱', '文獻集名稱'];
             this.colHeaders = this.colHeaders.concat(this.selectedMetaDataColumns.map(x=>x.headerName));
             this.isEditMetadata = true;
             this.isEditMetaTable = false;

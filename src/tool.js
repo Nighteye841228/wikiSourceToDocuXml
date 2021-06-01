@@ -564,20 +564,30 @@ export function splitAndUrlHandler(unCutContents) {
     return splitParagraphs;
 }
 
-export function createMetadataRows(wikiFilesWithTitleAndDocuments, needColumns) {
+export function createMetadataRows(wikiFilesWithTitleAndDocuments, needColumns, fileName, corpusName) {
     let separateFiles = [];
     let fileMeta = {
     };
+    let fileCount = 0;
     needColumns.forEach(element => {
         fileMeta[element.field] = '';
     });
     wikiFilesWithTitleAndDocuments.forEach((files) => {
-        files.documents.forEach((document, index) => {
+        files.documents.forEach(() => {
+            fileCount++;
+        });
+    });
+    let filePaddingNum = fileCount.toString().length;
+    fileCount = 0;
+    wikiFilesWithTitleAndDocuments.forEach((files) => {
+        files.documents.forEach((document) => {
+            fileCount++;
             let column = Object.assign({
             }, {
-                title: `${files.title}/第${index}件` 
-            }, {
-                doc_content: document 
+                title: `${files.title}`,
+                doc_content: document,
+                fileName: `${padding(fileCount, filePaddingNum)}.txt`,
+                corpus: corpusName
             }, fileMeta,);
             separateFiles.push(column);
         });
