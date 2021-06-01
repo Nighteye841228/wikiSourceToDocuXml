@@ -58,44 +58,42 @@
                 <button class="button" @click="confirmAdd(0)">取消</button>
             </footer>
         </b-modal>
+
         <b-modal v-model="isCheckBook" :width="1000" scroll="keep">
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">目前已選書籍</p>
-                    <button
-                        class="delete"
-                        aria-label="close"
-                        @click="isCheckBook = false"
-                    ></button>
-                </header>
-                <section class="modal-card-body">
-                    <div class="content">
-                        <ul
-                            v-for="(book, count) in selectedBookMenuPool"
-                            :key="count"
-                        >
-                            <li>第{{ count + 1 }}本</li>
-                            <ul v-for="(chap, ind) in book.menu" :key="ind">
-                                <li>
-                                    <a
-                                        href="#"
-                                        @click="deleteChapter(count, ind)"
-                                    >{{ chap }}</a>
-                                </li>
-                            </ul>
-                        </ul>
-                    </div>
-                </section>
-                <footer class="modal-card-foot">
-                    <button
-                        class="button is-success"
-                        @click="isCheckBook = false"
+            <header class="modal-card-head">
+                <p class="modal-card-title">目前已選書籍｜點擊可刪除書籍</p>
+                <button
+                    class="delete"
+                    aria-label="close"
+                    @click="isCheckBook = false"
+                ></button>
+            </header>
+            <section class="modal-card-body">
+                <div class="content">
+                    <ul
+                        v-for="(book, count) in selectedBookMenuPool"
+                        :key="count"
                     >
-                        返回
-                    </button>
-                </footer>
-            </div>
+                        <li>第{{ count + 1 }}本</li>
+                        <ul v-for="(chap, ind) in book.menu" :key="ind">
+                            <li>
+                                <a
+                                    href="#"
+                                    @click="deleteChapter(count, ind)"
+                                >{{ chap }}</a>
+                            </li>
+                        </ul>
+                    </ul>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <button
+                    class="button is-success"
+                    @click="isCheckBook = false"
+                >
+                    返回
+                </button>
+            </footer>
         </b-modal>
         <div class="modal" :class="{ 'is-active': isAddMenuToDownload }">
             <div class="modal-background"></div>
@@ -199,13 +197,7 @@
 
         <div class="section" v-if="isInputDataValid">
             <div class="container">
-                <label class="label is-large">搜索關鍵字結果｜<b-button
-                    class="is-primary"
-                    @click="openSelectBookList"
-                    outlined
-                >
-                    察看目前已選章節
-                </b-button></label>
+                <label class="label is-large">搜索關鍵字結果</label>
                 <div class="is-divider"></div>
                 <div class="field">
                     <div class="control">
@@ -250,7 +242,15 @@
         </div>
         <div class="section">
             <div class="container">
-                <label class="label is-large">目前已下載卷數檢視</label>
+                <label class="label is-large">目前已下載卷數檢視 & 分件｜
+                    <b-button
+                        class="is-primary"
+                        @click="openSelectBookList"
+                        outlined
+                    >
+                        察看目前已選章節
+                    </b-button>
+                </label>
                 <div class="is-divider"></div>
                 <div
                     class="columns is-multiline"
@@ -270,12 +270,13 @@
                         ></BookChildContent>
                     </div>
                 </div>
+                <b-button type="is-success" @click="openEditTable" outlined>確認分段</b-button>
                 <div class="is-divider"></div>
             </div>
         </div>
         <div class="section">
             <div class="container">
-                <label class="label is-large">分段完成編輯metadata區域</label>
+                <label class="label is-large">分段完成｜檢視分件檔</label>
                 <div class="is-divider"></div>
                 <div class="columns is-multiline">
                     <div
@@ -294,70 +295,82 @@
             </div>
         </div>
 
+        <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep">
+            <header class="modal-card-head">
+                <label class="label">選擇需要的metadata欄位</label>
+            </header>
+            <section class="modal-card-body">
+                <multiselect
+                    v-model="selectedMetaDataColumns"
+                    :options="selectMetaDataColumns"
+                    :multiple="true"
+                    :close-on-select="false"
+                    :clear-on-select="false"
+                    :preserve-search="true"
+                    placeholder="Pick some"
+                    label="headerName"
+                    track-by="headerName"
+                    :preselect-first="true"
+                    :max-height="400"
+                    ref="multiselect" 
+                >
+                    <template
+                        slot="selection"
+                        slot-scope="{ values, search, isOpen }"
+                    >
+                        <span
+                            class="multiselect__single"
+                            v-if="values.length &amp;&amp; !isOpen"
+                        >
+                            {{ values.length }} options selected
+                        </span>
+                    </template>
+                </multiselect>
+            </section>
+            <footer class="modal-card-foot">
+                <b-tooltip
+                    label="下一步編輯Metadata與Tag！"
+                    position="is-right"
+                    :animated="false"
+                    size="is-small"
+                >
+                    <b-button
+                        class="is-primary"
+                        @click="splitWikiContents"
+                        outlined
+                    >確認輸出
+                    </b-button>
+                </b-tooltip>
+            </footer>
+        </b-modal>                
+
         <div class="section" v-if="true">
             <div class="container">
                 <div class="field">
-                    <div>
-                        <label class="label">選擇需要的metadata欄位</label>
-                        <multiselect
-                            v-model="selectedMetaDataColumns"
-                            :options="selectMetaDataColumns"
-                            :multiple="true"
-                            :close-on-select="false"
-                            :clear-on-select="false"
-                            :preserve-search="true"
-                            placeholder="Pick some"
-                            label="headerName"
-                            track-by="headerName"
-                            :preselect-first="true"
-                        >
-                            <template
-                                slot="selection"
-                                slot-scope="{ values, search, isOpen }"
-                            >
-                                <span
-                                    class="multiselect__single"
-                                    v-if="values.length &amp;&amp; !isOpen"
-                                >
-                                    {{ values.length }} options selected
-                                </span>
-                            </template>
-                        </multiselect>
-                    </div>
-                    <b-tooltip
-                        label="下一步編輯Metadata與Tag！"
-                        position="is-bottom"
-                        :animated="false"
-                        size="is-small"
+                    <label class="label is-large">編輯metadata區域</label>
+                    <div class="is-divider"></div>
+                    <hot-table
+                        :data.sync="splitCompleteWikiContents"
+                        :rowHeaders="true"
+                        :licenseKey="licenseKey"
+                        width="100%"
+                        height="600"
+                        :autoRowSize="true"
+                        :colHeaders="colHeaders"
+                        :manualRowResize="true"
+                        :manualColumnResize="[200, 250]"
+                        :wordWrap="false"
+                        :autoWrapCol="false"
+                        ref="hotTableComponent"
                     >
-                        <b-button
-                            class="is-primary"
-                            @click="splitWikiContents"
-                            outlined
-                        >確認輸出
-                        </b-button>
-                    </b-tooltip>
+                    </hot-table>
                 </div>
             </div>
         </div>
 
         <div class="section" v-if="true">
             <div class="container">
-                <hot-table
-                    :data.sync="splitCompleteWikiContents"
-                    :rowHeaders="true"
-                    :licenseKey="licenseKey"
-                    width="100%"
-                    height="600"
-                    :autoRowSize="true"
-                    :colHeaders="colHeaders"
-                    :manualRowResize="true"
-                    :manualColumnResize="[200, 250]"
-                    :wordWrap="false"
-                    :autoWrapCol="false"
-                    ref="hotTableComponent"
-                >
-                </hot-table>
+                
             </div>
         </div>
     </div>
@@ -399,6 +412,9 @@ export default {
         Treeselect,
         HotTable,
         Multiselect,
+    },
+    mounted() {
+        // this.$refs.multiselect.activate();
     },
     data: function () {
         return {
@@ -444,6 +460,7 @@ export default {
             getSplitSheet: [],
             colHeaders: colHeader,
             columns: columns,
+            isEditMetaTable: false,
             dataSchema: {
                 title: '',
                 corpus: '',
@@ -549,6 +566,12 @@ export default {
         deleteChapter: function (count, ind) {
             this.selectedBookMenuPool[count].menu.splice(ind, 1);
         },
+        openEditTable: function() {
+            this.isEditMetaTable = true;
+            this.$nextTick(function () {
+                this.$refs.multiselect.activate();
+            });
+        },
         handleWikiCutObj: function (param) {
             this.wikiContentWaitCut.push(param);
         },
@@ -571,6 +594,7 @@ export default {
             this.colHeaders = ['文件標題', '文本內容'];
             this.colHeaders = this.colHeaders.concat(this.selectedMetaDataColumns.map(x=>x.headerName));
             this.isEditMetadata = true;
+            this.isEditMetaTable = false;
         },
         checkForm: function () {
             if (!this.wikiUrls) {

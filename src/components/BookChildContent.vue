@@ -9,7 +9,22 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <label class="label is-large">獲取的WikiSource文本內容<b-button type="is-success is-small" @click="getViewArray(1)" outlined>檢視分段結果</b-button></label>
+                            <label class="label is-large">獲取的WikiSource文本內容 
+                            </label>
+                            <div class="block">
+                                <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
+                                    以此卷作為一件
+                                </b-radio>
+                                <b-radio name="name" native-value="2" v-model.number="paragraphCutWay" @change="getViewArray">
+                                    以段落切開作為一件
+                                </b-radio>
+                                <b-radio name="name" native-value="3" v-model.number="paragraphCutWay" @change="getViewArray">
+                                    以自由分段作為分件（以####作為語法輸入）
+                                </b-radio>
+                                <b-button type="is-success is-small" @click="getViewArray(1)" outlined>
+                                    檢視分段結果
+                                </b-button>
+                            </div>
                         </div>
                     </div>
     
@@ -31,15 +46,7 @@
                             保存超連結
                         </label>
                         <div class="block">
-                            <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
-                                以此卷作為一件
-                            </b-radio>
-                            <b-radio name="name" native-value="2" v-model.number="paragraphCutWay" @change="getViewArray">
-                                以段落切開作為一件
-                            </b-radio>
-                            <b-radio name="name" native-value="3" v-model.number="paragraphCutWay" @change="getViewArray">
-                                以自由分段作為分件（以####作為語法輸入）
-                            </b-radio>
+                            
                             <b-button type="is-success" outlined @click="sendWikiCutObj">確認分段</b-button>
                         </div>
                     </section>
@@ -105,7 +112,9 @@ export default {
             let cutParas =
                 re === '' ? [useContent] :
                     useContent.split(re).filter((text) => text);
-            this.viewContents = cutParas;
+            this.$nextTick(function () {
+                this.viewContents = cutParas;
+            });
             if(param === 1) this.isPreview = !this.isPreview;
         }
     },
