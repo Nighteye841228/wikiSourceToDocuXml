@@ -58,7 +58,7 @@ export async function searchWord(title) {
             },
         });
         let outputs = await apiBackJson.data.query.search;
-        console.log(outputs);
+        // console.log(outputs);
         outputs = outputs.map((x) =>
             x.title.replace(/\/.*$/g, '').replace(/[0-9-]*$/g, '')
         );
@@ -428,7 +428,7 @@ export async function getWikisourceJson(
                     );
                 }
             }
-            console.log(`目前的count來到：${saveContent.numOfDir}`);
+            // console.log(`目前的count來到：${saveContent.numOfDir}`);
             if (saveContent.numOfDir === 0) {
                 tableContentsTemp = tableTreeGenerate(tableContentsTemp);
             }
@@ -532,7 +532,7 @@ export async function getWikiPage(title) {
                 utf8: '',
             },
         });
-        console.log(apiBackJson.data.parse);
+        // console.log(apiBackJson.data.parse);
         return apiBackJson.data.parse;
     } catch (error) {
         console.log(error);
@@ -555,7 +555,7 @@ export function splitAndUrlHandler(unCutContents) {
         }
         let cutParas =
       re === '' ? [useContent] : useContent.split(re).filter((text) => text);
-        console.log('print: ', cutParas);
+        // console.log('print: ', cutParas);
         splitParagraphs.push({
             title: content.title,
             documents: cutParas,
