@@ -274,7 +274,7 @@
                 <div class="is-divider"></div>
             </div>
         </div>
-        <div class="section">
+        <!-- <div class="section">
             <div class="container">
                 <label class="label is-large">分段完成｜檢視分件檔</label>
                 <div class="is-divider"></div>
@@ -293,7 +293,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep">
             <header class="modal-card-head">
@@ -350,7 +350,7 @@
             </footer>
         </b-modal>                
 
-        <div class="section" v-if="true">
+        <div class="section dataHandsonTable" v-if="isEditMetadata">
             <div class="container">
                 <div class="field">
                     <label class="label is-large">編輯metadata區域</label>
@@ -371,12 +371,33 @@
                     >
                     </hot-table>
                 </div>
+                <b-button
+                    class="is-primary"
+                    @click="isCheckTag=true"
+                    outlined
+                >編輯完成
+                </b-button>
             </div>
         </div>
 
-        <div class="section" v-if="true">
+        <div class="section" v-if="isCheckTag">
             <div class="container">
-                
+                <label class="label is-large">點擊檢視文本 & 編輯Tag</label>
+                <div class="is-divider"></div>
+                <div class="columns is-multiline">
+                    <div
+                        class="column is-one-quarter"
+                        v-for="(document, order) in splitCompleteWikiContents"
+                        :key="order"
+                    >
+                        <TagEdit
+                            :fileName="document.title"
+                            :content="document.doc_content"
+                            :index="order"
+                        >
+                        </TagEdit>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -386,9 +407,10 @@
 import {
     columnDefinition, colHeader, columns 
 } from './data';
-import SplitCompleteContent from './components/SplitCompleteContent.vue';
+// import SplitCompleteContent from './components/SplitCompleteContent.vue';
 import BookChildContent from './components/BookChildContent.vue';
 import Treeselect from '@riophae/vue-treeselect';
+import TagEdit from './components/TagEdit';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import {
     HotTable 
@@ -413,14 +435,12 @@ import {
 export default {
     name: 'App',
     components: {
-        SplitCompleteContent,
+        // SplitCompleteContent,
         BookChildContent,
         Treeselect,
         HotTable,
         Multiselect,
-    },
-    mounted() {
-        // this.$refs.multiselect.activate();
+        TagEdit
     },
     data: function () {
         return {
@@ -469,6 +489,7 @@ export default {
             isEditMetaTable: false,
             fileNameMeta: 'file',
             corpusNameMeta: '我的文獻集',
+            isCheckTag: false,
             dataSchema: {
                 title: '',
                 corpus: '',
@@ -784,5 +805,10 @@ hr {
     height: 2px;
     margin: 6px 23px 1px -19px;
     width: 41%;
+}
+
+.dataHandsonTable {
+    position: relative;
+    z-index: 0;
 }
 </style>

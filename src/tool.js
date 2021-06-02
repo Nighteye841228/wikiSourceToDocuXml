@@ -586,7 +586,7 @@ export function createMetadataRows(wikiFilesWithTitleAndDocuments, needColumns, 
             }, {
                 title: `${files.title}`,
                 doc_content: document,
-                fileName: `${padding(fileCount, filePaddingNum)}.txt`,
+                fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
                 corpus: corpusName
             }, fileMeta,);
             separateFiles.push(column);
