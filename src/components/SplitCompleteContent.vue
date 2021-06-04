@@ -9,14 +9,13 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <p class="title is-4">{{ title }}/第{{index}}件</p>
+                            <p class="title is-4">{{ title }}/第{{ index }}件</p>
                         </div>
                     </div>
-    
+
                     <textarea class="textarea" v-text="document" rows="20"></textarea>
                 </div>
-                <footer class="modal-card-foot">
-                </footer>
+                <footer class="modal-card-foot"></footer>
             </div>
         </b-modal>
     </div>
@@ -25,7 +24,7 @@
 <script>
 export default {
     name: 'SplitCompleteContent',
-    data: function() {
+    data: function () {
         return {
             isOpenBook: false,
         };

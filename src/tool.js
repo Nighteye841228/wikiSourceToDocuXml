@@ -564,12 +564,17 @@ export function splitAndUrlHandler(unCutContents) {
     return splitParagraphs;
 }
 
-export function createMetadataRows(wikiFilesWithTitleAndDocuments, needColumns, fileName, corpusName) {
+export function createMetadataRows(
+    wikiFilesWithTitleAndDocuments,
+    needColumns,
+    fileName,
+    corpusName
+) {
     let separateFiles = [];
     let fileMeta = {
     };
     let fileCount = 0;
-    needColumns.forEach(element => {
+    needColumns.forEach((element) => {
         fileMeta[element.field] = '';
     });
     wikiFilesWithTitleAndDocuments.forEach((files) => {
@@ -582,13 +587,17 @@ export function createMetadataRows(wikiFilesWithTitleAndDocuments, needColumns, 
     wikiFilesWithTitleAndDocuments.forEach((files) => {
         files.documents.forEach((document) => {
             fileCount++;
-            let column = Object.assign({
-            }, {
-                title: `${files.title}`,
-                doc_content: document,
-                fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
-                corpus: corpusName
-            }, fileMeta,);
+            let column = Object.assign(
+                {
+                },
+                {
+                    title: `${files.title}`,
+                    doc_content: `${document}`,
+                    fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
+                    corpus: `${corpusName}`,
+                },
+                fileMeta
+            );
             separateFiles.push(column);
         });
     });
@@ -610,4 +619,34 @@ export function splitAriaConvert(pureTextWithCutVal, urlVal) {
         waitToAddUrlText = waitToAddUrlText.replace(cleanUrlText, url);
     });
     return waitToAddUrlText;
+}
+
+export function parseTag(htmlString) {
+    let extractCompleteTags = [];
+    let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+    $(doc)
+        .find('mark')
+        .each(function (index, element) {
+            console.log(element);
+            if ($(element).attr('tag') !== undefined) {
+                console.log($(element).attr('tag'));
+                console.log($(element).text());
+                extractCompleteTags.push({
+                    tagName: $(element).attr('tag'),
+                    tagValue: $(element).text(),
+                });
+            }
+        });
+    // let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
+    // tagTexts.forEach(element => {
+    //     let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
+    //     if(tag){
+    //         let tagName = tag[1];
+    //         let tagValue = tag[2];
+    //         extractCompleteTags.push({
+    //             tagName: tagName,
+    //             tagValue: tagValue
+    //         });
+    //     }
+    // });
 }

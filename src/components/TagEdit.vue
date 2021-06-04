@@ -1,17 +1,19 @@
 <template>
-    <div>
+    <div ref="tagParent">
         <div class="content">
             <b-button class="is-primary" outlined expanded @click="isOpenTagModal = true">{{ fileName }}
             </b-button>
         </div>
 
         <div class="selectTagBox" ref="selbox" v-if="isTagOpen">
-            <div v-for="(tag, index) in splitWikiTags" :key="index">
+            <span v-for="(tag, index) in splitWikiTags" :key="index">
                 <b-radio type="radio" v-model="selectTag" :native-value="tag">
                     {{ tag }}</b-radio>
+            </span>
+            <div>
+                <b-button type="is-small" @click="setTag">確認</b-button>
+                <b-button type="is-small" @click="isTagOpen = false">取消</b-button>
             </div>
-            <b-button type="is-small" @click="setTag">確認</b-button>
-            <b-button type="is-small" @click="isTagOpen = false">取消</b-button>
         </div>
 
         <b-modal v-model="isOpenTagModal" :width="1000" scroll="keep">
@@ -24,6 +26,7 @@
                     </div>
                     <div class="content">
                         <b-input placeholder="輸入需要的標籤（以逗號分隔）" v-model="wikiTags"></b-input>
+                        <b-button type="is-success">確認</b-button>
                     </div>
                     <div>
                         <div ref="text" style="white-space:pre-wrap;" v-html="content"
@@ -41,7 +44,7 @@
                 <footer class="modal-card-foot">
                     <section>
                         <div class="block">
-                            <b-button type="is-success" outlined @click="isOpenTagModal=false">保存Tag</b-button>
+                            <b-button type="is-success" outlined @click="saveTag">保存Tag</b-button>
                         </div>
                     </section>
                 </footer>
@@ -62,15 +65,25 @@ export default {
             isTagOpen: false,
             isOpenTagModal: false,
             extractCompleteTags: [],
+            isMouseMove: false,
         };
     },
-    props: ['fileName', 'content'],
+    props: ['fileName', 'content', 'index'],
     methods: {
-        print: function (e) {
+        print: function (evt) {
+            // let oEvent = evt || window.event;
+            // let eventDoc = (oEvent.target && oEvent.target.ownerDocument) || document;
+            // let doc = eventDoc.documentElement;
+            // let body = eventDoc.body;
+            // let scrollLeft = oEvent.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
+            //   (doc && doc.clientLeft || body && body.clientLeft || 0);
+            // let scrollTop = oEvent.clientY + (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
+            //   (doc && doc.clientTop  || body && body.clientTop  || 0 );
             this.isTagOpen = true;
-            this.$nextTick(() => {
-                this.$refs.selbox.style.left = `${e.clientX}px`;
-                this.$refs.selbox.style.top = `${e.offsetY}px`;
+            // document.body.appendChild(this.$refs.selbox);
+            this.$nextTick(()=>{
+                this.$refs.selbox.style.left = `${evt.clientX}px`;
+                this.$refs.selbox.style.top = `${evt.clientY}px`;
             });
             this.wordSelection = window.getSelection();
         },
@@ -82,19 +95,36 @@ export default {
             this.wordSelection.deleteFromDocument();
             this.wordSelection.getRangeAt(0).insertNode(markNode);
             this.isTagOpen = false;
+            this.searchAndTag(this.selectTag, selectText);
+        },
+        searchAndTag: function (tagName, tagWord) {
+            this.$refs.text.innerHTML = 
+                this.$refs.text.innerHTML
+                    .replace(new RegExp(tagWord, 'g'), `<mark tag="${tagName}">${tagWord}</mark>`)
+                    .replace(/(<mark[^>]*>)<mark[^>]*>/g, '$1')
+                    .replace(/<\/mark><\/mark>/g, '</mark>');
         },
         extractTag: function () {
             let ht = this.$refs.text.getInnerHTML();
             let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
             tagTexts.forEach(element => {
                 let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
-                let tagName = tag[1];
-                let tagValue = tag[2];
-                this.extractCompleteTags.push({
-                    tagName: tagName,
-                    tagValue: tagValue
-                });
+                if(tag){
+                    let tagName = tag[1];
+                    let tagValue = tag[2];
+                    this.extractCompleteTags.push({
+                        tagName: tagName,
+                        tagValue: tagValue
+                    });
+                }
             });
+        },
+        saveTag: function(){
+            this.$emit('handle-tag', {
+                newContent: this.$refs.text.getInnerHTML(),
+                index: this.index
+            });
+            this.isOpenTagModal = false;
         }
     },
     computed: {
@@ -108,7 +138,7 @@ export default {
 
 <style scoped>
 .selectTagBox {
-    position: absolute;
+    position: fixed;
     max-width: 500px;
     max-height: 400px;
     z-index: 1000;

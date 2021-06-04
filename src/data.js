@@ -1,4 +1,4 @@
-const columnDefinition = [ 
+const columnDefinition = [
     {
         field: 'author',
         headerName: '文件作者',
@@ -159,11 +159,11 @@ const colHeader = [
 
 const columns = [
     {
-        wordWrap: false 
+        wordWrap: false,
     },
     {
         wordWrap: false,
-        width: '150px' 
+        width: '150px',
     },
     {
     },

@@ -9,44 +9,71 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <label class="label is-large">獲取的WikiSource文本內容 
-                            </label>
+                            <label class="label is-large">獲取的WikiSource文本內容 </label>
                             <div class="block">
-                                <b-radio name="name" native-value="1" v-model.number="paragraphCutWay" @change="getViewArray">
+                                <b-radio
+                                    name="name"
+                                    native-value="1"
+                                    v-model.number="paragraphCutWay"
+                                    @change="getViewArray"
+                                >
                                     以此卷作為一件
                                 </b-radio>
-                                <b-radio name="name" native-value="2" v-model.number="paragraphCutWay" @change="getViewArray">
+                                <b-radio
+                                    name="name"
+                                    native-value="2"
+                                    v-model.number="paragraphCutWay"
+                                    @change="getViewArray"
+                                >
                                     以段落切開作為一件
                                 </b-radio>
-                                <b-radio name="name" native-value="3" v-model.number="paragraphCutWay" @change="getViewArray">
+                                <b-radio
+                                    name="name"
+                                    native-value="3"
+                                    v-model.number="paragraphCutWay"
+                                    @change="getViewArray"
+                                >
                                     以自由分段作為分件（以####作為語法輸入）
                                 </b-radio>
-                                <b-button type="is-success is-small" @click="getViewArray(1)" outlined>
+                                <b-button
+                                    type="is-success is-small"
+                                    @click="getViewArray(1)"
+                                    outlined
+                                >
                                     檢視分段結果
                                 </b-button>
                             </div>
                         </div>
                     </div>
-    
+
                     <div v-if="!isPreview">
-                        <textarea class="textarea" placeholder="10 lines of textarea" v-model.lazy="pureText" rows="20"></textarea>
+                        <textarea
+                            class="textarea"
+                            placeholder="10 lines of textarea"
+                            v-model.lazy="pureText"
+                            rows="20"
+                        ></textarea>
                     </div>
                     <div class="content" v-if="isPreview">
                         <div v-for="(content, index) in viewContents" :key="index">
-                            <textarea class="textarea" placeholder="10 lines of textarea" v-text="content" rows="5" readonly></textarea>
+                            <textarea
+                                class="textarea"
+                                placeholder="10 lines of textarea"
+                                v-text="content"
+                                rows="5"
+                                readonly
+                            ></textarea>
                             <div class="is-divider"></div>
                         </div>
                     </div>
-    
                 </div>
                 <footer class="modal-card-foot">
                     <section>
                         <label class="checkbox">
-                            <input type="checkbox" v-model="isUrlAllow">
+                            <input type="checkbox" v-model="isUrlAllow" />
                             保存超連結
                         </label>
                         <div class="block">
-                            
                             <b-button type="is-success" outlined @click="sendWikiCutObj">確認分段</b-button>
                         </div>
                     </section>
@@ -58,14 +85,12 @@
 
 <script>
 import {
-    parseHtmlText,
-    getWikiPage,
-    splitAriaConvert,
+    parseHtmlText, getWikiPage, splitAriaConvert 
 } from '../tool.js';
 
 export default {
     name: 'BookChildContent',
-    data: function() {
+    data: function () {
         return {
             isOpenBook: false,
             paragraphCutWay: 1,
@@ -78,12 +103,12 @@ export default {
             isUrlAllow: false,
             isViewed: false,
             viewContents: [],
-            isPreview: false
+            isPreview: false,
         };
     },
     props: ['value', 'wikiBook', 'order'],
     methods: {
-        sendWikiCutObj: function() {
+        sendWikiCutObj: function () {
             this.$emit('handle-wiki', {
                 title: this.wikiBook,
                 order: this.order,
@@ -97,12 +122,10 @@ export default {
             this.isOpenBook = false;
             this.isViewed = true;
         },
-        getViewArray: function(param = 0) {
+        getViewArray: function (param = 0) {
             this.viewContents = [];
             let useContent =
-                this.isUrlAllow === true ?
-                    this.wikiText.hyperlinks :
-                    this.pureText;
+            this.isUrlAllow === true ? this.wikiText.hyperlinks : this.pureText;
             let re = '';
             if (this.paragraphCutWay === 2) {
                 re = /\n/;
@@ -110,23 +133,22 @@ export default {
                 re = /####/;
             }
             let cutParas =
-                re === '' ? [useContent] :
-                    useContent.split(re).filter((text) => text);
+            re === '' ? [useContent] : useContent.split(re).filter((text) => text);
             this.$nextTick(function () {
                 this.viewContents = cutParas;
             });
-            if(param === 1) this.isPreview = !this.isPreview;
-        }
+            if (param === 1) this.isPreview = !this.isPreview;
+        },
     },
     computed: {
         pureText: {
-            get: function() {
+            get: function () {
                 return this.wikiText.hyperlinks.replace(
                     /\n{0,1}<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
                     '$1'
                 );
             },
-            set: function(val) {
+            set: function (val) {
                 this.wikiText.hyperlinks = splitAriaConvert(
                     val,
                     this.wikiText.hyperlinks
@@ -134,7 +156,7 @@ export default {
             },
         },
     },
-    created: async function() {
+    created: async function () {
         console.log('進入偵測！');
         this.wikiObj = await getWikiPage(this.wikiBook);
         this.wikiText = parseHtmlText(this.wikiObj.text['*']);
@@ -143,6 +165,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>
+<style scoped></style>

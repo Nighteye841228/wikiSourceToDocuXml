@@ -43,11 +43,9 @@
             <section class="modal-card-body">
                 <div v-for="(link, index) in refLinks" :key="index">
                     <label class="checkbox">
-                        <input
-                            type="checkbox"
-                            :value="link"
-                            v-model="selectRefLinks"
-                        />{{ link }}
+                        <input type="checkbox" :value="link" v-model="selectRefLinks" />{{
+                            link
+                        }}
                     </label>
                 </div>
             </section>
@@ -70,27 +68,18 @@
             </header>
             <section class="modal-card-body">
                 <div class="content">
-                    <ul
-                        v-for="(book, count) in selectedBookMenuPool"
-                        :key="count"
-                    >
+                    <ul v-for="(book, count) in selectedBookMenuPool" :key="count">
                         <li>第{{ count + 1 }}本</li>
                         <ul v-for="(chap, ind) in book.menu" :key="ind">
                             <li>
-                                <a
-                                    href="#"
-                                    @click="deleteChapter(count, ind)"
-                                >{{ chap }}</a>
+                                <a href="#" @click="deleteChapter(count, ind)">{{ chap }}</a>
                             </li>
                         </ul>
                     </ul>
                 </div>
             </section>
             <footer class="modal-card-foot">
-                <button
-                    class="button is-success"
-                    @click="isCheckBook = false"
-                >
+                <button class="button is-success" @click="isCheckBook = false">
                     返回
                 </button>
             </footer>
@@ -133,10 +122,7 @@
                             <div class="content">
                                 <h4>可參考延伸資料</h4>
                             </div>
-                            <div
-                                v-for="(refLink, index) in refLinks"
-                                :key="index"
-                            >
+                            <div v-for="(refLink, index) in refLinks" :key="index">
                                 <label class="checkbox">
                                     <input
                                         type="checkbox"
@@ -150,10 +136,7 @@
                     </div>
                 </section>
                 <footer class="modal-card-foot">
-                    <button
-                        class="button is-success"
-                        @click="addSelectedMenuItem"
-                    >
+                    <button class="button is-success" @click="addSelectedMenuItem">
                         保存結果
                     </button>
                     <button class="button" @click="isAddMenuToDownload = false">
@@ -187,9 +170,7 @@
                         />
                     </div>
                     <div class="control">
-                        <a class="button is-link" @click="getQueryResult">
-                            搜尋
-                        </a>
+                        <a class="button is-link" @click="getQueryResult"> 搜尋 </a>
                     </div>
                 </div>
             </div>
@@ -209,18 +190,12 @@
                             >
                                 <div
                                     class="columns"
-                                    style="
-                                        box-shadow: 2px 2px 2px 1px
-                                            rgba(0, 0, 0, 0.2);
-                                    "
+                                    style="box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2)"
                                 >
                                     <div class="column">
                                         <div
                                             class="content"
-                                            style="
-                                                padding-top: 15px;
-                                                padding-left: 10px;
-                                            "
+                                            style="padding-top: 15px; padding-left: 10px"
                                         >
                                             <h4>{{ extendedLink }}</h4>
                                         </div>
@@ -243,11 +218,7 @@
         <div class="section">
             <div class="container">
                 <label class="label is-large">目前已下載卷數檢視 & 分件｜
-                    <b-button
-                        class="is-primary"
-                        @click="openSelectBookList"
-                        outlined
-                    >
+                    <b-button class="is-primary" @click="openSelectBookList" outlined>
                         察看目前已選章節
                     </b-button>
                 </label>
@@ -318,12 +289,9 @@
                     track-by="headerName"
                     :preselect-first="true"
                     :max-height="400"
-                    ref="multiselect" 
+                    ref="multiselect"
                 >
-                    <template
-                        slot="selection"
-                        slot-scope="{ values, search, isOpen }"
-                    >
+                    <template slot="selection" slot-scope="{ values, search, isOpen }">
                         <span
                             class="multiselect__single"
                             v-if="values.length &amp;&amp; !isOpen"
@@ -340,15 +308,11 @@
                     :animated="false"
                     size="is-small"
                 >
-                    <b-button
-                        class="is-primary"
-                        @click="splitWikiContents"
-                        outlined
-                    >確認輸出
+                    <b-button class="is-primary" @click="splitWikiContents" outlined>確認輸出
                     </b-button>
                 </b-tooltip>
             </footer>
-        </b-modal>                
+        </b-modal>
 
         <div class="section dataHandsonTable" v-if="isEditMetadata">
             <div class="container">
@@ -371,11 +335,7 @@
                     >
                     </hot-table>
                 </div>
-                <b-button
-                    class="is-primary"
-                    @click="isCheckTag=true"
-                    outlined
-                >編輯完成
+                <b-button class="is-primary" @click="isCheckTag = true" outlined>編輯完成
                 </b-button>
             </div>
         </div>
@@ -394,6 +354,7 @@
                             :fileName="document.title"
                             :content="document.doc_content"
                             :index="order"
+                            @handle-tag="handleWikiTag"
                         >
                         </TagEdit>
                     </div>
@@ -435,12 +396,12 @@ import {
 export default {
     name: 'App',
     components: {
-        // SplitCompleteContent,
+    // SplitCompleteContent,
         BookChildContent,
         Treeselect,
         HotTable,
         Multiselect,
-        TagEdit
+        TagEdit,
     },
     data: function () {
         return {
@@ -544,9 +505,7 @@ export default {
             this.isAddExtendedLinks = true;
         },
         getMenuOfContent: async function (index) {
-            this.wikiContentSnippet = await getSnippet(
-                this.extendedLinks[index]
-            );
+            this.wikiContentSnippet = await getSnippet(this.extendedLinks[index]);
             let targetFindExistedMenu = this.tableOfContents.find(
                 (x) => x.index === index
             );
@@ -595,7 +554,7 @@ export default {
         deleteChapter: function (count, ind) {
             this.selectedBookMenuPool[count].menu.splice(ind, 1);
         },
-        openEditTable: function() {
+        openEditTable: function () {
             this.isEditMetaTable = true;
             this.$nextTick(function () {
                 this.$refs.multiselect.activate();
@@ -603,6 +562,10 @@ export default {
         },
         handleWikiCutObj: function (param) {
             this.wikiContentWaitCut.push(param);
+        },
+        handleWikiTag: function (param) {
+            console.log(param);
+            this.splitCompleteWikiContents[param.index].doc_content = param.newContent;
         },
         splitWikiContents: function () {
             this.$refs.contentTable.forEach((element) => {
@@ -615,16 +578,20 @@ export default {
                 this.wikiContentWaitCut
             );
             this.splitCompleteWikiContents = createMetadataRows(
-                this.splitCompleteWikiContents, 
+                this.splitCompleteWikiContents,
                 this.selectedMetaDataColumns,
                 this.fileNameMeta,
                 this.corpusNameMeta
             );
             this.$nextTick(function () {
-                this.$refs.hotTableComponent.hotInstance.loadData(this.splitCompleteWikiContents);
+                this.$refs.hotTableComponent.hotInstance.loadData(
+                    this.splitCompleteWikiContents
+                );
             });
             this.colHeaders = ['文件標題', '文本內容', '檔案名稱', '文獻集名稱'];
-            this.colHeaders = this.colHeaders.concat(this.selectedMetaDataColumns.map(x=>x.headerName));
+            this.colHeaders = this.colHeaders.concat(
+                this.selectedMetaDataColumns.map((x) => x.headerName)
+            );
             this.isEditMetadata = true;
             this.isEditMetaTable = false;
         },
@@ -638,9 +605,7 @@ export default {
         },
         confirmAdd: function (flag) {
             if (flag)
-                this.extendedLinks = this.extendedLinks.concat(
-                    this.selectRefLinks
-                );
+                this.extendedLinks = this.extendedLinks.concat(this.selectRefLinks);
             this.selectRefLinks = [];
             this.isAddExtendedLinks = false;
         },
@@ -654,13 +619,12 @@ export default {
         download: function () {
             let element = document.createElement('a');
             let filename =
-                this.filename == ''
-                    ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
-                    : this.filename;
+        this.filename == ''
+            ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
+            : this.filename;
             element.setAttribute(
                 'href',
-                'data:text/xml;charset=utf-8,' +
-                    encodeURIComponent(this.wikiContents)
+                'data:text/xml;charset=utf-8,' + encodeURIComponent(this.wikiContents)
             );
             element.setAttribute('download', filename);
             element.style.display = 'none';
@@ -689,14 +653,11 @@ export default {
             });
             for (let wikiDocument of this.wikiDocuments) {
                 wikiDocument.isImport.corpus =
-                    this.corpusName === '' ? '我的資料集' : this.corpusName;
+          this.corpusName === '' ? '我的資料集' : this.corpusName;
             }
             let answer = '';
             if (this.isSeperateByParagraph == 'default') {
-                answer = convertAlltoDocuments(
-                    this.wikiDocuments,
-                    this.isAddHyperlink
-                );
+                answer = convertAlltoDocuments(this.wikiDocuments, this.isAddHyperlink);
             } else if (this.isSeperateByParagraph == 'seperateEachParagraph') {
                 answer = convertParagraphToDocuments(
                     this.wikiDocuments,
@@ -715,100 +676,100 @@ export default {
                 this.confirmLinks.push(ele);
             });
         },
-        // reset: function () {
-        //     this.newDocument = new WikiXmlMetadata();
-        //     this.wikiDocuments = [];
-        //     this.isInputDataValid = true;
-        //     this.isMetadataComplete = true;
-        //     this.isKeepFormat = "Yes";
-        //     this.isAddHyperlink = true;
-        //     this.urlFieldHint = "";
-        //     this.isInputEmpty = false;
-        //     this.wikiUrls = "";
-        //     this.wikiContents = "";
-        //     this.filename = "";
-        //     this.isSeperateByParagraph = "default";
-        //     this.isAddExtendedLinks = false;
-        //     this.extendedLinks = [];
-        //     this.confirmLinks = [];
-        //     this.sourceWord = "";
-        //     this.corpusName = "";
-        //     this.corpusDefault = "文獻集名稱：預設「我的資料集」";
-        // },
+    // reset: function () {
+    //     this.newDocument = new WikiXmlMetadata();
+    //     this.wikiDocuments = [];
+    //     this.isInputDataValid = true;
+    //     this.isMetadataComplete = true;
+    //     this.isKeepFormat = "Yes";
+    //     this.isAddHyperlink = true;
+    //     this.urlFieldHint = "";
+    //     this.isInputEmpty = false;
+    //     this.wikiUrls = "";
+    //     this.wikiContents = "";
+    //     this.filename = "";
+    //     this.isSeperateByParagraph = "default";
+    //     this.isAddExtendedLinks = false;
+    //     this.extendedLinks = [];
+    //     this.confirmLinks = [];
+    //     this.sourceWord = "";
+    //     this.corpusName = "";
+    //     this.corpusDefault = "文獻集名稱：預設「我的資料集」";
+    // },
     },
 };
 </script>
 
 <style scoped>
 [v-cloak] {
-    display: none;
+  display: none;
 }
 
 .modal-card-body {
-    min-height: 500px;
-    overflow: auto;
+  min-height: 500px;
+  overflow: auto;
 }
 
 .extend-link {
-    max-height: 400px;
-    overflow: auto;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .wiki-snippet {
-    display: inherit;
-    max-height: 200px;
-    overflow: auto;
+  display: inherit;
+  max-height: 200px;
+  overflow: auto;
 }
 
 .table {
-    min-width: 100%;
+  min-width: 100%;
 }
 
 .vue-treeselect__list-item {
-    padding-left: 10px;
+  padding-left: 10px;
 }
 
 .modal-box {
-    display: flex;
-    align-content: space-around;
-    justify-content: space-around;
-    flex-direction: column;
-    flex-wrap: wrap;
-    width: 960px;
-    height: 580px;
+  display: flex;
+  align-content: space-around;
+  justify-content: space-around;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 960px;
+  height: 580px;
 }
 
 .modal-box-select-content {
-    width: 55%;
-    height: 95%;
-    overflow: auto;
-    border-right: 2px ridge black;
-    padding-right: 20px;
+  width: 55%;
+  height: 95%;
+  overflow: auto;
+  border-right: 2px ridge black;
+  padding-right: 20px;
 }
 
 .modal-box-snippet {
-    width: 41%;
-    height: 30%;
-    overflow: auto;
+  width: 41%;
+  height: 30%;
+  overflow: auto;
 }
 
 .modal-box-extend-link {
-    width: 41%;
-    height: 66%;
-    overflow: auto;
+  width: 41%;
+  height: 66%;
+  overflow: auto;
 }
 
 hr {
-    background-color: black;
-    border: none;
-    display: flex;
-    height: 2px;
-    margin: 6px 23px 1px -19px;
-    width: 41%;
+  background-color: black;
+  border: none;
+  display: flex;
+  height: 2px;
+  margin: 6px 23px 1px -19px;
+  width: 41%;
 }
 
 .dataHandsonTable {
-    position: relative;
-    z-index: 0;
+  position: relative;
+  z-index: 0;
 }
 </style>
