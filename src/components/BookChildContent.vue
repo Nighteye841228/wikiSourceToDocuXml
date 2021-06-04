@@ -74,7 +74,7 @@
                             保存超連結
                         </label>
                         <div class="block">
-                            <b-button type="is-success" outlined @click="sendWikiCutObj">確認分段</b-button>
+                            <b-button type="is-success" outlined @click="sendWikiCutObj">確認分件方式</b-button>
                         </div>
                     </section>
                 </footer>

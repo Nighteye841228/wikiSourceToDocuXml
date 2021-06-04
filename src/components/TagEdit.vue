@@ -25,8 +25,14 @@
                         </div>
                     </div>
                     <div class="content">
-                        <b-input placeholder="輸入需要的標籤（以逗號分隔）" v-model="wikiTags"></b-input>
-                        <b-button type="is-success">確認</b-button>
+                        <div class="control">
+                            <b-input placeholder="輸入需要的標籤（以逗號分隔）" v-model="wikiTags">
+                            </b-input>
+                        </div>
+                        <div class="control">
+                            <b-button type="is-success">確認
+                            </b-button>
+                        </div>
                     </div>
                     <div>
                         <div ref="text" style="white-space:pre-wrap;" v-html="content"

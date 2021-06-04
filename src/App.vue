@@ -120,7 +120,7 @@
                         <hr />
                         <div class="modal-box-extend-link">
                             <div class="content">
-                                <h4>可參考延伸資料</h4>
+                                <h4>維基文庫提供可參考資料</h4>
                             </div>
                             <div v-for="(refLink, index) in refLinks" :key="index">
                                 <label class="checkbox">
@@ -241,7 +241,7 @@
                         ></BookChildContent>
                     </div>
                 </div>
-                <b-button type="is-success" @click="openEditTable" outlined>確認分段</b-button>
+                <b-button type="is-success" @click="openEditTable" outlined>確認分件完成</b-button>
                 <div class="is-divider"></div>
             </div>
         </div>
