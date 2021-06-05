@@ -362,6 +362,7 @@
                         :options="wikiTagOptions" 
                         :multiple="true" 
                         :taggable="true" 
+                        @remove="deleteAllTag"
                         @tag="addTag"
                     >
                     </multiselect>
@@ -385,6 +386,7 @@
                             :index="order"
                             :tagOptions="wikiTags"
                             @handle-tag="handleWikiTag"
+                            ref="editTag"
                         >
                         </TagEdit>
                     </div>
@@ -538,6 +540,13 @@ export default {
         };
     },
     methods: {
+        deleteAllTag: function (tag) {
+            this.splitCompleteWikiContents.forEach((element) => {
+                element.doc_content = element.doc_content
+                    .replace(new RegExp(String.raw`<mark tag="${tag.tagName}">([^<]*)</mark>`, 'g'), '$1');
+                console.log(element.doc_content);
+            });
+        },
         addTag: function (newTag) {
             const tag = {
                 tagLabel: newTag,

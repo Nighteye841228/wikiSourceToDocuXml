@@ -29,12 +29,12 @@
                              @mouseup="print"
                         ></div>
                     </div>
-                    <div class="is-divider"></div>
+                    <!-- <div class="is-divider"></div>
                     <div class="content">
                         <ul v-for="(value, name, index) in extractCompleteTags" :key="index">
                             <li>標籤名稱是: {{ name }}，標籤內容為: {{ value }}</li>
                         </ul>
-                    </div>
+                    </div> -->
                 </div>
                 <footer class="modal-card-foot">
                     <section>
