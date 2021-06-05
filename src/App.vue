@@ -217,11 +217,13 @@
         </div>
         <div class="section">
             <div class="container">
-                <label class="label is-large">目前已下載卷數檢視 & 分件｜
+                <b-field>
+                    <label class="label is-large">目前已下載卷數檢視 & 分件｜
+                    </label>
                     <b-button class="is-primary" @click="openSelectBookList" outlined>
-                        察看目前已選章節
+                        刪除章節
                     </b-button>
-                </label>
+                </b-field>
                 <div class="is-divider"></div>
                 <div
                     class="columns is-multiline"
@@ -241,8 +243,10 @@
                         ></BookChildContent>
                     </div>
                 </div>
-                <b-button type="is-success" @click="openEditTable" outlined>確認分件完成</b-button>
                 <div class="is-divider"></div>
+                <div>
+                    <b-button type="is-success" @click="openEditTable" outlined>確認分件完成</b-button>
+                </div>
             </div>
         </div>
         <!-- <div class="section">
@@ -289,6 +293,7 @@
                     track-by="headerName"
                     :preselect-first="true"
                     :max-height="400"
+                    @close="closeEventHandler"
                     ref="multiselect"
                 >
                     <template slot="selection" slot-scope="{ values, search, isOpen }">
@@ -314,46 +319,71 @@
             </footer>
         </b-modal>
 
-        <div class="section dataHandsonTable" v-if="isEditMetadata">
+        <div class="section dataHandsonTable">
             <div class="container">
                 <div class="field">
                     <label class="label is-large">編輯metadata區域</label>
                     <div class="is-divider"></div>
-                    <hot-table
-                        :data.sync="splitCompleteWikiContents"
-                        :rowHeaders="true"
-                        :licenseKey="licenseKey"
-                        width="100%"
-                        height="600"
-                        :autoRowSize="true"
-                        :colHeaders="colHeaders"
-                        :manualRowResize="true"
-                        :manualColumnResize="[200, 250]"
-                        :wordWrap="false"
-                        :autoWrapCol="false"
-                        ref="hotTableComponent"
-                    >
-                    </hot-table>
+                    <div v-if="isEditMetadata">
+                        <hot-table
+                            :data.sync="splitCompleteWikiContents"
+                            :rowHeaders="true"
+                            :licenseKey="licenseKey"
+                            width="100%"
+                            height="600"
+                            :autoRowSize="true"
+                            :colHeaders="colHeaders"
+                            :manualRowResize="true"
+                            :manualColumnResize="[200, 250]"
+                            :wordWrap="false"
+                            :autoWrapCol="false"
+                            ref="hotTableComponent"
+                        >
+                        </hot-table>
+                        <b-button class="is-primary" @click="isCheckTag = true" outlined>輸出|編輯TAG
+                        </b-button>
+                    </div>
                 </div>
-                <b-button class="is-primary" @click="isCheckTag = true" outlined>編輯完成
-                </b-button>
             </div>
         </div>
 
-        <div class="section" v-if="isCheckTag">
+        <div class="section">
             <div class="container">
                 <label class="label is-large">點擊檢視文本 & 編輯Tag</label>
+                <b-field>
+                    <multiselect 
+                        v-model="wikiTags" 
+                        tag-placeholder="新增自訂tag" 
+                        placeholder="選擇需要的tag或輸入自訂的tag名稱(請用英文)" 
+                        label="tagLabel" 
+                        track-by="tagName" 
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :options="wikiTagOptions" 
+                        :multiple="true" 
+                        :taggable="true" 
+                        @tag="addTag"
+                    >
+                    </multiselect>
+                </b-field>
                 <div class="is-divider"></div>
-                <div class="columns is-multiline">
+                <!-- <b-field>
+                    <b-input placeholder="輸入需要的標籤（以逗號分隔）" v-model="wikiTags" expanded>
+                    </b-input>
+                    <b-button type="is-success">確認
+                    </b-button>
+                </b-field> -->
+                <div class="columns is-multiline" v-if="isCheckTag">
                     <div
                         class="column is-one-quarter"
                         v-for="(document, order) in splitCompleteWikiContents"
                         :key="order"
                     >
                         <TagEdit
-                            :fileName="document.title"
+                            :fileName="document.title + '/' + document.fileName"
                             :content="document.doc_content"
                             :index="order"
+                            :tagOptions="wikiTags"
                             @handle-tag="handleWikiTag"
                         >
                         </TagEdit>
@@ -451,6 +481,25 @@ export default {
             fileNameMeta: 'file',
             corpusNameMeta: '我的文獻集',
             isCheckTag: false,
+            wikiTags: [],
+            wikiTagOptions: [
+                {
+                    tagLabel: 'PersonName',
+                    tagName: 'PersonName'
+                },
+                {
+                    tagLabel: 'LocName',
+                    tagName: 'LocName'
+                },
+                {
+                    tagLabel: 'Date',
+                    tagName: 'Date'
+                },
+                {
+                    tagLabel: 'Office',
+                    tagName: 'Office'
+                },
+            ],
             dataSchema: {
                 title: '',
                 corpus: '',
@@ -489,6 +538,14 @@ export default {
         };
     },
     methods: {
+        addTag: function (newTag) {
+            const tag = {
+                tagLabel: newTag,
+                tagName: `Udef_${newTag}`
+            };
+            this.wikiTagOptions.push(tag);
+            this.wikiTags.push(tag);
+        },
         cleanUrlField: function () {
             this.wikiUrls = '';
             this.urlFieldHint = '';
@@ -676,6 +733,9 @@ export default {
                 this.confirmLinks.push(ele);
             });
         },
+        closeEventHandler: function () {
+            this.$refs.multiselect.isOpen = true;
+        }
     // reset: function () {
     //     this.newDocument = new WikiXmlMetadata();
     //     this.wikiDocuments = [];

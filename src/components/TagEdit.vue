@@ -6,9 +6,9 @@
         </div>
 
         <div class="selectTagBox" ref="selbox" v-if="isTagOpen">
-            <span v-for="(tag, index) in splitWikiTags" :key="index">
-                <b-radio type="radio" v-model="selectTag" :native-value="tag">
-                    {{ tag }}</b-radio>
+            <span v-for="(tag, index) in tagOptions" :key="index">
+                <b-radio type="radio" v-model="selectTag" :native-value="tag.tagName">
+                    {{ tag.tagLabel }}</b-radio>
             </span>
             <div>
                 <b-button type="is-small" @click="setTag">確認</b-button>
@@ -21,17 +21,7 @@
                 <div class="card-content">
                     <div class="media">
                         <div class="media-content">
-                            <label class="label is-large">編輯Tag</label>
-                        </div>
-                    </div>
-                    <div class="content">
-                        <div class="control">
-                            <b-input placeholder="輸入需要的標籤（以逗號分隔）" v-model="wikiTags">
-                            </b-input>
-                        </div>
-                        <div class="control">
-                            <b-button type="is-success">確認
-                            </b-button>
+                            <label class="label is-large">編輯Tag｜劃記後選擇Tag名稱，再次點擊Tag即可刪除</label>
                         </div>
                     </div>
                     <div>
@@ -39,11 +29,10 @@
                              @mouseup="print"
                         ></div>
                     </div>
+                    <div class="is-divider"></div>
                     <div class="content">
-                        <h4>目前所選擇的tag為: {{ selectTag }}</h4>
-                        <b-button @click="extractTag">輸出tag列表</b-button>
-                        <ul v-for="(item,index) in extractCompleteTags" :key="index">
-                            <li>標籤名稱是: {{ item.tagName }}，標籤內容為: {{ item.tagValue }}</li>
+                        <ul v-for="(value, name, index) in extractCompleteTags" :key="index">
+                            <li>標籤名稱是: {{ name }}，標籤內容為: {{ value }}</li>
                         </ul>
                     </div>
                 </div>
@@ -66,17 +55,21 @@ export default {
         return {
             wordSelection: undefined,
             wordRange: undefined,
-            wikiTags: '',
             selectTag: '',
             isTagOpen: false,
             isOpenTagModal: false,
-            extractCompleteTags: [],
+            extractCompleteTags: {
+            },
             isMouseMove: false,
         };
     },
-    props: ['fileName', 'content', 'index'],
+    props: ['fileName', 'content', 'index', 'tagOptions'],
     methods: {
         print: function (evt) {
+            if(evt.toElement.tagName==='MARK') {
+                this.deleteTag(evt);
+                return;    
+            }
             // let oEvent = evt || window.event;
             // let eventDoc = (oEvent.target && oEvent.target.ownerDocument) || document;
             // let doc = eventDoc.documentElement;
@@ -92,6 +85,12 @@ export default {
                 this.$refs.selbox.style.top = `${evt.clientY}px`;
             });
             this.wordSelection = window.getSelection();
+            let x = window.getSelection();
+            console.log(x);
+        },
+        deleteTag: function (evt) {
+            this.$refs.text.insertBefore(document.createTextNode(evt.toElement.innerText), evt.toElement);
+            this.$refs.text.removeChild(evt.toElement);
         },
         setTag: function () {
             let selectText = this.wordSelection.toString();
@@ -102,6 +101,9 @@ export default {
             this.wordSelection.getRangeAt(0).insertNode(markNode);
             this.isTagOpen = false;
             this.searchAndTag(this.selectTag, selectText);
+            this.extractCompleteTags[this.selectTag] = this.extractCompleteTags[this.selectTag]
+                ? this.extractCompleteTags[this.selectTag] + ', ' + selectText
+                : selectText;
         },
         searchAndTag: function (tagName, tagWord) {
             this.$refs.text.innerHTML = 
@@ -110,32 +112,24 @@ export default {
                     .replace(/(<mark[^>]*>)<mark[^>]*>/g, '$1')
                     .replace(/<\/mark><\/mark>/g, '</mark>');
         },
-        extractTag: function () {
-            let ht = this.$refs.text.getInnerHTML();
-            let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
-            tagTexts.forEach(element => {
-                let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
-                if(tag){
-                    let tagName = tag[1];
-                    let tagValue = tag[2];
-                    this.extractCompleteTags.push({
-                        tagName: tagName,
-                        tagValue: tagValue
-                    });
-                }
-            });
-        },
+        // extractTag: function () {
+        //     let ht = this.$refs.text.getInnerHTML();
+        //     let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
+        //     tagTexts.forEach(element => {
+        //         let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
+        //         if(tag){
+        //             let tagName = tag[1];
+        //             let tagValue = tag[2];
+        //             this.extractCompleteTags[tagName] = this.extractCompleteTags[tagName] + ',' + tagValue;
+        //         }
+        //     });
+        // },
         saveTag: function(){
             this.$emit('handle-tag', {
                 newContent: this.$refs.text.getInnerHTML(),
                 index: this.index
             });
             this.isOpenTagModal = false;
-        }
-    },
-    computed: {
-        splitWikiTags: function () {
-            return this.wikiTags.split(',').filter(x=>x).map(x=>x.trim());
         }
     }
 };
