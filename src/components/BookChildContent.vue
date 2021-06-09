@@ -1,8 +1,14 @@
 <template>
     <div>
         <div class="content">
-            <b-button class="is-primary" outlined expanded @click="isOpenBook = true">{{ wikiBook }}
-            </b-button>
+            <b-field>
+                <b-button class="is-primary" outlined expanded @click="isOpenBook = true">
+                    {{ wikiBook }}
+                </b-button>
+                <p class="control">
+                    <b-button class="button is-danger" outlined @click="deleteBook"><b-icon icon="delete"></b-icon></b-button>
+                </p>
+            </b-field>
         </div>
         <b-modal v-model="isOpenBook" :width="1000" scroll="keep">
             <div class="card">
@@ -105,7 +111,7 @@ export default {
             isPreview: false,
         };
     },
-    props: ['value', 'wikiBook', 'order'],
+    props: ['value', 'wikiBook', 'order', 'bookOrder'],
     methods: {
         sendWikiCutObj: function () {
             this.$emit('handle-wiki', {
@@ -138,6 +144,12 @@ export default {
             });
             if (param === 1) this.isPreview = !this.isPreview;
         },
+        deleteBook: function () {
+            this.$emit('delete-book', {
+                bookOrder: this.bookOrder,
+                chapOrder: this.order
+            });
+        }
     },
     computed: {
         pureText: {

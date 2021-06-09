@@ -47,6 +47,9 @@
 </template>
 
 <script>
+import {
+    searchAndTag
+} from './../tool';
 export default {
     name: 'TagEdit',
     watch: {
@@ -68,7 +71,9 @@ export default {
             },
             isMouseMove: false,
             isCheckTagName: false,
-            showTagName: ''
+            showTagName: '',
+            markBucket: {
+            },
         };
     },
     props: ['fileName', 'content', 'index', 'tagOptions'],
@@ -100,16 +105,7 @@ export default {
             this.wordSelection = window.getSelection();
             const {width} = this.wordSelection.getRangeAt(0).getBoundingClientRect();
             if(!width) return;
-            // let oEvent = evt || window.event;
-            // let eventDoc = (oEvent.target && oEvent.target.ownerDocument) || document;
-            // let doc = eventDoc.documentElement;
-            // let body = eventDoc.body;
-            // let scrollLeft = oEvent.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-            //   (doc && doc.clientLeft || body && body.clientLeft || 0);
-            // let scrollTop = oEvent.clientY + (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-            //   (doc && doc.clientTop  || body && body.clientTop  || 0 );
             this.isTagOpen = true;
-            // document.body.appendChild(this.$refs.selbox);
             this.$nextTick(()=>{
                 this.$refs.selbox.style.left = `${evt.clientX + 20}px`;
                 this.$refs.selbox.style.top = `${evt.clientY + 20}px`;
@@ -132,33 +128,30 @@ export default {
                 ? this.extractCompleteTags[this.selectTag] + ', ' + selectText
                 : selectText;
         },
+        saveAndReleaseMark: function (flag = false) {
+            let countOrder = 0, saveText = this.$refs.text.innerHTML, re = new RegExp('(<mark[^>]*>[^<]*</mark>)');
+            function save (text) {
+                this.markBucket[text] = `###${countOrder}@###`;
+                return `###${countOrder}@###`;
+            }
+            if (!flag) {
+                while (saveText.match(re)) {
+                    saveText = saveText.replace(re, save);
+                    countOrder++;
+                }
+                this.$refs.text.innerHTML = saveText;
+            } else {
+                for (const [key, value] of Object.entries(this.markBucket)) {
+                    saveText.replace(new RegExp(value), key);
+                }
+            }
+        },
         searchAndTag: function (tagName, tagWord) {
-            let re = String.raw`([^"])${tagWord}([^"])`;
-            let tarString = String.raw`<mark tag="${tagName}">${tagWord}</mark>`;
-            this.$refs.text.innerHTML = 
-                this.$refs.text.innerHTML
-                    .replace(new RegExp(re, 'g'), '$1' + tarString + '$2')
-                    .replace(/(<mark[^>]*>)<mark[^>]*>/g, '$1')
-                    .replace(/<\/mark><\/mark>/g, '</mark>');
-            //這作法有問題：如果沒有剛好碰到""的左或右邊則無法觸發
-            this.actionShowTag();
+            this.$refs.text.innerHTML = searchAndTag(tagName, tagWord, this.$refs.text.innerHTML);
         },
         actionShowTag: function() {
             this.$refs.text.addEventListener('mouseover', this.handleIn);
-            // ele.addEventListener('mouseleave', this.handleOut);
         },
-        // extractTag: function () {
-        //     let ht = this.$refs.text.getInnerHTML();
-        //     let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
-        //     tagTexts.forEach(element => {
-        //         let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
-        //         if(tag){
-        //             let tagName = tag[1];
-        //             let tagValue = tag[2];
-        //             this.extractCompleteTags[tagName] = this.extractCompleteTags[tagName] + ',' + tagValue;
-        //         }
-        //     });
-        // },
         saveTag: function(){
             this.$emit('handle-tag', {
                 newContent: this.$refs.text.getInnerHTML(),

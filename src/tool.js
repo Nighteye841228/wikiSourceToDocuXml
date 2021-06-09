@@ -640,16 +640,39 @@ export function parseTag(htmlString) {
                 });
             }
         });
-    // let tagTexts = ht.match(/<mark[^>]*>[^<]*<\/mark>/g);
-    // tagTexts.forEach(element => {
-    //     let tag = element.match(/<mark tag="([^"]*)">([^<]*)<\/mark>/);
-    //     if(tag){
-    //         let tagName = tag[1];
-    //         let tagValue = tag[2];
-    //         extractCompleteTags.push({
-    //             tagName: tagName,
-    //             tagValue: tagValue
-    //         });
-    //     }
-    // });
+}
+
+export function searchAndTag (tagName='', tagWord='', string) {
+    let str = string;
+    let buck = {
+    };
+    str = saveAndReleaseMark(false, str);
+    let re = String.raw`${tagWord}`;
+    let tarString = String.raw`<mark tag="${tagName}">${tagWord}</mark>`;
+    str = str.replace(new RegExp(re, 'g'), tarString);
+    str = saveAndReleaseMark(true, str);
+
+    function saveAndReleaseMark(flag = false, str) {
+        let countOrder = 0, saveText = str, re = new RegExp('(<mark[^>]*>[^<]*</mark>)');
+        function save (text) {
+            buck[`###${countOrder}@###`] = text;
+            return `###${countOrder}@###`;
+        }
+        if (!flag) {
+            while (saveText.match(re)) {
+                saveText = saveText.replace(re, save);
+                countOrder++;
+            }
+            str = saveText;
+        } else {
+            for (const [key, value] of Object.entries(buck)) {
+                saveText = saveText.replace(new RegExp(key), value);
+            }
+            buck = {
+            };
+        }
+        return saveText;
+    }
+    
+    return str;
 }

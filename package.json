@@ -19,6 +19,8 @@
     "handsontable": "^8.4.0",
     "jquery": "^3.6.0",
     "postcss": "^8.3.0",
+    "simple-syntax-highlighter": "^1.4.7",
+    "vkbeautify": "^0.99.3",
     "vue": "^2.6.12",
     "vue-excel-editor": "^1.4.1",
     "vue-loader": "^15.9.7",
