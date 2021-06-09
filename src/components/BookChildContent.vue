@@ -69,13 +69,12 @@
                 </div>
                 <footer class="modal-card-foot">
                     <section>
-                        <label class="checkbox">
-                            <input type="checkbox" v-model="isUrlAllow" />
-                            保存超連結
-                        </label>
-                        <div class="block">
+                        <b-field>
+                            <b-checkbox v-model="isUrlAllow">
+                                保存超連結
+                            </b-checkbox>
                             <b-button type="is-success" outlined @click="sendWikiCutObj">確認分件方式</b-button>
-                        </div>
+                        </b-field>
                     </section>
                 </footer>
             </div>

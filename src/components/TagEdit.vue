@@ -16,34 +16,32 @@
             </div>
         </div>
 
+        <div class="selectTagBox" ref="checkTagBox" v-if="isCheckTagName">
+            <span>{{ showTagName }}</span>
+        </div>
+
         <b-modal v-model="isOpenTagModal" :width="1000" scroll="keep">
-            <div class="card">
-                <div class="card-content">
-                    <div class="media">
-                        <div class="media-content">
-                            <label class="label is-large">編輯Tag｜劃記後選擇Tag名稱，再次點擊Tag即可刪除</label>
-                        </div>
-                    </div>
-                    <div>
-                        <div ref="text" style="white-space:pre-wrap;" v-html="content"
-                             @mouseup="print"
-                        ></div>
-                    </div>
-                    <!-- <div class="is-divider"></div>
+            <header class="modal-card-head">
+                <p class="modal-card-title">編輯Tag｜劃記後選擇Tag名稱，再次點擊Tag即可刪除</p>
+            </header>
+            <section class="modal-card-body">
+                <div>
+                    <div ref="text" style="white-space:pre-wrap;" v-html="content"
+                         @mouseup="print"
+                    ></div>
+                </div>
+            </section>
+                
+            <!-- <div class="is-divider"></div>
                     <div class="content">
                         <ul v-for="(value, name, index) in extractCompleteTags" :key="index">
                             <li>標籤名稱是: {{ name }}，標籤內容為: {{ value }}</li>
                         </ul>
                     </div> -->
-                </div>
-                <footer class="modal-card-foot">
-                    <section>
-                        <div class="block">
-                            <b-button type="is-success" outlined @click="saveTag">保存Tag</b-button>
-                        </div>
-                    </section>
-                </footer>
-            </div>
+            <footer class="modal-card-foot">
+                <b-button type="is-success" outlined @click="saveTag">保存Tag</b-button>
+                <b-button type="is-primary" outlined @click="isOpenTagModal = false">取消</b-button>
+            </footer>
         </b-modal>
     </div>
 </template>
@@ -51,6 +49,14 @@
 <script>
 export default {
     name: 'TagEdit',
+    watch: {
+        isOpenTagModal: function(val) {
+            this.$nextTick(()=>{
+                if(val) this.actionShowTag();
+            });
+            if(!val) this.isTagOpen = false;
+        }
+    },
     data: function() {
         return {
             wordSelection: undefined,
@@ -61,15 +67,39 @@ export default {
             extractCompleteTags: {
             },
             isMouseMove: false,
+            isCheckTagName: false,
+            showTagName: ''
         };
     },
     props: ['fileName', 'content', 'index', 'tagOptions'],
     methods: {
+        handleOut: function(evt) {
+            console.log('out', evt.target.tagName);
+            this.isCheckTagName = false;
+            evt.target.removeEventListener('mouseleave', this.handleOut);
+        },
+        handleIn: function(evt) {
+            if(evt.target.tagName !== 'MARK') return;
+            console.log('in', evt.target.tagName);
+            this.isCheckTagName = true;
+            this.showTagName = evt.target.attributes.tag.value;
+            this.$nextTick(()=>{
+                this.$refs.checkTagBox.style.left = `${evt.clientX + 20}px`;
+                this.$refs.checkTagBox.style.top = `${evt.clientY + 20}px`;
+                // evt.target.addEventListener('mouseleave', this.handleOut);
+            });
+            setTimeout(()=>{
+                this.isCheckTagName = false;
+            }, 1000);
+        },
         print: function (evt) {
-            if(evt.toElement.tagName==='MARK') {
+            if(evt.target.tagName==='MARK') {
                 this.deleteTag(evt);
                 return;    
             }
+            this.wordSelection = window.getSelection();
+            const {width} = this.wordSelection.getRangeAt(0).getBoundingClientRect();
+            if(!width) return;
             // let oEvent = evt || window.event;
             // let eventDoc = (oEvent.target && oEvent.target.ownerDocument) || document;
             // let doc = eventDoc.documentElement;
@@ -81,16 +111,13 @@ export default {
             this.isTagOpen = true;
             // document.body.appendChild(this.$refs.selbox);
             this.$nextTick(()=>{
-                this.$refs.selbox.style.left = `${evt.clientX}px`;
-                this.$refs.selbox.style.top = `${evt.clientY}px`;
+                this.$refs.selbox.style.left = `${evt.clientX + 20}px`;
+                this.$refs.selbox.style.top = `${evt.clientY + 20}px`;
             });
-            this.wordSelection = window.getSelection();
-            let x = window.getSelection();
-            console.log(x);
         },
         deleteTag: function (evt) {
-            this.$refs.text.insertBefore(document.createTextNode(evt.toElement.innerText), evt.toElement);
-            this.$refs.text.removeChild(evt.toElement);
+            this.$refs.text.insertBefore(document.createTextNode(evt.target.innerText), evt.target);
+            this.$refs.text.removeChild(evt.target);
         },
         setTag: function () {
             let selectText = this.wordSelection.toString();
@@ -106,11 +133,19 @@ export default {
                 : selectText;
         },
         searchAndTag: function (tagName, tagWord) {
+            let re = String.raw`([^"])${tagWord}([^"])`;
+            let tarString = String.raw`<mark tag="${tagName}">${tagWord}</mark>`;
             this.$refs.text.innerHTML = 
                 this.$refs.text.innerHTML
-                    .replace(new RegExp(tagWord, 'g'), `<mark tag="${tagName}">${tagWord}</mark>`)
+                    .replace(new RegExp(re, 'g'), '$1' + tarString + '$2')
                     .replace(/(<mark[^>]*>)<mark[^>]*>/g, '$1')
                     .replace(/<\/mark><\/mark>/g, '</mark>');
+            //這作法有問題：如果沒有剛好碰到""的左或右邊則無法觸發
+            this.actionShowTag();
+        },
+        actionShowTag: function() {
+            this.$refs.text.addEventListener('mouseover', this.handleIn);
+            // ele.addEventListener('mouseleave', this.handleOut);
         },
         // extractTag: function () {
         //     let ht = this.$refs.text.getInnerHTML();
@@ -145,5 +180,10 @@ export default {
     border: #cfe65b 2px solid;
     background-color: white;
     padding: 10px;
+}
+
+.modal-card-body {
+  height: 550px;
+  overflow: auto;
 }
 </style>

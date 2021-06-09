@@ -463,6 +463,7 @@ export function tableTreeGenerate(wikis) {
                     isLeaf: isLeaf,
                     children: [],
                 };
+                if(isLeaf) delete temp['children'];
                 level.push(temp);
             }
             return temp.children;
@@ -592,7 +593,9 @@ export function createMetadataRows(
                 },
                 {
                     title: `${files.title}`,
-                    doc_content: `${document}`,
+                    doc_content: document
+                        .replace(/<Udef_wiki/g, '<mark tag="Udef_wiki"')
+                        .replace(/\/Udef_wiki/g, '/mark'),
                     fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
                     corpus: `${corpusName}`,
                 },
