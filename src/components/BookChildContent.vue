@@ -175,7 +175,6 @@ export default {
         },
     },
     created: async function () {
-        console.log('進入偵測！');
         this.wikiObj = await getWikiPage(this.wikiBook);
         this.wikiText = parseHtmlText(this.wikiObj.text['*']);
     },

@@ -215,8 +215,23 @@
                                 <div class="level-left">
                                     <div class="level-item">
                                         <label class="label is-large">
-                                            目前已下載卷數檢視 & 分件
+                                            目前已下載卷數檢視 & 分件｜
                                         </label>
+                                    </div>
+                                    <div class="level-item">
+                                        <p>
+                                            未點擊文件：
+                                        </p>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-checkbox v-model="isKeepHyperLink">
+                                            保留超連結
+                                        </b-checkbox>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-checkbox v-model="isCutFileByPara">
+                                            以段分件
+                                        </b-checkbox>
                                     </div>
                                 </div>
                                 <div class="level-right">
@@ -521,6 +536,8 @@ export default {
                 },
             ],
             showXmlString: '',
+            isKeepHyperLink: false,
+            isCutFileByPara: false
         };
     },
     methods: {
@@ -609,7 +626,11 @@ export default {
         },
         splitWikiContents: function () {
             this.$refs.contentTable.forEach((element) => {
-                if (!element.isViewed) element.sendWikiCutObj();
+                if (!element.isViewed) {
+                    if(this.isCutFileByPara) element.paragraphCutWay = 2;
+                    if(this.isKeepHyperLink) element.isUrlAllow = true;
+                    element.sendWikiCutObj();
+                }
             });
             this.wikiContentWaitCut.sort(function (a, b) {
                 return a.order > b.order ? 1 : -1;

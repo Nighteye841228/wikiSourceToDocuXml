@@ -646,31 +646,33 @@ export function searchAndTag (tagName='', tagWord='', string) {
     let str = string;
     let buck = {
     };
-    str = saveAndReleaseMark(false, str);
     let re = String.raw`${tagWord}`;
     let tarString = String.raw`<mark tag="${tagName}">${tagWord}</mark>`;
+    
+    str = save(str);
     str = str.replace(new RegExp(re, 'g'), tarString);
-    str = saveAndReleaseMark(true, str);
+    str = release(str);
 
-    function saveAndReleaseMark(flag = false, str) {
+    function save(str) {
         let countOrder = 0, saveText = str, re = new RegExp('(<mark[^>]*>[^<]*</mark>)');
         function save (text) {
             buck[`###${countOrder}@###`] = text;
             return `###${countOrder}@###`;
         }
-        if (!flag) {
-            while (saveText.match(re)) {
-                saveText = saveText.replace(re, save);
-                countOrder++;
-            }
-            str = saveText;
-        } else {
-            for (const [key, value] of Object.entries(buck)) {
-                saveText = saveText.replace(new RegExp(key), value);
-            }
-            buck = {
-            };
+        while (saveText.match(re)) {
+            saveText = saveText.replace(re, save);
+            countOrder++;
         }
+        return saveText;
+    }
+
+    function release(str) {
+        let saveText = str;
+        for (const [key, value] of Object.entries(buck)) {
+            saveText = saveText.replace(new RegExp(key), value);
+        }
+        buck = {
+        };
         return saveText;
     }
     
