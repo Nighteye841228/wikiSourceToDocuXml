@@ -17,37 +17,44 @@
                         <div class="media-content">
                             <label class="label is-large">獲取的WikiSource文本內容 </label>
                             <div class="block">
-                                <b-radio
-                                    name="name"
-                                    native-value="1"
-                                    v-model.number="paragraphCutWay"
-                                    @change="getViewArray"
-                                >
-                                    以此卷作為一件
-                                </b-radio>
-                                <b-radio
-                                    name="name"
-                                    native-value="2"
-                                    v-model.number="paragraphCutWay"
-                                    @change="getViewArray"
-                                >
-                                    以段落切開作為一件
-                                </b-radio>
-                                <b-radio
-                                    name="name"
-                                    native-value="3"
-                                    v-model.number="paragraphCutWay"
-                                    @change="getViewArray"
-                                >
-                                    以自由分段作為分件（以####作為語法輸入）
-                                </b-radio>
-                                <b-button
-                                    type="is-success is-small"
-                                    @click="getViewArray(1)"
-                                    outlined
-                                >
-                                    檢視分段結果
-                                </b-button>
+                                <nav class="level">
+                                    <div class="level-left">
+                                        <div class="level-item"><b-radio
+                                            name="name"
+                                            native-value="1"
+                                            v-model.number="paragraphCutWay"
+                                            @change="getViewArray"
+                                        >
+                                            以此卷作為一件
+                                        </b-radio></div>
+                                        <div class="level-item"><b-radio
+                                            name="name"
+                                            native-value="2"
+                                            v-model.number="paragraphCutWay"
+                                            @change="getViewArray"
+                                        >
+                                            以段落切開作為一件
+                                        </b-radio></div>
+                                        <div class="level-item"><b-radio
+                                            name="name"
+                                            native-value="3"
+                                            v-model.number="paragraphCutWay"
+                                            @change="getViewArray"
+                                        >
+                                            以自由分段作為分件（以####作為語法輸入）
+                                        </b-radio></div>
+                                        <div class="level-item"><b-button
+                                            type="is-success is-small"
+                                            @click="getViewArray(1)"
+                                            outlined
+                                        >
+                                            檢視分段結果
+                                        </b-button></div>
+                                    </div>
+                                </nav>
+                                
+                                
+                                
                             </div>
                         </div>
                     </div>

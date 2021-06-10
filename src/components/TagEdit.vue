@@ -22,7 +22,16 @@
 
         <b-modal v-model="isOpenTagModal" :width="1000" scroll="keep">
             <header class="modal-card-head">
-                <p class="modal-card-title">編輯Tag｜劃記後選擇Tag名稱，再次點擊Tag即可刪除</p>
+                <nav class="level">
+                    <div class="level-left">
+                        <div class="level-item">
+                            <p class="modal-card-title">編輯Tag</p>
+                        </div>
+                        <div class="level-item">
+                            <h6>劃記後選擇Tag名稱，再次點擊Tag即可刪除</h6>
+                        </div>
+                    </div>
+                </nav>
             </header>
             <section class="modal-card-body">
                 <div>

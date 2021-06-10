@@ -182,10 +182,18 @@
 
                     <b-step-item step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section wow" v-if="isInputDataValid">
-                            <b-field>
-                                <label class="label is-large">搜索關鍵字結果｜</label>
-                                <b-button type="is-success" @click="activeStep = 2">選完了</b-button>
-                            </b-field>
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">書本目錄檢視與選取</label>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <b-button type="is-success" @click="activeStep = 2" outlined>選完了</b-button>
+                                    </div>
+                                </div>
+                            </nav>
                             <div class="is-divider"></div> 
                             <div class="columns is-multiline">
                                 <div v-for="(extendedLink, index) in extendedLinks"
@@ -203,15 +211,22 @@
 
                     <b-step-item step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section wow">
-                            <b-field>
-                                <label class="label is-large">目前已下載卷數檢視 & 分件｜
-                                </label>
-                                <div class="buttons">
-                                    <b-button type="is-success" @click="openEditTable" outlined>
-                                        確認分件完成
-                                    </b-button>
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">
+                                            目前已下載卷數檢視 & 分件
+                                        </label>
+                                    </div>
                                 </div>
-                            </b-field>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <b-button type="is-success" @click="openEditTable" outlined>
+                                            確認分件完成
+                                        </b-button>
+                                    </div>
+                                </div>
+                            </nav>
                             <div class="is-divider"></div>
                             <div
                                 class="columns is-multiline"
@@ -237,15 +252,30 @@
                     </b-step-item>
 
                     <b-step-item step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section dataHandsonTable wow">
-                            <b-field>
-                                <label class="label is-large">編輯metadata區域｜</label>
-                                <div class="buttons">
-                                    <b-button class="is-primary" @click="activeStep = 4" outlined>輸出｜編輯TAG
-                                    </b-button>
+                        <section class="dataHandsonTable wow">
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">編輯metadata區域｜</label>
+                                        <div class="buttons">
+                                            <b-button type="is-primary" @click="undoHot" outlined>
+                                                <b-icon icon="undo" icon-pack="fas"></b-icon>
+                                            </b-button>
+                                            <b-button type="is-primary" @click="redoHot" outlined>
+                                                <b-icon icon="redo" icon-pack="fas"></b-icon>
+                                            </b-button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </b-field>
-                            <div v-if="isEditMetadata">
+                                <div class="level-right">
+                                    <div class="level-it">
+                                        <b-button class="is-success" @click="activeStep = 4" outlined>完成輸出｜編輯TAG
+                                        </b-button>
+                                    </div>
+                                </div>
+                            </nav>
+                            
+                            <div v-show="isEditMetadata">
                                 <hot-table
                                     :data.sync="splitCompleteWikiContents"
                                     :rowHeaders="true"
@@ -266,12 +296,18 @@
 
                     <b-step-item step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section wow">
-                            <b-field>
-                                <label class="label is-large">點擊檢視文本 & 編輯Tag｜</label>
-                                <div class="buttons">
-                                    <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">點擊檢視文本 & 編輯Tag｜</label>
+                                    </div>
                                 </div>
-                            </b-field>
+                                <div class="level-right">
+                                    <div class="level-item">
+                                        <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
+                                    </div>
+                                </div>
+                            </nav>
                             <b-field>
                                 <multiselect 
                                     v-model="wikiTags" 
@@ -488,6 +524,13 @@ export default {
         };
     },
     methods: {
+        undoHot: function () {
+            console.log('in');
+            this.$refs.hotTableComponent.hotInstance.undo();
+        },
+        redoHot: function () {
+            this.$refs.hotTableComponent.hotInstance.redo();
+        },
         deleteBook: function (val) {
             let bookOrder = val.bookOrder;
             let chapOrder = val.chapOrder;
