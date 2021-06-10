@@ -128,24 +128,6 @@ export default {
                 ? this.extractCompleteTags[this.selectTag] + ', ' + selectText
                 : selectText;
         },
-        saveAndReleaseMark: function (flag = false) {
-            let countOrder = 0, saveText = this.$refs.text.innerHTML, re = new RegExp('(<mark[^>]*>[^<]*</mark>)');
-            function save (text) {
-                this.markBucket[text] = `###${countOrder}@###`;
-                return `###${countOrder}@###`;
-            }
-            if (!flag) {
-                while (saveText.match(re)) {
-                    saveText = saveText.replace(re, save);
-                    countOrder++;
-                }
-                this.$refs.text.innerHTML = saveText;
-            } else {
-                for (const [key, value] of Object.entries(this.markBucket)) {
-                    saveText.replace(new RegExp(value), key);
-                }
-            }
-        },
         searchAndTag: function (tagName, tagWord) {
             this.$refs.text.innerHTML = searchAndTag(tagName, tagWord, this.$refs.text.innerHTML);
         },
@@ -154,7 +136,7 @@ export default {
         },
         saveTag: function(){
             this.$emit('handle-tag', {
-                newContent: this.$refs.text.getInnerHTML(),
+                newContent: this.$refs.text.innerHTML,
                 index: this.index
             });
             this.isOpenTagModal = false;
