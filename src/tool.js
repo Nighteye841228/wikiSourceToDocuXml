@@ -385,14 +385,10 @@ export async function getWikisourceJson(
                 },
             }
         );
-        // console.log(`recusive來到：${recursionCount}`);
-        // await sleep(300);
         apiBackJson = apiBackJson.data;
-        // console.log(apiBackJson);
         let wikiDocNum = getWikiNum(apiBackJson.query.pages);
         let dirtyText = apiBackJson.query.pages[wikiDocNum].revisions[0]['*'];
         let wikiTitle = apiBackJson.query.pages[wikiDocNum].title;
-        // console.log(dirtyText);
         let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm);
         cleanText = cleanText.join('\n').replace(/^\n/gm, '').replace(/^\n/gm, '');
         cleanText = cleanText.match(/^[*#!].*\[\[(.*)\|*.*\]\]/gm);
@@ -410,38 +406,34 @@ export async function getWikisourceJson(
                     wikiArrayCut[i] = wikiTitle + wikiArrayCut[i];
                 }
                 if (
-                    tableContentsTemp.indexOf(wikiArrayCut[i]) == -1 &&
-          !/.*全覽.*/.test(wikiArrayCut[i])
+                    tableContentsTemp.indexOf(wikiArrayCut[i]) == -1 && !/.*全覽.*/.test(wikiArrayCut[i])
                 ) {
                     tableContentsTemp.push({
                         index: i,
                         value: wikiArrayCut[i],
                     });
-                    // console.log(
-                    //     `這是第${count}層，祖宗/title是${title},${wikiArrayCut[i]}\n`
+                    // getWikisourceJson(
+                    //     wikiArrayCut[i],
+                    //     count + 1,
+                    //     saveContent,
+                    //     tableContentsTemp
                     // );
-                    getWikisourceJson(
-                        wikiArrayCut[i],
-                        count + 1,
-                        saveContent,
-                        tableContentsTemp
-                    );
                 }
             }
-            // console.log(`目前的count來到：${saveContent.numOfDir}`);
             if (saveContent.numOfDir === 0) {
                 tableContentsTemp = tableTreeGenerate(tableContentsTemp);
             }
         } else if (!cleanText && saveContent.numOfDir == 0) {
             tableContentsTemp.push({
                 index: 0,
-                value: title,
+                id: title,
+                label: title,
             });
             tableContentsTemp = tableTreeGenerate(tableContentsTemp);
         }
         return tableContentsTemp;
     } catch (error) {
-    // console.log(error);
+        console.log(error);
     }
 }
 
@@ -523,6 +515,7 @@ export async function getSnippet(title) {
 }
 
 export async function getWikiPage(title) {
+    if(!title.length) return;
     try {
         let apiBackJson = await axios.get('https://zh.wikisource.org/w/api.php', {
             params: {

@@ -72,7 +72,7 @@ function composeDocuXmlDocument(wikiDocuments) {
 
 function addPara(string) {
     let str = string;
-    let paraText = str.split('\n').map(ele => {
+    let paraText = str.split('\n').filter(x=>x).map(ele => {
         return bindXmlVal('Paragraph', ele, false, [1, 1]);
     }).join('');
     return paraText;

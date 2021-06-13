@@ -73,22 +73,41 @@
             <header class="modal-card-head">
                 <p class="modal-card-title">目前已選書籍｜點擊可刪除書籍</p>
             </header>
-            <section class="modal-card-body">
-                <div class="content">
-                    <ul v-for="(book, count) in selectedBookMenuPool" :key="count">
-                        <li>第{{ count + 1 }}本</li>
-                        <ul v-for="(chap, ind) in book.menu" :key="ind">
-                            <li>
-                                <a href="#" @click="deleteChapter(count, ind)">{{ chap }}</a>
-                            </li>
-                        </ul>
-                    </ul>
-                </div>
-            </section>
+
             <footer class="modal-card-foot">
                 <button class="button is-success" @click="isCheckBook = false">
                     返回
                 </button>
+            </footer>
+        </b-modal>
+        <b-modal v-model="isOpenUploadModal" :width="400">
+            <header class="modal-card-head">
+                <p class="modal-card-title">登入</p>
+            </header>
+
+            <section class="modal-card-body login">
+                <b-field label="帳號">
+                    <b-input v-model="account"></b-input>
+                </b-field>
+                <b-field label="密碼">
+                    <b-input type="password" v-model="password" @keypress.native.enter="login"></b-input>
+                </b-field>
+            </section>
+
+            <footer class="modal-card-foot" style="justify-content: space-between;">
+                <div>
+                    <b-button type="is-success" @click="login" outlined>
+                        確認
+                    </b-button>
+                    <b-button type="is-success" @click="uploadXML" outlined :disabled="!isUploadable">
+                        上傳
+                    </b-button>
+                </div>
+                <div>
+                    <b-button type="is-primary" @click="isOpenUploadModal = false" outlined>
+                        取消
+                    </b-button>
+                </div>
             </footer>
         </b-modal>
         <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep">
@@ -158,6 +177,7 @@
                     position="is-right"
                     :class="stepClass"
                     vertical
+                    ref="control"
                 >
                     <b-step-item step="1" label="關鍵字搜索" :clickable="isStepsClickable">
                         <section class="section wow">
@@ -249,7 +269,7 @@
                                 :key="index"
                             >
                                 <div
-                                    class="column is-one-quarter"
+                                    class="column is-one-third"
                                     v-for="(chap, chapCount) in book.menu"
                                     :key="chapCount"
                                 >
@@ -342,7 +362,7 @@
                             </b-field>
                             <div class="columns is-multiline">
                                 <div
-                                    class="column is-one-quarter"
+                                    class="column is-one-third"
                                     v-for="(document, order) in splitCompleteWikiContents"
                                     :key="order"
                                 >
@@ -360,18 +380,15 @@
                         </section>
                     </b-step-item>
 
+
                     <b-step-item step="6" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section wow">
                             <div class="buttons">
-                                <b-button class="is-medium is-success" outlined>複製DocuXML到剪貼簿</b-button>
-                                <b-button class="is-medium is-success" outlined>下載XML檔案進一步編輯</b-button>
-                                <b-button class="is-medium is-success" outlined>直接上傳到DocuSky建庫</b-button>
+                                <b-button class="is-medium is-success" @click="copyXML" outlined>複製DocuXML到剪貼簿</b-button>
+                                <b-button class="is-medium is-success" @click="downloadXML" outlined>下載XML檔案進一步編輯</b-button>
+                                <b-button class="is-medium is-success" @click="openLoginModal" outlined>直接上傳到DocuSky建庫</b-button>
                             </div>
-                            <div class="content">
-                                <ssh-pre language="xml" reactive>
-                                    {{  xml }}
-                                </ssh-pre>
-                            </div>
+                            <SimpleXml :xml="xml" :step="activeStep" />
                         </section>
                     </b-step-item>
 
@@ -415,16 +432,14 @@ import {
 import BookChildContent from './components/BookChildContent.vue';
 import TagEdit from './components/TagEdit';
 import GetTableContent from './components/GetTableContent';
+import SimpleXml from './components/SimpleXml';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
-import SshPre from 'simple-syntax-highlighter';
-import 'simple-syntax-highlighter/dist/sshpre.css';
 import {
     HotTable 
 } from '@handsontable/vue';
 import 'handsontable/dist/handsontable.full.css';
 import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
-import vkbeautify from 'vkbeautify';
 import {
     dt,
     $,
@@ -436,6 +451,15 @@ import {
 import {
     composeDocuXmlFile
 } from './docuXml';
+import {
+    docuskyManageDbListSimpleUI 
+} from './docuWid';
+import {
+    SnackbarProgrammatic as Snackbar 
+} from 'buefy';
+
+
+
 export default {
     name: 'App',
     components: {
@@ -444,11 +468,11 @@ export default {
         Multiselect,
         TagEdit,
         GetTableContent,
-        SshPre
+        SimpleXml
     },
     computed: {
         xml: function () {
-            return vkbeautify.xml(this.showXmlString.replace(/\n/g, ''));
+            return this.showXmlString.replace(/\n/g, '');
         }
     },
     data() {
@@ -537,7 +561,14 @@ export default {
             ],
             showXmlString: '',
             isKeepHyperLink: false,
-            isCutFileByPara: false
+            isCutFileByPara: false,
+
+            //登入用
+            isOpenUploadModal: false,
+            account: '',
+            password: '',
+            isUploadable: false,
+            widget: docuskyManageDbListSimpleUI
         };
     },
     methods: {
@@ -597,9 +628,6 @@ export default {
         openSelectBookList: function () {
             this.selectedBookMenuPool.sort((x, y) => x.index - y.index);
             this.isCheckBook = true;
-        },
-        deleteChapter: function (count, ind) {
-            this.selectedBookMenuPool[count].menu.splice(ind, 1);
         },
         openEditTable: function () {
             this.isEditMetaTable = true;
@@ -727,8 +755,70 @@ export default {
                 this.corpusNameMeta
             );
             this.activeStep = 5;  
+        },
+        copyXML: async function () {
+            await navigator.clipboard.writeText(this.showXmlString);
+        },
+        downloadXML: function () {
+            let link = document.createElement('a');
+            link.download = `${this.corpusNameMeta}`;
+            link.style.display = 'none';
+            // 字元內容轉變成blob地址
+            let blob = new Blob([this.showXmlString], {
+                type: 'text/xml'
+            });
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        },
+        openLoginModal: function () {
+            this.isOpenUploadModal = true;
+        },
+        login: function() {
+            if(!this.account || !this.password) { 
+                fail(); 
+                return;
+            }
+            this.widget.login(
+                this.account, 
+                this.password, 
+                () => { 
+                    Snackbar.open('Login Success!');
+                    this.isUploadable = true;
+                }, 
+                function () {
+                    fail();
+                }
+            );
+            function fail () {
+                Snackbar.open('Login Failed...');
+            }
+        },
+        uploadXML: function() {
+            if(!this.xml) return Snackbar.open('Require Content...');
+            let formData = { 
+                dummy: {
+                    name: 'dbTitleForImport', 
+                    value: this.corpusNameMeta
+                }, 
+                file: {
+                    value: this.xml, 
+                    filename: this.corpusNameMeta + '.xml', 
+                    name: 'importedFiles[]'
+                }
+            };
+            this.widget.uploadMultipart(
+                formData, 
+                function() {
+                    Snackbar.open('Upload Success!');
+                }, 
+                function() {
+                    Snackbar.open('Upload Failed...');
+                }
+            );
         }
-    },
+    }
 };
 </script>
 
@@ -764,5 +854,9 @@ export default {
 
 .handsontable.htRowHeaders.htColumnHeaders {
   box-shadow: 10px 5px 7px grey;
+}
+
+.login {
+    height: auto;
 }
 </style>

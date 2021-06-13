@@ -11,24 +11,23 @@
             </header>
             <section class="modal-card-body">
                 <div class="tile is-ancestor">
-                    <div class="tile is-parent">
+                    <div class="tile is-7 is-parent">
                         <div class="tile is-child in-modal box">
                             <p class="title">目錄</p>
-                            <treeselect
-                                v-model="tempSelectMenu"
-                                :multiple="true"
-                                :options="treeShowMenu"
-                                :sort-value-by="sortValueBy"
-                                :value-consists-of="valueConsistsOf"
-                                :limit="0"
-                                :always-open="true"
-                                :default-expand-level="1"
-                                :max-height="400"
-                                noChildrenText="無子目錄"
+                            <VJstree 
+                                :data="data"
+                                show-checkbox
+                                multiple
+                                allow-batch
+                                whole-row
+                                draggable
+                                text-field-name="label"
+                                klass="tree-control"
+                                ref="tree"
                             />
                         </div>
                     </div>
-                    <div class="tile is-5 is-vertical is-parent">
+                    <div class="tile is-vertical is-parent">
                         <div class="tile is-child box">
                             <div class="content"><h5>簡介</h5></div>
                             <div class="content" style="max-height:30em; overflow:auto;">
@@ -49,15 +48,32 @@
         </b-modal>
 
         <div class="box">
-            <b-field grouped>
-                <b-button expanded type="is-static is-medium">{{ link }}</b-button>
-                <p class="control">
-                    <b-button class="button is-primary is-medium" @click="getMenuOfContent">
-                        <span class="icon"><i class="fas fa-search"></i></span>
-                    </b-button>
-                </p>
-            </b-field>
+            <div class="container">
+                <nav class="level">
+                    <div class="level-item has-text-centered" style="flex-shrink: 1;">
+                        <h4 class="title is-4">{{ link }}</h4>
+                    </div>
+                    <div class="level-right">
+                        <b-button class="button is-primary is-medium" @click="getMenuOfContent">
+                            <b-icon icon="search" pack="fas"></b-icon>
+                        </b-button>
+                    </div>
+                </nav>
+            </div>
         </div>
+        <section class="is-large">
+            <VJstree 
+                :data="data"
+                show-checkbox
+                multiple
+                allow-batch
+                whole-row
+                draggable
+                text-field-name="label"
+                ref="tree"
+                klass="tree-control"
+            />
+        </section>
     </div>
 </template>
 
@@ -66,11 +82,13 @@ import {
     getSnippet,
     getWikisourceJson
 } from './../tool';
-import Treeselect from '@riophae/vue-treeselect';
+// import Treeselect from '@riophae/vue-treeselect';
+import VJstree from 'vue-jstree';
 export default {
     name: 'GetTableContent',
     components: {
-        Treeselect
+        // Treeselect,
+        VJstree
     },
     data: function() {
         return {
@@ -81,20 +99,396 @@ export default {
             wikiContentSnippet: '',
             extendedLinks: [],
             valueConsistsOf: 'ALL',
+            data: [
+                {
+                    'label': 'Same but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxesSame but with checkboxes',
+                    'id': 'wowowSame but with checkboxes',
+                    'value': 'WOWOWOWOWO',
+                    'children': [{
+                        'label': 'initially selected',
+                        'id': 'wowowinitially selected',
+                        'selected': true
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'initially open',
+                        'id': 'wowowinitially open',
+                        'icon': 'fa fa-folder icon-state-default',
+                        'opened': true,
+                        'children': [{
+                            'label': 'Another node',
+                            'id': 'wowowAnother node'
+                        }]
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-warning'
+                    },
+                    {
+                        'label': 'disabled node',
+                        'id': 'wowowdisabled node',
+                        'icon': 'fa fa-check icon-state-success',
+                        'disabled': true
+                    }
+                    ]
+                },
+                {
+                    'label': 'Same but with checkboxes',
+                    'id': 'wowowSame but with checkboxes',
+                    'opened': true,
+                    'children': [{
+                        'label': 'initially selected',
+                        'id': 'wowowinitially selected',
+                        'selected': true
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-danger'
+                    },
+                    {
+                        'label': 'initially open',
+                        'id': 'wowowinitially open',
+                        'icon': 'fa fa-folder icon-state-default',
+                        'opened': true,
+                        'children': [{
+                            'label': 'Another node',
+                            'id': 'wowowAnother node'
+                        }]
+                    },
+                    {
+                        'label': 'custom icon',
+                        'id': 'wowowcustom icon',
+                        'icon': 'fa fa-warning icon-state-warning'
+                    },
+                    {
+                        'label': 'disabled node',
+                        'id': 'wowowdisabled node',
+                        'icon': 'fa fa-check icon-state-success',
+                        'disabled': true
+                    }
+                    ]
+                },
+                {
+                    'label': 'And wholerow selection',
+                    'id': 'wowowAnd wholerow selection'
+                },
+                {
+                    'label': 'drag disabled',
+                    'id': 'wowowdrag disabled',
+                    'icon': 'fa fa-warning icon-state-danger',
+                    'dragDisabled': true
+                },
+                {
+                    'label': 'drop disabled',
+                    'id': 'wowowdrop disabled',
+                    'icon': 'fa fa-warning icon-state-danger',
+                    'dropDisabled': true
+                }
+            ],
         };
     },
     props: ['link', 'index'],
     methods: {
         getMenuOfContent: async function () {
-            this.wikiContentSnippet = await getSnippet(this.link);
-            this.treeShowMenu = await getWikisourceJson(
-                this.link,
-                0,
-                {
-                },
-                []
-            );
-            this.isAddMenuToDownload = true;
+            try {
+                this.wikiContentSnippet = await getSnippet(this.link);
+                this.treeShowMenu = await getWikisourceJson(
+                    this.link,
+                    0,
+                    {
+                    },
+                    []
+                );
+                this.isAddMenuToDownload = true;
+            } catch (error) {
+                console.log('獲取失敗。');
+            }
         },
         addSelectedMenuItem: function() {
             this.$emit('contentTableAdd', {
@@ -114,9 +508,6 @@ export default {
   padding-left: 10px;
 }
 
-.vue-treeselect__menu {
-    height: 450px;
-}
 
 .vue-treeselect__control {
     display: none;
@@ -131,5 +522,10 @@ export default {
 .modal-card-body {
   height: 600px;
   overflow: auto;
+}
+
+.tree-control {
+    white-space: pre-wrap;
+    overflow: scroll;
 }
 </style>

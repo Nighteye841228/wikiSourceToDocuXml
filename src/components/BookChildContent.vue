@@ -2,11 +2,11 @@
     <div>
         <div class="content">
             <b-field>
-                <b-button class="is-primary" outlined expanded @click="isOpenBook = true">
+                <b-button class="is-primary is-medium book-child" outlined expanded @click="isOpenBook = true">
                     {{ wikiBook }}
                 </b-button>
                 <p class="control">
-                    <b-button class="button is-danger" outlined @click="deleteBook"><b-icon icon="delete"></b-icon></b-button>
+                    <b-button class="button is-medium is-danger" outlined @click="deleteBook"><b-icon icon="delete"></b-icon></b-button>
                 </p>
             </b-field>
         </div>
@@ -118,7 +118,7 @@ export default {
             isPreview: false,
         };
     },
-    props: ['value', 'wikiBook', 'order', 'bookOrder'],
+    props: ['wikiBook', 'order', 'bookOrder'],
     methods: {
         sendWikiCutObj: function () {
             this.$emit('handle-wiki', {
@@ -137,7 +137,7 @@ export default {
         getViewArray: function (param = 0) {
             this.viewContents = [];
             let useContent =
-            this.isUrlAllow === true ? this.wikiText.hyperlinks : this.pureText;
+                this.isUrlAllow === true ? this.wikiText.hyperlinks : this.pureText;
             let re = '';
             if (this.paragraphCutWay === 2) {
                 re = /\n/;
@@ -182,4 +182,10 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
+<style scoped>
+.book-child {
+    white-space: pre-wrap;
+    flex-wrap: wrap;
+    overflow: auto;
+}
+</style>
