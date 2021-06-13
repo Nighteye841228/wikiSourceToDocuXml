@@ -14,16 +14,17 @@
                     <div class="tile is-7 is-parent">
                         <div class="tile is-child in-modal box">
                             <p class="title">目錄</p>
-                            <VJstree 
-                                :data="data"
-                                show-checkbox
-                                multiple
-                                allow-batch
-                                whole-row
-                                draggable
-                                text-field-name="label"
-                                klass="tree-control"
-                                ref="tree"
+                            <treeselect
+                                v-model="tempSelectMenu"
+                                :multiple="true"
+                                :options="treeShowMenu"
+                                :sort-value-by="sortValueBy"
+                                :value-consists-of="valueConsistsOf"
+                                :limit="0"
+                                :always-open="true"
+                                :default-expand-level="1"
+                                :max-height="400"
+                                noChildrenText="無子目錄"
                             />
                         </div>
                     </div>
@@ -61,9 +62,9 @@
                 </nav>
             </div>
         </div>
-        <section class="is-large">
+        <!-- <section class="is-large">
             <VJstree 
-                :data="data"
+                :data="ㄈ"
                 show-checkbox
                 multiple
                 allow-batch
@@ -73,7 +74,7 @@
                 ref="tree"
                 klass="tree-control"
             />
-        </section>
+        </section> -->
     </div>
 </template>
 
@@ -82,13 +83,13 @@ import {
     getSnippet,
     getWikisourceJson
 } from './../tool';
-// import Treeselect from '@riophae/vue-treeselect';
-import VJstree from 'vue-jstree';
+import Treeselect from '@riophae/vue-treeselect';
+// import VJstree from 'vue-jstree';
 export default {
     name: 'GetTableContent',
     components: {
-        // Treeselect,
-        VJstree
+        Treeselect,
+        // VJstree
     },
     data: function() {
         return {
