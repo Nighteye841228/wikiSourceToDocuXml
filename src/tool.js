@@ -392,6 +392,7 @@ export async function getWikisourceJson(
         let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm);
         cleanText = cleanText.join('\n').replace(/^\n/gm, '').replace(/^\n/gm, '');
         cleanText = cleanText.match(/^[*#!].*\[\[(.*)\|*.*\]\]/gm);
+        console.log(cleanText);
         if (cleanText) {
             cleanText = cleanText.join('\n');
 
@@ -423,13 +424,12 @@ export async function getWikisourceJson(
             if (saveContent.numOfDir === 0) {
                 tableContentsTemp = tableTreeGenerate(tableContentsTemp);
             }
-        } else if (!cleanText && saveContent.numOfDir == 0) {
+        } else if (!cleanText) {
             tableContentsTemp.push({
                 index: 0,
-                id: title,
-                label: title,
+                id: wikiTitle,
+                label: wikiTitle,
             });
-            tableContentsTemp = tableTreeGenerate(tableContentsTemp);
         }
         return tableContentsTemp;
     } catch (error) {
