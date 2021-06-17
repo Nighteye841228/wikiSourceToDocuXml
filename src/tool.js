@@ -390,79 +390,83 @@ export async function getWikisourceJson(
         let dirtyText = apiBackJson.query.pages[wikiDocNum].revisions[0]['*'];
         let wikiTitle = apiBackJson.query.pages[wikiDocNum].title;
         let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm);
-        cleanText = cleanText.join('\n').replace(/^\n/gm, '').replace(/^\n/gm, '');
-        cleanText = cleanText.match(/^[*#!].*\[\[(.*)\|*.*\]\]/gm);
+        let checkTitle = title.match(/^[^/]*/); //篩選出title的第一個斜線之前的字（就是書名）
+        cleanText = cleanText.join('\n')
+            .replace(/^\n/gm, '')
+            .replace(/^\n/gm, '')
+            .match(/^[=*#!].*\[\[(.*)\|*.*\]\]/gm);
+        if (checkTitle) {
+            cleanText = cleanText.filter(x => x.match(new RegExp(String.raw`^[=*#!].*\[\[${checkTitle[0]}.*`, 'g')));    
+        }
         if (cleanText) {
-            cleanText = cleanText.join('\n');
-
-            cleanText = cleanText
+            let wikiArrayCut = cleanText
+                .join('\n')
                 .replace(/.*\[\[(.*\/*.*)\|*.*\]\]/gm, '$1')
-                .replace(/\|.*/gm, '');
-            let wikiArrayCut = cleanText.split('\n');
-            saveContent.numOfDir += wikiArrayCut.length;
-            for (let i = 0; i < wikiArrayCut.length; i++) {
-                saveContent.numOfDir--;
-                if (/^\/.*/.test(wikiArrayCut[i])) {
-                    wikiArrayCut[i] = wikiTitle + wikiArrayCut[i];
-                }
-                if (
-                    tableContentsTemp.indexOf(wikiArrayCut[i]) == -1 && !/.*全覽.*/.test(wikiArrayCut[i])
-                ) {
-                    tableContentsTemp.push({
-                        index: i,
-                        value: wikiArrayCut[i],
-                    });
+                .replace(/\|.*/gm, '')
+                .split('\n');
+            if (wikiArrayCut) {
+                saveContent.numOfDir += wikiArrayCut.length;
+                for (let i = 0; i < wikiArrayCut.length; i++) {
+                    saveContent.numOfDir--;
+                    if (/^\/.*/.test(wikiArrayCut[i])) {
+                        wikiArrayCut[i] = wikiTitle + wikiArrayCut[i];
+                    }
+                    if (
+                        tableContentsTemp.indexOf(wikiArrayCut[i]) == -1 && !/.*全覽.*/.test(wikiArrayCut[i])
+                    ) {
+                        tableContentsTemp.push(
+                            wikiArrayCut[i],
+                        );
                     // getWikisourceJson(
                     //     wikiArrayCut[i],
                     //     count + 1,
                     //     saveContent,
                     //     tableContentsTemp
                     // );
+                    }
                 }
+
+            } else {
+                tableContentsTemp.push([]);
             }
-            if (saveContent.numOfDir === 0) {
-                tableContentsTemp = tableTreeGenerate(tableContentsTemp);
-            }
-        } else if (!cleanText && saveContent.numOfDir == 0) {
-            tableContentsTemp.push({
-                index: 0,
-                id: title,
-                label: title,
-            });
-            tableContentsTemp = tableTreeGenerate(tableContentsTemp);
+        } else {
+            tableContentsTemp.push([]);
         }
         return tableContentsTemp;
     } catch (error) {
-        console.log(error);
+        console.log('錯誤：', error);
+        return [];
     }
 }
 
 export function tableTreeGenerate(wikis) {
     let items = wikis,
         result = [];
-    items.forEach(function (path) {
-        let logArray = path.value.split('/');
-        logArray.reduce(function (level, key, index) {
-            let temp = level.find(({ id }) => key === id);
-            let isLeaf = true;
-            if (!temp) {
-                isLeaf = index === logArray.length ? true : false;
-                temp = {
-                    id: key,
-                    label: key,
-                    index: path.index,
-                    value: '',
-                    isLeaf: isLeaf,
-                    children: [],
-                };
-                if(isLeaf) delete temp['children'];
-                level.push(temp);
-            }
-            return temp.children;
-        }, result);
+    return new Promise(resolve=> {
+        items.forEach(function (path) {
+            let logArray = path.split('/');
+            logArray.reduce(function (level, key, index) {
+                let temp = level.find(({ id }) => key === id);
+                let isLeaf = true;
+                if (!temp) {
+                    isLeaf = index === logArray.length ? true : false;
+                    temp = {
+                        id: key,
+                        label: key,
+                        index: index,
+                        value: '',
+                        isLeaf: isLeaf,
+                        children: [],
+                    };
+                    if(isLeaf) delete temp['children'];
+                    level.push(temp);
+                }
+                return temp.children;
+            }, result);
+        });
+        treeIndexSort(result);
+        resolve(result);
     });
-    treeIndexSort(result);
-    return result;
 }
 
 export function treeIndexSort(resultTree, path = '', count = 1) {
@@ -671,3 +675,33 @@ export function searchAndTag (tagName='', tagWord='', string) {
     
     return str;
 }
+
+// const spread = (x) => {
+//     return new Promise(resolve => {
+//         setTimeout(() => {
+//             if (x < 6) {
+//                 resolve([x + 1, x + 2, x + 3]);
+//             } else {
+//                 resolve([]);
+//             }
+//         }, 200);
+//     });
+// };
+
+export const getMenu = async (title) => {
+    let line = [];
+    let frag = await getWikisourceJson(title, 0, {
+    }, []);
+    // console.log('frag: ', frag);
+    if (!frag.length) return frag;
+    line = frag.map(async (number) => {
+        let wow = await getMenu(number);
+        // console.log('得到回應： ', wow);
+        return wow;
+    });
+    let result = await Promise.all(line);
+    result.map(x => {
+        frag = frag.concat(x);
+    });
+    return frag.filter(x=>x.length!==0);
+};

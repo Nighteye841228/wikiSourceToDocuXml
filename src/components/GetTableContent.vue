@@ -80,8 +80,10 @@
 
 <script>
 import {
-    getSnippet,
-    getWikisourceJson
+    // getSnippet,
+    // getWikisourceJson,
+    tableTreeGenerate,
+    getMenu
 } from './../tool';
 import Treeselect from '@riophae/vue-treeselect';
 // import VJstree from 'vue-jstree';
@@ -477,15 +479,13 @@ export default {
     props: ['link', 'index'],
     methods: {
         getMenuOfContent: async function () {
+            this.treeShowMenu = [this.link];
             try {
-                this.wikiContentSnippet = await getSnippet(this.link);
-                this.treeShowMenu = await getWikisourceJson(
-                    this.link,
-                    0,
-                    {
-                    },
-                    []
-                );
+                let x = await getMenu(this.link);
+                console.log('result: ', x);
+                // this.wikiContentSnippet = await getSnippet('史記');
+                this.treeShowMenu = this.treeShowMenu.concat(x);
+                this.treeShowMenu = await tableTreeGenerate(this.treeShowMenu);
                 this.isAddMenuToDownload = true;
             } catch (error) {
                 console.log('獲取失敗。');
