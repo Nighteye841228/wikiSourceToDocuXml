@@ -1,5 +1,5 @@
 <template>
-    <div ref="tagParent">
+    <div ref="tagParent" class="column is-one-third">
         <div class="content">
             <b-button class="is-primary" outlined expanded @click="isOpenTagModal = true">{{ fileName }}
             </b-button>
