@@ -390,9 +390,14 @@ export async function getWikisourceJson(
         let dirtyText = apiBackJson.query.pages[wikiDocNum].revisions[0]['*'];
         let wikiTitle = apiBackJson.query.pages[wikiDocNum].title;
         let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm);
-        cleanText = cleanText.join('\n').replace(/^\n/gm, '').replace(/^\n/gm, '');
-        cleanText = cleanText.match(/^[*#!].*\[\[(.*)\|*.*\]\]/gm);
-        console.log(cleanText);
+        let checkTitle = title.match(/^[^/]*/); //篩選出title的第一個斜線之前的字（就是書名）
+        cleanText = cleanText.join('\n')
+            .replace(/^\n/gm, '')
+            .replace(/^\n/gm, '')
+            .match(/^[=*#!].*\[\[(.*)\|*.*\]\]/gm);
+        if (checkTitle) {
+            cleanText = cleanText.filter(x => x.match(new RegExp(String.raw`^[=*#!].*\[\[${checkTitle[0]}.*`, 'g')));    
+        }
         if (cleanText) {
             cleanText = cleanText.join('\n');
 
