@@ -81,11 +81,29 @@
             </footer>
         </b-modal>
         <b-modal v-model="isOpenUploadModal" :width="400">
-            <header class="modal-card-head">
-                <p class="modal-card-title">登入</p>
+            <header class="modal-card-head" style="justify-content: space-between;">
+                <p class="modal-card-title">上傳到DocuSky</p>
+                <b-tooltip label="到DocuSky看看結果吧！"
+                           position="is-left"
+                >
+                    <a href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
+                        <nav class="level">
+                            <div class="level-item">
+                                <img src="../public/C_4C_small.png" alt="">
+                            </div>
+                            <div class="level-item" style="padding-top: 5px;">
+                                <b-icon icon="upload" pack="fas"></b-icon>
+                            </div>
+                        </nav>
+                    </a>
+                </b-tooltip>
+                
             </header>
 
             <section class="modal-card-body login">
+                <b-field label="檔案名稱">
+                    <b-input v-model="uploadFileName"></b-input>
+                </b-field>
                 <b-field label="帳號">
                     <b-input v-model="account"></b-input>
                 </b-field>
@@ -97,7 +115,7 @@
             <footer class="modal-card-foot" style="justify-content: space-between;">
                 <div>
                     <b-button type="is-success" @click="login" outlined>
-                        確認
+                        登入
                     </b-button>
                     <b-button type="is-success" @click="uploadXML" outlined :disabled="!isUploadable">
                         上傳
@@ -240,7 +258,7 @@
                                     </div>
                                     <div class="level-item">
                                         <p>
-                                            未點擊文件：
+                                            未處理文件：
                                         </p>
                                     </div>
                                     <div class="level-item">
@@ -304,7 +322,7 @@
                                 </div>
                                 <div class="level-right">
                                     <div class="level-it">
-                                        <b-button class="is-success" @click="activeStep = 4" outlined>完成輸出｜編輯TAG
+                                        <b-button class="is-success" @click="activeStep = 4" outlined>完成編輯
                                         </b-button>
                                     </div>
                                 </div>
@@ -360,13 +378,20 @@
                                 >
                                 </multiselect>
                             </b-field>
-                            <div class="columns is-multiline">
-                                <div
-                                    class="column is-one-third"
-                                    v-for="(document, order) in splitCompleteWikiContents"
-                                    :key="order"
+                            
+                            <draggable 
+                                v-model="splitCompleteWikiContents"
+                                v-bind="dragOptions"
+                                @start="drag = true"
+                                @end="drag = false"
+                            >
+                                <transition-group 
+                                    class="columns is-multiline"
+                                    type="transition" :name="!drag ? 'flip-list' : null"
                                 >
                                     <TagEdit
+                                        v-for="(document, order) in splitCompleteWikiContents"
+                                        :key="document.fileName"
                                         :fileName="document.title + '/' + document.fileName"
                                         :content="document.doc_content"
                                         :index="order"
@@ -375,8 +400,11 @@
                                         ref="editTag"
                                     >
                                     </TagEdit>
-                                </div>
-                            </div>
+
+                                </transition-group>
+                                
+                            </draggable>
+                            
                         </section>
                     </b-step-item>
 
@@ -419,6 +447,8 @@
                         </b-button>
                     </template>
                 </b-steps>
+
+                
             </div>
         </section>
     </div>
@@ -433,6 +463,7 @@ import BookChildContent from './components/BookChildContent.vue';
 import TagEdit from './components/TagEdit';
 import GetTableContent from './components/GetTableContent';
 import SimpleXml from './components/SimpleXml';
+import draggable from 'vuedraggable';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import {
     HotTable 
@@ -468,11 +499,20 @@ export default {
         Multiselect,
         TagEdit,
         GetTableContent,
-        SimpleXml
+        SimpleXml,
+        draggable
     },
     computed: {
         xml: function () {
             return this.showXmlString.replace(/\n/g, '');
+        },
+        dragOptions() {
+            return {
+                animation: 200,
+                group: 'description',
+                disabled: false,
+                ghostClass: 'ghost'
+            };
         }
     },
     data() {
@@ -540,6 +580,7 @@ export default {
             isEditMetaTable: false,
             fileNameMeta: 'file',
             corpusNameMeta: '我的文獻集',
+            uploadFileName: '我的文獻集',
             wikiTags: [],
             wikiTagOptions: [
                 {
@@ -568,7 +609,10 @@ export default {
             account: '',
             password: '',
             isUploadable: false,
-            widget: docuskyManageDbListSimpleUI
+            widget: docuskyManageDbListSimpleUI,
+
+            //拖曳
+            drag: false
         };
     },
     methods: {
@@ -800,11 +844,11 @@ export default {
             let formData = { 
                 dummy: {
                     name: 'dbTitleForImport', 
-                    value: this.corpusNameMeta
+                    value: this.uploadFileName
                 }, 
                 file: {
                     value: this.xml, 
-                    filename: this.corpusNameMeta + '.xml', 
+                    filename: this.uploadFileName + '.xml', 
                     name: 'importedFiles[]'
                 }
             };
@@ -858,5 +902,16 @@ export default {
 
 .login {
     height: auto;
+}
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
 }
 </style>
