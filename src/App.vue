@@ -176,6 +176,42 @@
                 </b-tooltip>
             </footer>
         </b-modal>
+        <b-modal v-model="isEditFileOrder" :width="500" scroll="keep">
+            <header class="modal-card-head">
+                <label class="label">拖曳與重編文件順序</label>
+            </header>
+            <section class="modal-card-body">
+                <draggable 
+                    v-model="splitCompleteWikiContents"
+                    v-bind="dragOptions"
+                    @start="drag = true"
+                    @end="drag = false"
+                >
+                    <transition-group 
+                        class="columns is-multiline"
+                        type="transition" :name="!drag ? 'flip-list' : null"
+                    >
+                        <FileOrder
+                            v-for="(document, order) in splitCompleteWikiContents"
+                            :key="document.fileName"
+                            :fileName="document.title + '/' + document.fileName"
+                            :content="document.doc_content"
+                            :index="order"
+                            ref="fileOrder"
+                        >
+                        </FileOrder>
+
+                    </transition-group>
+                                
+                </draggable>
+            </section>
+            <footer class="modal-card-foot">
+                <b-button class="is-primary" @click="reOrderFile" outlined>重置排序
+                </b-button>
+                <b-button class="is-primary" @click="isEditFileOrder = false" outlined>確認順序
+                </b-button>
+            </footer>
+        </b-modal>
 
         
 
@@ -357,6 +393,9 @@
                                 </div>
                                 <div class="level-right">
                                     <div class="level-item">
+                                        <b-button type="is-success" outlined @click="isEditFileOrder = true">排列文件順序</b-button>
+                                    </div>
+                                    <div class="level-item">
                                         <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
                                     </div>
                                 </div>
@@ -379,32 +418,20 @@
                                 </multiselect>
                             </b-field>
                             
-                            <draggable 
-                                v-model="splitCompleteWikiContents"
-                                v-bind="dragOptions"
-                                @start="drag = true"
-                                @end="drag = false"
-                            >
-                                <transition-group 
-                                    class="columns is-multiline"
-                                    type="transition" :name="!drag ? 'flip-list' : null"
+                            <div class="columns is-multiline">
+                                <TagEdit
+                                    v-for="(document, order) in splitCompleteWikiContents"
+                                    :key="document.fileName"
+                                    :fileName="document.title + '/' + document.fileName"
+                                    :content="document.doc_content"
+                                    :index="order"
+                                    :tagOptions="wikiTags"
+                                    @handle-tag="handleWikiTag"
+                                    ref="editTag"
                                 >
-                                    <TagEdit
-                                        v-for="(document, order) in splitCompleteWikiContents"
-                                        :key="document.fileName"
-                                        :fileName="document.title + '/' + document.fileName"
-                                        :content="document.doc_content"
-                                        :index="order"
-                                        :tagOptions="wikiTags"
-                                        @handle-tag="handleWikiTag"
-                                        ref="editTag"
-                                    >
-                                    </TagEdit>
+                                </TagEdit>
+                            </div>
 
-                                </transition-group>
-                                
-                            </draggable>
-                            
                         </section>
                     </b-step-item>
 
@@ -463,6 +490,7 @@ import BookChildContent from './components/BookChildContent.vue';
 import TagEdit from './components/TagEdit';
 import GetTableContent from './components/GetTableContent';
 import SimpleXml from './components/SimpleXml';
+import FileOrder from './components/FileOrder';
 import draggable from 'vuedraggable';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import {
@@ -488,6 +516,9 @@ import {
 import {
     SnackbarProgrammatic as Snackbar 
 } from 'buefy';
+import {
+    cloneDeep
+} from 'lodash-es';
 
 
 
@@ -500,7 +531,8 @@ export default {
         TagEdit,
         GetTableContent,
         SimpleXml,
-        draggable
+        draggable,
+        FileOrder
     },
     computed: {
         xml: function () {
@@ -612,12 +644,12 @@ export default {
             widget: docuskyManageDbListSimpleUI,
 
             //拖曳
-            drag: false
+            drag: false,
+            isEditFileOrder: false
         };
     },
     methods: {
         undoHot: function () {
-            console.log('in');
             this.$refs.hotTableComponent.hotInstance.undo();
         },
         redoHot: function () {
@@ -634,7 +666,6 @@ export default {
             this.splitCompleteWikiContents.forEach((element) => {
                 element.doc_content = element.doc_content
                     .replace(new RegExp(String.raw`<mark tag="${tag.tagName}">([^<]*)</mark>`, 'g'), '$1');
-                console.log(element.doc_content);
             });
         },
         addContentTag: function (newTag) {
@@ -693,7 +724,6 @@ export default {
             }
         },
         handleWikiTag: function (param) {
-            console.log(param);
             this.splitCompleteWikiContents[param.index].doc_content = param.newContent;
         },
         splitWikiContents: function () {
@@ -726,8 +756,12 @@ export default {
             this.colHeaders = this.colHeaders.concat(
                 this.selectedMetaDataColumns.map((x) => x.headerName)
             );
+            this.colHeaders = this.colHeaders.concat('文件次序編碼');
             this.isEditMetaTable = false;
             this.activeStep = 3;
+        },
+        reOrderFile: function() {
+            this.splitCompleteWikiContents = this.splitCompleteWikiContents.sort((a, b)=>{return a.fileOrder-b.fileOrder;});
         },
         checkForm: function () {
             if (!this.wikiUrls) {
@@ -792,8 +826,12 @@ export default {
             this.$refs.multiselect.isOpen = true;
         },
         generateXml: function () {
+            let finalFile = cloneDeep(this.splitCompleteWikiContents);
+            finalFile.forEach((ele)=>{
+                delete ele['fileOrder'];
+            });
             this.showXmlString = composeDocuXmlFile(
-                this.splitCompleteWikiContents, 
+                finalFile, 
                 this.selectedMetaDataColumns,
                 this.wikiTags,
                 this.corpusNameMeta

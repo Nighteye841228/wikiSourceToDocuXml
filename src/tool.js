@@ -577,9 +577,7 @@ export function createMetadataRows(
         fileMeta[element.field] = '';
     });
     wikiFilesWithTitleAndDocuments.forEach((files) => {
-        files.documents.forEach(() => {
-            fileCount++;
-        });
+        fileCount += files.documents.length;
     });
     let filePaddingNum = fileCount.toString().length;
     fileCount = 0;
@@ -597,7 +595,10 @@ export function createMetadataRows(
                     fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
                     corpus: `${corpusName}`,
                 },
-                fileMeta
+                fileMeta,
+                {
+                    fileOrder: fileCount
+                }
             );
             separateFiles.push(column);
         });

@@ -88,13 +88,11 @@ export default {
     props: ['fileName', 'content', 'index', 'tagOptions'],
     methods: {
         handleOut: function(evt) {
-            console.log('out', evt.target.tagName);
             this.isCheckTagName = false;
             evt.target.removeEventListener('mouseleave', this.handleOut);
         },
         handleIn: function(evt) {
             if(evt.target.tagName !== 'MARK') return;
-            console.log('in', evt.target.tagName);
             this.isCheckTagName = true;
             this.showTagName = evt.target.attributes.tag.value;
             this.$nextTick(()=>{
