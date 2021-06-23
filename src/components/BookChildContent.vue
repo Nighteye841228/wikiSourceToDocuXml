@@ -2,11 +2,11 @@
     <div>
         <div class="content">
             <b-field>
-                <b-button class="is-primary is-medium book-child" outlined expanded @click="isOpenBook = true">
+                <b-button style="height:auto" class="is-primary is-medium book-child" outlined expanded @click="isOpenBook = true">
                     {{ wikiBook }}
                 </b-button>
                 <p class="control">
-                    <b-button class="button is-medium is-danger" outlined @click="deleteBook"><b-icon icon="delete"></b-icon></b-button>
+                    <b-button style="height:auto" class="button is-medium is-danger" outlined @click="deleteBook"><b-icon icon="delete"></b-icon></b-button>
                 </p>
             </b-field>
         </div>

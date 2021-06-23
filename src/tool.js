@@ -396,7 +396,7 @@ export async function getWikisourceJson(
             .replace(/^\n/gm, '')
             .match(/^[=*#!].*\[\[(.*)\|*.*\]\]/gm);
         if (checkTitle) {
-            cleanText = cleanText.filter(x => x.match(new RegExp(String.raw`^[=*#!].*\[\[${checkTitle[0]}.*`, 'g')));    
+            cleanText = cleanText.filter(x => x);    
         }
         if (cleanText) {
             cleanText = cleanText.join('\n');

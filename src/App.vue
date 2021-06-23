@@ -232,11 +232,14 @@
                     :class="stepClass"
                     vertical
                     ref="control"
+                    class="step-custom"
                 >
                     <b-step-item step="1" label="關鍵字搜索" :clickable="isStepsClickable">
-                        <section class="section wow">
+                        <section class="section">
                             <label class="label is-large" title="不需完整標題">文本關鍵字搜索
                             </label>
+                        </section>
+                        <section class="section wow">
                             <div class="field has-addons">
                                 <div class="control">
                                     <input
@@ -255,7 +258,7 @@
                     </b-step-item>
 
                     <b-step-item step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section wow" v-if="isInputDataValid">
+                        <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
@@ -268,6 +271,9 @@
                                     </div>
                                 </div>
                             </nav>
+                        </section>
+                        <section class="section wow" v-if="isInputDataValid">
+                            
                             <div class="is-divider"></div> 
                             <div class="columns is-multiline">
                                 <div v-for="(extendedLink, index) in extendedLinks"
@@ -284,7 +290,7 @@
                     </b-step-item>
 
                     <b-step-item step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section wow">
+                        <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
@@ -316,7 +322,8 @@
                                     </div>
                                 </div>
                             </nav>
-                            <div class="is-divider"></div>
+                        </section>
+                        <section class="section wow">
                             <div
                                 class="columns is-multiline"
                                 v-for="(book, index) in selectedBookMenuPool"
@@ -341,7 +348,7 @@
                     </b-step-item>
 
                     <b-step-item step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="dataHandsonTable wow">
+                        <section>
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
@@ -363,7 +370,8 @@
                                     </div>
                                 </div>
                             </nav>
-                            
+                        </section>
+                        <section class="dataHandsonTable wow">                            
                             <div v-show="isEditMetadata">
                                 <hot-table
                                     :data.sync="splitCompleteWikiContents"
@@ -383,8 +391,8 @@
                         </section>
                     </b-step-item>
 
-                    <b-step-item step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section wow">
+                    <b-step-item step="5" label="編輯Tag&順序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                        <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
@@ -400,6 +408,8 @@
                                     </div>
                                 </div>
                             </nav>
+                        </section>
+                        <section class="section wow">
                             <b-field>
                                 <multiselect 
                                     v-model="wikiTags" 
@@ -437,12 +447,14 @@
 
 
                     <b-step-item step="6" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section wow">
+                        <section class="section">
                             <div class="buttons">
                                 <b-button class="is-medium is-success" @click="copyXML" outlined>複製DocuXML到剪貼簿</b-button>
                                 <b-button class="is-medium is-success" @click="downloadXML" outlined>下載XML檔案進一步編輯</b-button>
                                 <b-button class="is-medium is-success" @click="openLoginModal" outlined>直接上傳到DocuSky建庫</b-button>
                             </div>
+                        </section>
+                        <section class="section wow">
                             <SimpleXml :xml="xml" :step="activeStep" />
                         </section>
                     </b-step-item>
@@ -929,7 +941,7 @@ export default {
 
 .wow {
     max-width: 59rem;
-    height: 42rem;
+    height: 37rem;
     overflow: auto;
     padding-top: inherit;
 }
@@ -951,5 +963,12 @@ export default {
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
+}
+
+</style>
+
+<style>
+.step-custom .step-items {
+    padding-top: 6rem !important; 
 }
 </style>
