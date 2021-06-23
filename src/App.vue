@@ -369,7 +369,7 @@
                                     :data.sync="splitCompleteWikiContents"
                                     :rowHeaders="true"
                                     :licenseKey="licenseKey"
-                                    height="480"
+                                    height="580"
                                     :autoRowSize="true"
                                     :colHeaders="colHeaders"
                                     :manualRowResize="true"
@@ -929,7 +929,7 @@ export default {
 
 .wow {
     max-width: 59rem;
-    height: 35rem;
+    height: 42rem;
     overflow: auto;
     padding-top: inherit;
 }
