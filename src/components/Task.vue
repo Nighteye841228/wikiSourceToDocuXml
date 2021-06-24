@@ -1,5 +1,5 @@
 <template>
-    <div ref="task">
+    <div>
         <div style="height:20em;overflow:auto;">
             <div class="columns is-multiline">
                 <div class="column is-12" v-for="(item) in tasks" :key="item.unique">
@@ -26,7 +26,7 @@
 
         
 
-        <b-collapse :open="false" aria-id="contentIdForA11y1">
+        <b-collapse :open="isEditTask" aria-id="contentIdForA11y1">
             <template #trigger>
                 <div class="container is-fullwidth">
                     <b-button
@@ -67,6 +67,9 @@
                         </option>
                     </b-select>
                 </b-field>
+                <b-field>
+                    <b-button outlined @click="confirmEdit">確認</b-button>
+                </b-field>
             </div>
         </b-collapse>
 
@@ -85,10 +88,12 @@ export default {
     props: ['date', 'labels', 'numberOfDays'],
     data: function() {
         return {
+            isEditTask: false,
             taskLabel: undefined,
             taskTitle: '',
             taskExplanation: '',
             taskDay: 0,
+            taskUnique: undefined,
             tasks: [
                 {
                     unique: 'Aasdsad'+getRandomInt(10000),
@@ -177,6 +182,31 @@ export default {
             this.taskExplanation = item.explanation;
             this.taskDay = this.date;
             this.taskLabel = item.label;
+            this.taskUnique = item.unique;
+        },
+        confirmEdit() {
+            let oldItem = this.tasks.find(({unique})=>{return unique === this.taskUnique;});
+            if(this.taskDay !== this.date) {
+                this.tasks = this.tasks.filter(({unique})=>{return unique !== this.taskUnique;});
+                this.$emit('handleTransTask', Object.assign({
+                    date: this.date
+                }, oldItem));
+                this.isEditTask = false;
+                return;
+            }
+            oldItem.title = this.taskTitle;
+            oldItem.explanation = this.taskExplanation;
+            oldItem.label = this.taskLabel;
+            this.isEditTask = false;
+        },
+        confirmAdd() {
+            let temp = {
+                title: this.taskTitle,
+                explanation: this.taskExplanation,
+                label: this.taskLabel,
+                unique: this.taskUnique || this.taskTitle + getRandomInt(10000)
+            };
+            this.tasks.push(temp);
         }
     }
 };

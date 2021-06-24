@@ -46,7 +46,13 @@
                             <div class="has-text-centered content" @dblclick="setRed(i)">
                                 <p class="title" ref="haha">{{ i }}</p>
                             </div>
-                            <child-task :date="i" :labels="labels" :numberOfDays="numberOfDays"></child-task>
+                            <child-task 
+                                :date="i" 
+                                :labels="labels" 
+                                :numberOfDays="numberOfDays" 
+                                @handleTransTask="handleTransTask" 
+                                ref="task"
+                            />
                         </div>
                     </div>
                 </div>
@@ -214,6 +220,10 @@ export default {
             this.$refs.haha[val].style.color = 
             this.$refs.haha[val].style.color === 'red' ? 'black' : 'red';
         },
+        handleTransTask(task) {
+            this.$refs.task[task.date].setTask(task);
+            this.$refs.task[task.date].confirmAdd();
+        }
     },
 };
 

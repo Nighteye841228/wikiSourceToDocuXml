@@ -447,9 +447,7 @@
                 
                 </div>
             </section>
-            <section class="section is-large">
-                <Calendar></Calendar>
-            </section>
+            
 
         </div>
 
@@ -466,6 +464,9 @@
                   
             </div>
         </div>
+        <section class="section is-large">
+            <Calendar></Calendar>
+        </section>
     </div>
 </template>
 
