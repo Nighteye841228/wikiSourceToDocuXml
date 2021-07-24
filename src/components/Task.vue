@@ -1,32 +1,42 @@
 <template>
     <div>
         <div style="height:20em;overflow:auto;">
-            <div class="columns is-multiline">
-                <div class="column is-12" v-for="(item) in tasks" :key="item.unique">
-                    <b-tooltip 
-                        class="tooltip-own"
-                        position="is-right"
-                        size="is-medium"
-                        append-to-body
-                        multilined
-                        type="is-primary"
-                        :triggers="['hover']"
-                    >
-                        <template v-slot:content>
-                            <p>{{item.explanation}}</p>
-                        </template>
-                        <b-button expanded @click="changeIcon(item)" style="width:7.8em">
-                            <span :style="{color: item.label.color}">{{item.label.icon}}</span>
-                            {{item.title}}
-                        </b-button>
-                    </b-tooltip>
-                </div>
-            </div>
+            <draggable
+                v-model="tasks"
+                v-bind="dragOptions"
+                @start="drag = true"
+                @end="drag = false"
+            >
+                <transition-group 
+                    class="columns is-multiline"
+                    type="transition" :name="!drag ? 'flip-list' : null"
+                >
+                    <div class="column is-12" v-for="(item) in tasks" :key="item.unique">
+                        <b-tooltip 
+                            class="tooltip-own"
+                            position="is-right"
+                            size="is-medium"
+                            multilined
+                            type="is-primary"
+                            :triggers="['hover']"
+                        >
+                            <template v-slot:content>
+                                <p>{{item.explanation}}</p>
+                            </template>
+                            <b-button expanded @click="changeIcon(item)" style="width:7.8em">
+                                <span :style="{color: item.label.color}">{{item.label.icon}}</span>
+                                {{item.title}}
+                            </b-button>
+                        </b-tooltip>
+                    </div>
+                </transition-group>
+
+            </draggable>
         </div>
 
         
 
-        <b-collapse :open="isEditTask" aria-id="contentIdForA11y1">
+        <b-collapse :open.sync="isEditTask" aria-id="contentIdForA11y1">
             <template #trigger>
                 <div class="container is-fullwidth">
                     <b-button
@@ -60,15 +70,16 @@
                     <b-select placeholder="選擇日期" expanded v-model.number="taskDay">
                         <option
                             v-for="(i,index) in numberOfDays"
-                            :value="i"
+                            :value="index"
                             :key="index"
                         >
-                            {{ i }}
+                            {{ index+1 }}
                         </option>
                     </b-select>
                 </b-field>
                 <b-field>
-                    <b-button outlined @click="confirmEdit">確認</b-button>
+                    <b-button type="is-primary" outlined @click="confirmEdit">確認</b-button>
+                    <b-button type="is-danger" outlined @click="deleteTask">刪除</b-button>
                 </b-field>
             </div>
         </b-collapse>
@@ -78,94 +89,38 @@
 </template>
 
 <script>
-import '../../node_modules/bulma-tooltip/dist/css/bulma-tooltip.min.css';
+import draggable from 'vuedraggable';
 function getRandomInt(max) {
     return 10*Math.floor(Math.random() * max);
 }
 
 export default {
     name: 'Task',
-    props: ['date', 'labels', 'numberOfDays'],
+    props: ['date', 'labels', 'numberOfDays', 'inheritTask'],
+    components: {
+        draggable,
+    },
+    computed: {
+        dragOptions() {
+            return {
+                animation: 200,
+                group: 'description',
+                disabled: false,
+                ghostClass: 'ghost'
+            };
+        },
+    },
     data: function() {
         return {
+            drag: false,
+
             isEditTask: false,
             taskLabel: undefined,
             taskTitle: '',
             taskExplanation: '',
             taskDay: 0,
             taskUnique: undefined,
-            tasks: [
-                {
-                    unique: 'Aasdsad'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '寫作',
-                        icon: '●',
-                        color: '#CD9DBE'
-                    },
-                    title: '今天吃早餐'
-                },
-                {
-                    unique: 'Aasdsad'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '寫作',
-                        icon: '●',
-                        color: '#CD9DBE'
-                    },
-                    title: '今天吃早餐'
-                },
-                {
-                    unique: 'Aasdsad'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '寫作',
-                        icon: '●',
-                        color: '#CD9DBE'
-                    },
-                    title: '今天吃早餐'
-                },
-                {
-                    unique: 'Aasdsad'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '寫作',
-                        icon: '●',
-                        color: '#CD9DBE'
-                    },
-                    title: '今天吃早餐'
-                },
-                {
-                    unique: 'Aasdsad'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '寫作',
-                        icon: '●',
-                        color: '#CD9DBE'
-                    },
-                    title: '今天吃早餐'
-                },
-                {
-                    unique: '1111'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '靈感',
-                        icon: '○',
-                        color: '#CD9DBE'
-                    },
-                    title: 'asjdiasjdilajsidl'
-                },
-                {
-                    unique: 'sdds'+getRandomInt(10000),
-                    explanation: 'asdasdsadsafsaascsa',
-                    label: {
-                        name: '閱讀',
-                        color: '#89D2AF',
-                        icon: '▲',
-                    },
-                    title: 'A'
-                }
-            ],
+            tasks: this.inheritTask || []
         };
     },
     methods: {
@@ -188,9 +143,13 @@ export default {
             let oldItem = this.tasks.find(({unique})=>{return unique === this.taskUnique;});
             if(this.taskDay !== this.date) {
                 this.tasks = this.tasks.filter(({unique})=>{return unique !== this.taskUnique;});
-                this.$emit('handleTransTask', Object.assign({
-                    date: this.date
-                }, oldItem));
+                this.$emit('handleTransTask', {
+                    date: this.taskDay,
+                    title: this.taskTitle,
+                    explanation: this.taskExplanation,
+                    label: this.taskLabel,
+                    unique: this.taskUnique
+                });
                 this.isEditTask = false;
                 return;
             }
@@ -207,6 +166,10 @@ export default {
                 unique: this.taskUnique || this.taskTitle + getRandomInt(10000)
             };
             this.tasks.push(temp);
+        },
+        deleteTask() {
+            if(!this.taskUnique) return;
+            this.tasks = this.tasks.filter(({unique})=>{return unique !== this.taskUnique;});
         }
     }
 };
@@ -223,6 +186,18 @@ export default {
 .tooltip-own > * {
     z-index: 1000; 
 }
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
 </style>
 
 // #CD9DBE
