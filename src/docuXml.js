@@ -62,9 +62,7 @@ function composeDocuXmlDocument(wikiDocuments) {
             }            
         }
         docContentTemp = addPara(transMarkToTag(docContentTemp));
-        let xmlString = documentString;
         documentString += bindXmlVal('doc_content', docContentTemp, false, [1, 1]);
-        documentString += bindXmlVal('xml_metadata', xmlString, false, [1, 1]);
         documentString = bindXmlVal('document', documentString, false, [1, 1]);
         documentString = addAttr('fileName', fileName, documentString, false);
         return documentString;
