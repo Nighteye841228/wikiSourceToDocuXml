@@ -80,6 +80,24 @@
                 </button>
             </footer>
         </b-modal>
+        <b-modal v-model="isSetGlobalDoc" scroll="keep">
+            <header class="modal-card-head">
+                <p class="title">
+                    其餘未確認分件方式的文檔，您希望如何處理？
+                </p>
+            </header>
+            <section class="modal-card-body" style="max-height:4em">
+                <b-checkbox v-model="isKeepHyperLink">
+                    保留超連結
+                </b-checkbox>
+                <b-checkbox v-model="isCutFileByPara">
+                    以段分件（若未勾選則保留原來的全卷為一件）
+                </b-checkbox>
+            </section>
+            <footer class="modal-card-foot">
+                <b-button type="is-primary" @click="openEditTable">確認</b-button>
+            </footer>
+        </b-modal>
         <b-modal v-model="isOpenUploadModal" :width="400">
             <header class="modal-card-head" style="justify-content: space-between;">
                 <p class="modal-card-title">上傳到DocuSky</p>
@@ -288,17 +306,9 @@
                             </div>
                         </section>
                     </b-step-item>
+                    
 
-                    <b-step-item step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">
-                                            目前已下載卷數檢視 & 分件｜
-                                        </label>
-                                    </div>
-                                    <div class="level-item">
+                    <!-- <div class="level-item">
                                         <p>
                                             未處理文件：
                                         </p>
@@ -312,11 +322,21 @@
                                         <b-checkbox v-model="isCutFileByPara">
                                             以段分件
                                         </b-checkbox>
+                                    </div> -->
+
+                    <b-step-item step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                        <section class="section">
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">
+                                            目前已下載卷數檢視 & 分件
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="level-right">
                                     <div class="level-item">
-                                        <b-button type="is-success" @click="openEditTable" outlined>
+                                        <b-button type="is-success" @click="confirmGlobalSet" outlined>
                                             確認分件完成
                                         </b-button>
                                     </div>
@@ -365,7 +385,7 @@
                                 </div>
                                 <div class="level-right">
                                     <div class="level-it">
-                                        <b-button class="is-success" @click="activeStep = 4" outlined>完成編輯
+                                        <b-button class="is-success" @click="combineOrigin" outlined>完成編輯
                                         </b-button>
                                     </div>
                                 </div>
@@ -433,7 +453,7 @@
                                     v-for="(document, order) in splitCompleteWikiContents"
                                     :key="document.fileName"
                                     :fileName="document.title + '/' + document.fileName"
-                                    :content="document.doc_content"
+                                    :temp="tempSplitContents[order]"
                                     :index="order"
                                     :tagOptions="wikiTags"
                                     @handle-tag="handleWikiTag"
@@ -495,7 +515,7 @@
 
 <script>
 import {
-    columnDefinition, colHeader, columns 
+    columnDefinition, colHeader 
 } from './data';
 // import SplitCompleteContent from './components/SplitCompleteContent.vue';
 import BookChildContent from './components/BookChildContent.vue';
@@ -557,6 +577,9 @@ export default {
                 disabled: false,
                 ghostClass: 'ghost'
             };
+        },
+        countSplitContents() {
+            return this.splitCompleteWikiContents.length;
         }
     },
     data() {
@@ -620,8 +643,9 @@ export default {
             isEditMetadata: false,
             getSplitSheet: [],
             colHeaders: colHeader,
-            columns: columns,
+            columns: [],
             isEditMetaTable: false,
+            isSetGlobalDoc: false,
             fileNameMeta: 'file',
             corpusNameMeta: '我的文獻集',
             uploadFileName: '我的文獻集',
@@ -657,7 +681,10 @@ export default {
 
             //拖曳
             drag: false,
-            isEditFileOrder: false
+            isEditFileOrder: false,
+
+            //取得暫存的分件文本內容
+            tempSplitContents: []
         };
     },
     methods: {
@@ -716,7 +743,11 @@ export default {
             this.selectedBookMenuPool.sort((x, y) => x.index - y.index);
             this.isCheckBook = true;
         },
+        confirmGlobalSet() {
+            this.isSetGlobalDoc = true;
+        },
         openEditTable: function () {
+            this.isSetGlobalDoc = false;
             this.isEditMetaTable = true;
             this.$nextTick(function () {
                 this.$refs.multiselect.activate();
@@ -769,8 +800,22 @@ export default {
                 this.selectedMetaDataColumns.map((x) => x.headerName)
             );
             this.colHeaders = this.colHeaders.concat('文件次序編碼');
+            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+                return x.doc_content;
+            });
+            this.splitCompleteWikiContents.forEach(element => {
+                element.doc_content = element.doc_content.replace(/(.{0,50})(.|\n)*/g, '$1');
+            });
             this.isEditMetaTable = false;
             this.activeStep = 3;
+        },
+        combineOrigin: function() {
+            setTimeout(()=>{
+                this.splitCompleteWikiContents.forEach((element, index) => {
+                    element.doc_content = this.tempSplitContents[index];
+                });
+            }, 3000);
+            this.activeStep = 4;
         },
         reOrderFile: function() {
             this.splitCompleteWikiContents = this.splitCompleteWikiContents.sort((a, b)=>{return a.fileOrder-b.fileOrder;});
@@ -849,6 +894,7 @@ export default {
                 this.corpusNameMeta
             );
             this.activeStep = 5;  
+            
         },
         copyXML: async function () {
             await navigator.clipboard.writeText(this.showXmlString);

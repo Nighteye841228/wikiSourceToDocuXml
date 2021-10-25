@@ -35,8 +35,8 @@
             </header>
             <section class="modal-card-body">
                 <div>
-                    <div ref="text" style="white-space:pre-wrap;" v-html="content"
-                         @mouseup="print"
+                    <div ref="text" style="white-space:pre-wrap;" v-html="wikiContent"
+                         @mouseup="print" v-if="isOpenTagModal"
                     ></div>
                 </div>
             </section>
@@ -64,7 +64,10 @@ export default {
     watch: {
         isOpenTagModal: function(val) {
             this.$nextTick(()=>{
-                if(val) this.actionShowTag();
+                if(val) {
+                    this.actionShowTag();
+                    this.wikiContent = this.temp;
+                }
             });
             if(!val) this.isTagOpen = false;
         }
@@ -83,9 +86,10 @@ export default {
             showTagName: '',
             markBucket: {
             },
+            wikiContent: ''
         };
     },
-    props: ['fileName', 'content', 'index', 'tagOptions'],
+    props: ['fileName', 'temp', 'index', 'tagOptions'],
     methods: {
         handleOut: function(evt) {
             this.isCheckTagName = false;

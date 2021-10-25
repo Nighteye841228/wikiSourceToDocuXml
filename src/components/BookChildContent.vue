@@ -10,7 +10,7 @@
                 </p>
             </b-field>
         </div>
-        <b-modal v-model="isOpenBook" :width="1000" scroll="keep">
+        <!-- <b-modal v-model="isOpenBook" :width="1000" scroll="keep">
             <div class="card">
                 <div class="card-content">
                     <div class="media">
@@ -91,6 +91,96 @@
                     </section>
                 </footer>
             </div>
+        </b-modal> -->
+
+        <b-modal v-model="isOpenBook" :width="1000" scroll="keep">
+            <header class="modal-card-head">
+                <p class="modal-card-title">獲取的WikiSource文本內容</p>
+                <b-checkbox v-model="isUrlAllow">
+                    保存超連結
+                </b-checkbox>
+            </header>
+            <section class="modal-card-body">
+                <div class="tile is-ancestor">
+                    <div class="tile is-7 is-parent">
+                        <div class="tile is-child in-modal box">
+                            <div class="card-content">
+                                <div class="block">
+                                    <nav class="level">
+                                        <div class="level-left">
+                                            <div class="level-item"><b-radio
+                                                name="name"
+                                                native-value="1"
+                                                v-model.number="paragraphCutWay"
+                                                @change="getViewArray"
+                                            >
+                                                以此卷作為一件
+                                            </b-radio></div>
+                                            <div class="level-item"><b-radio
+                                                name="name"
+                                                native-value="2"
+                                                v-model.number="paragraphCutWay"
+                                                @change="getViewArray"
+                                            >
+                                                以段落切開作為一件
+                                            </b-radio></div>
+                                                    
+                                            
+                                        </div>
+                                    </nav>
+                                    <nav class="level">
+                                        <div class="level-left">
+                                            <div class="level-item"><b-radio
+                                                name="name"
+                                                native-value="3"
+                                                v-model.number="paragraphCutWay"
+                                                @change="getViewArray"
+                                            >
+                                                以自由分段作為分件（以####作為語法輸入）
+                                            </b-radio></div>
+                                        </div>
+                                    </nav>
+                                
+                                
+                                
+                                </div>
+
+                                <textarea
+                                    class="textarea"
+                                    placeholder="10 lines of textarea"
+                                    v-model.lazy="pureText"
+                                    rows="20"
+                                    @change="getViewArray"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tile is-vertical is-parent">
+                        <div class="tile is-child box">
+                            <p class="title">分件結果檢視</p>
+                            <div class="content" style="max-height:37em; overflow:auto;">
+                                <div v-for="(content, index) in viewContents" :key="index">
+                                    <textarea
+                                        class="textarea"
+                                        placeholder="10 lines of textarea"
+                                        v-text="content"
+                                        rows="5"
+                                        readonly
+                                    ></textarea>
+                                    <div class="is-divider"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+                <section>
+                    <b-field>
+                        <b-button type="is-success" outlined @click="sendWikiCutObj">確認分件方式</b-button>
+                    </b-field>
+                </section>
+            </footer>
         </b-modal>
     </div>
 </template>
@@ -116,6 +206,12 @@ export default {
             isViewed: false,
             viewContents: [],
             isPreview: false,
+
+            //sidebar
+            sideFullheight: true,
+            sideFullwidth: false,
+            sideRight: true,
+            sideOpen: false
         };
     },
     props: ['wikiBook', 'order', 'bookOrder'],
@@ -177,7 +273,15 @@ export default {
     created: async function () {
         this.wikiObj = await getWikiPage(this.wikiBook);
         this.wikiText = parseHtmlText(this.wikiObj.text['*']);
+        this.viewContents.push(this.wikiText.hyperlinks.replace(
+            /\n{0,1}<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
+            '$1'));
     },
+    watch: {
+        paragraphCutWay() {
+            this.getViewArray();
+        }
+    }
 };
 </script>
 
