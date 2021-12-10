@@ -151,36 +151,38 @@
                 <label class="label">選擇需要的metadata欄位</label>
             </header>
             <section class="modal-card-body">
-                <b-field label="檔案名稱前綴（EX：輸入X則會顯示為X_01.txt）">
+                <b-field label="1. DocuSky分件檔案名稱前綴（輸入X則會顯示為X_01.txt）">
                     <b-input v-model="fileNameMeta"></b-input>
                 </b-field>
-                <b-field label="文獻集名稱取名">
+                <b-field label="2. 文獻集名稱取名">
                     <b-input v-model="corpusNameMeta"></b-input>
                 </b-field>
-                <multiselect
-                    v-model="selectedMetaDataColumns"
-                    :options="selectMetaDataColumns"
-                    :multiple="true"
-                    :close-on-select="false"
-                    :clear-on-select="false"
-                    :preserve-search="true"
-                    placeholder="Pick some"
-                    label="headerName"
-                    track-by="headerName"
-                    :preselect-first="true"
-                    :max-height="400"
-                    @close="closeEventHandler"
-                    ref="multiselect"
-                >
-                    <template slot="selection" slot-scope="{ values, search, isOpen }">
-                        <span
-                            class="multiselect__single"
-                            v-if="values.length &amp;&amp; !isOpen"
-                        >
-                            {{ values.length }} options selected
-                        </span>
-                    </template>
-                </multiselect>
+                <b-field label="3. 選擇需要的Metadata欄位">
+                    <multiselect
+                        v-model="selectedMetaDataColumns"
+                        :options="selectMetaDataColumns"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Pick some"
+                        label="headerName"
+                        track-by="headerName"
+                        :preselect-first="true"
+                        :max-height="400"
+                        @close="closeEventHandler"
+                        ref="multiselect"
+                    >
+                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                            <span
+                                class="multiselect__single"
+                                v-if="values.length &amp;&amp; !isOpen"
+                            >
+                                {{ values.length }} options selected
+                            </span>
+                        </template>
+                    </multiselect>
+                </b-field>
             </section>
             <footer class="modal-card-foot">
                 <b-tooltip
@@ -358,7 +360,7 @@
                                         @handle-wiki="handleWikiCutObj"
                                         @delete-book="deleteBook"
                                         ref="contentTable"
-                                        :wiki-book.sync="chap"
+                                        :wiki-book="chap"
                                         :bookOrder="index"
                                         :order="chapCount"
                                     ></BookChildContent>
@@ -430,11 +432,18 @@
                             </nav>
                         </section>
                         <section class="section wow">
-                            <b-field>
+                            <b-field label="1. 選擇DocuSky預設Tag" custom-class="is-medium has-text-primary">
+                                <div v-for="option in wikiCheckTagOptions" :key="option.tagLabel+'20'">
+                                    <b-checkbox :native-value="option" v-model="wikiTags">
+                                        {{ option.tagLabel }}
+                                    </b-checkbox>
+                                </div>
+                            </b-field>
+                            <b-field label="2. 增加個人設定Tag(於DocuSky顯示為Udef_'使用者自訂名稱')" custom-class="is-medium has-text-primary">
                                 <multiselect 
                                     v-model="wikiTags" 
                                     tag-placeholder="新增自訂tag" 
-                                    placeholder="選擇需要的tag或輸入自訂的tag名稱(請用英文)" 
+                                    placeholder="輸入自訂的tag名稱(請用英文)" 
                                     label="tagLabel" 
                                     track-by="tagName" 
                                     :close-on-select="false"
@@ -447,20 +456,23 @@
                                 >
                                 </multiselect>
                             </b-field>
+                            <b-field label="3. 選擇文本進行Tag" custom-class="is-medium has-text-primary">
+                                <div class="columns is-multiline">
+                                    <TagEdit
+                                        v-for="(document, order) in splitCompleteWikiContents"
+                                        :key="document.fileName"
+                                        :fileName="document.title + '/' + document.fileName"
+                                        :temp="tempSplitContents[order]"
+                                        :index="order"
+                                        :tagOptions="wikiTags"
+                                        @handle-tag="handleWikiTag"
+                                        ref="editTag"
+                                    >
+                                    </TagEdit>
+                                </div>
+                            </b-field>
                             
-                            <div class="columns is-multiline">
-                                <TagEdit
-                                    v-for="(document, order) in splitCompleteWikiContents"
-                                    :key="document.fileName"
-                                    :fileName="document.title + '/' + document.fileName"
-                                    :temp="tempSplitContents[order]"
-                                    :index="order"
-                                    :tagOptions="wikiTags"
-                                    @handle-tag="handleWikiTag"
-                                    ref="editTag"
-                                >
-                                </TagEdit>
-                            </div>
+                            
 
                         </section>
                     </b-step-item>
@@ -651,6 +663,8 @@ export default {
             uploadFileName: '我的文獻集',
             wikiTags: [],
             wikiTagOptions: [
+            ],
+            wikiCheckTagOptions: [
                 {
                     tagLabel: 'PersonName',
                     tagName: 'PersonName'
