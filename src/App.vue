@@ -173,7 +173,7 @@
                         @close="closeEventHandler"
                         ref="multiselect"
                     >
-                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                        <template slot="selection" slot-scope="{ values, isOpen }">
                             <span
                                 class="multiselect__single"
                                 v-if="values.length &amp;&amp; !isOpen"
