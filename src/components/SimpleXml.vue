@@ -188,7 +188,7 @@ export default {
     props: ['step', 'xml'],
     watch: {
         step: function (val) {
-            if(val === 5) {
+            if(val === 6) {
                 $('#simpleXml').simpleXML({
                     xmlString: this.xml
                 });

@@ -196,42 +196,7 @@
                 </b-tooltip>
             </footer>
         </b-modal>
-        <b-modal v-model="isEditFileOrder" :width="500" scroll="keep">
-            <header class="modal-card-head">
-                <label class="label">拖曳與重編文件順序</label>
-            </header>
-            <section class="modal-card-body">
-                <draggable 
-                    v-model="splitCompleteWikiContents"
-                    v-bind="dragOptions"
-                    @start="drag = true"
-                    @end="drag = false"
-                >
-                    <transition-group 
-                        class="columns is-multiline"
-                        type="transition" :name="!drag ? 'flip-list' : null"
-                    >
-                        <FileOrder
-                            v-for="(document, order) in splitCompleteWikiContents"
-                            :key="document.fileName"
-                            :fileName="document.title + '/' + document.fileName"
-                            :content="document.doc_content"
-                            :index="order"
-                            ref="fileOrder"
-                        >
-                        </FileOrder>
-
-                    </transition-group>
-                                
-                </draggable>
-            </section>
-            <footer class="modal-card-foot">
-                <b-button class="is-primary" @click="reOrderFile" outlined>重置排序
-                </b-button>
-                <b-button class="is-primary" @click="isEditFileOrder = false" outlined>確認順序
-                </b-button>
-            </footer>
-        </b-modal>
+        
 
         
 
@@ -278,23 +243,53 @@
                     </b-step-item>
 
                     <b-step-item step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                        <section>
+                            <b-sidebar
+                                type="is-light"
+                                :fullheight="fullheightSideBar"
+                                :fullwidth="fullwidthSideBar"
+                                :overlay="overlaySideBar"
+                                :right="rightSideBar"
+                                :open.sync="openSideBar"
+                            >
+                                <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+'0'">
+                                    <div v-for="(article,index) in books.menu" :key="article+1">
+                                        <nav class="level">
+                                            <div class="level-left">
+                                                <div class="level-item">
+                                                    {{ article }} 
+                                                </div>
+                                            </div>
+                                            <div class="level-right">
+                                                <div class="level-item">
+                                                    <a @click.stop="deleteBook({bookOrder: numbooks,chapOrder: index})">
+                                                        <b-icon icon-pack="fas" icon="delete">刪除</b-icon>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </b-sidebar>
+                        </section>
                         <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
-                                        <label class="label is-large">書本目錄檢視與選取</label>
+                                        <label class="label is-large">書本目錄檢視與選取｜</label>
                                     </div>
-                                </div>
-                                <div class="level-right">
                                     <div class="level-item">
-                                        <b-button type="is-success" @click="activeStep = 2" outlined>選完了</b-button>
+                                        <b-button type="is-primary" @click="openSideBar = !openSideBar" outlined>
+                                            檢視已選文件</b-button>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-button type="is-success" @click="activeStep = 2" outlined>
+                                            已選取完畢，進入下一步</b-button>
                                     </div>
                                 </div>
                             </nav>
                         </section>
                         <section class="section wow" v-if="isInputDataValid">
-                            
-                            <div class="is-divider"></div> 
                             <div class="columns is-multiline">
                                 <div v-for="(extendedLink, index) in extendedLinks"
                                      :key="index" class="column is-half"
@@ -332,11 +327,9 @@
                                 <div class="level-left">
                                     <div class="level-item">
                                         <label class="label is-large">
-                                            目前已下載卷數檢視 & 分件
+                                            目前已下載卷數檢視 & 分件｜
                                         </label>
                                     </div>
-                                </div>
-                                <div class="level-right">
                                     <div class="level-item">
                                         <b-button type="is-success" @click="confirmGlobalSet" outlined>
                                             確認分件完成
@@ -370,7 +363,7 @@
                     </b-step-item>
 
                     <b-step-item step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section>
+                        <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
@@ -384,9 +377,7 @@
                                             </b-button>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="level-right">
-                                    <div class="level-it">
+                                    <div class="level-item">
                                         <b-button class="is-success" @click="combineOrigin" outlined>完成編輯
                                         </b-button>
                                     </div>
@@ -413,20 +404,17 @@
                         </section>
                     </b-step-item>
 
-                    <b-step-item step="5" label="編輯Tag&順序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <b-step-item step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section">
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
                                         <label class="label is-large">點擊檢視文本 & 編輯Tag｜</label>
                                     </div>
-                                </div>
-                                <div class="level-right">
                                     <div class="level-item">
-                                        <b-button type="is-success" outlined @click="isEditFileOrder = true">排列文件順序</b-button>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
+                                        <b-button type="is-success" outlined @click="activeStep = 5">
+                                            完成Tag
+                                        </b-button>
                                     </div>
                                 </div>
                             </nav>
@@ -477,14 +465,67 @@
                         </section>
                     </b-step-item>
 
-
-                    <b-step-item step="6" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <b-step-item step="6" label="排列文本次序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
                         <section class="section">
-                            <div class="buttons">
-                                <b-button class="is-medium is-success" @click="copyXML" outlined>複製DocuXML到剪貼簿</b-button>
-                                <b-button class="is-medium is-success" @click="downloadXML" outlined>下載XML檔案進一步編輯</b-button>
-                                <b-button class="is-medium is-success" @click="openLoginModal" outlined>直接上傳到DocuSky建庫</b-button>
-                            </div>
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">排列文本次序｜</label>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-button class="is-primary" @click="reOrderFile" outlined>重置排序
+                                        </b-button>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
+                                    </div>
+                                </div>
+                            </nav>
+                        </section>
+                        <section class="section wow">
+                            <draggable 
+                                v-model="splitCompleteWikiContents"
+                                v-bind="dragOptions"
+                                @start="drag = true"
+                                @end="drag = false"
+                            >
+                                <transition-group 
+                                    class="columns is-multiline"
+                                    type="transition" :name="!drag ? 'flip-list' : null"
+                                >
+                                    <FileOrder
+                                        v-for="(document, order) in splitCompleteWikiContents"
+                                        :key="document.fileName"
+                                        :fileName="document.title + '/' + document.fileName"
+                                        :content="document.doc_content"
+                                        :index="order"
+                                        ref="fileOrder"
+                                    >
+                                    </FileOrder>
+
+                                </transition-group>
+                                
+                            </draggable>
+                        </section>
+                    </b-step-item>
+
+
+                    <b-step-item step="7" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                        <section class="section">
+                            <nav class="level">
+                                <div class="level-left">
+                                    <div class="level-item">
+                                        <label class="label is-large">輸出資料｜</label>
+                                    </div>
+                                    <div class="level-item">
+                                        <div class="buttons">
+                                            <b-button class="is-success" @click="copyXML" outlined>複製DocuXML到剪貼簿</b-button>
+                                            <b-button class="is-success" @click="downloadXML" outlined>下載XML檔案進一步編輯</b-button>
+                                            <b-button class="is-success" @click="openLoginModal" outlined>直接上傳到DocuSky建庫</b-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </nav>                            
                         </section>
                         <section class="section wow">
                             <SimpleXml :xml="xml" :step="activeStep" />
@@ -698,7 +739,14 @@ export default {
             isEditFileOrder: false,
 
             //取得暫存的分件文本內容
-            tempSplitContents: []
+            tempSplitContents: [],
+
+            //側邊欄紀錄
+            openSideBar: false,
+            overlaySideBar: true,
+            fullheightSideBar: true,
+            fullwidthSideBar: false,
+            rightSideBar: false
         };
     },
     methods: {
@@ -907,7 +955,7 @@ export default {
                 this.wikiTags,
                 this.corpusNameMeta
             );
-            this.activeStep = 5;  
+            this.activeStep = 6;  
             
         },
         copyXML: async function () {
@@ -1001,7 +1049,7 @@ export default {
 
 .wow {
     max-width: 59rem;
-    height: 37rem;
+    height: 29rem;
     overflow: auto;
     padding-top: inherit;
 }
