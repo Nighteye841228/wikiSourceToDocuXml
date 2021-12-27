@@ -169,7 +169,7 @@ export default {
 }
 
 .modal-card-body {
-  height: 550px;
+  height: 37em;
   overflow: auto;
 }
 </style>

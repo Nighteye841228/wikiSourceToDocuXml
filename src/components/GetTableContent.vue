@@ -47,21 +47,23 @@
                 </button>
             </footer>
         </b-modal>
-
         <div class="box">
             <div class="container">
                 <nav class="level">
                     <div class="level-item has-text-centered" style="flex-shrink: 1;">
-                        <h4 class="title is-4">{{ link }}</h4>
+                        <h4 class="title is-4" :class="selectChapLen == 0 ? '' : 'purple' ">{{ link }}</h4>
                     </div>
                     <div class="level-right">
                         <b-button class="button is-primary is-medium" @click="getMenuOfContent">
-                            <b-icon icon="search" pack="fas"></b-icon>
+                            <b-icon v-if="selectChapLen == 0" icon="search" pack="fas"></b-icon>
+                            <div v-if="selectChapLen != 0">{{ selectChapLen }}</div>
                         </b-button>
                     </div>
                 </nav>
             </div>
         </div>
+
+        
         <!-- <section class="is-large">
             <VJstree 
                 :data="ㄈ"
@@ -90,6 +92,11 @@ export default {
     components: {
         Treeselect,
         // VJstree
+    },
+    computed: {
+        selectChapLen: function() {
+            return this.tempSelectMenu.length;
+        }
     },
     data: function() {
         return {
@@ -528,5 +535,9 @@ export default {
 .tree-control {
     white-space: pre-wrap;
     overflow: scroll;
+}
+
+.purple {
+    color: purple;
 }
 </style>

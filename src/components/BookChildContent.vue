@@ -2,7 +2,7 @@
     <div>
         <div class="content">
             <b-field>
-                <b-button style="height:auto" class="is-primary is-medium book-child" outlined expanded @click="isOpenBook = true">
+                <b-button style="height:auto" :class=" isViewed ? 'is-success' : 'is-primary' " class="is-medium book-child" outlined expanded @click="isOpenBook = true">
                     {{ wikiBook }}
                 </b-button>
                 <p class="control">
@@ -100,7 +100,7 @@
                     保存超連結
                 </b-checkbox>
             </header>
-            <section class="modal-card-body">
+            <section class="modal-card-body" height="30rem">
                 <div class="tile is-ancestor">
                     <div class="tile is-7 is-parent">
                         <div class="tile is-child in-modal box">
@@ -149,7 +149,7 @@
                                     class="textarea"
                                     placeholder="10 lines of textarea"
                                     v-model.lazy="pureText"
-                                    rows="20"
+                                    rows="17"
                                     @change="getViewArray"
                                 ></textarea>
                             </div>
@@ -291,5 +291,10 @@ export default {
     white-space: pre-wrap;
     flex-wrap: wrap;
     overflow: auto;
+}
+
+.modal-card-body {
+  max-height: 40em;
+  overflow: auto;
 }
 </style>

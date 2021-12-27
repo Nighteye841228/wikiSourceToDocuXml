@@ -83,7 +83,7 @@
         <b-modal v-model="isSetGlobalDoc" scroll="keep">
             <header class="modal-card-head">
                 <p class="title">
-                    其餘未確認分件方式的文檔，您希望如何處理？
+                    未確認分件方式的文檔處理方式
                 </p>
             </header>
             <section class="modal-card-body" style="max-height:4em">
@@ -298,7 +298,7 @@
                                         :link="extendedLink" 
                                         :index="index" 
                                         @contentTableAdd="addSelectedMenuItem" 
-                                    />
+                                    />   
                                 </div>
                             </div>
                         </section>
@@ -332,7 +332,7 @@
                                     </div>
                                     <div class="level-item">
                                         <b-button type="is-success" @click="confirmGlobalSet" outlined>
-                                            確認分件完成
+                                            完成自訂修改，批次處理所有分件
                                         </b-button>
                                     </div>
                                 </div>
@@ -830,6 +830,7 @@ export default {
         },
         handleWikiTag: function (param) {
             this.splitCompleteWikiContents[param.index].doc_content = param.newContent;
+            this.tempSplitContents[param.index] = param.newContent;
         },
         splitWikiContents: function () {
             this.$refs.contentTable.forEach((element) => {
