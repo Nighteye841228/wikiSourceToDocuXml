@@ -398,6 +398,7 @@
                                     :wordWrap="false"
                                     :autoWrapCol="false"
                                     ref="hotTableComponent"
+                                    :cells="setReadonlyColumn"
                                 >
                                 </hot-table>
                             </div>
@@ -942,6 +943,16 @@ export default {
                 this.confirmLinks.push(ele);
             });
         },
+
+        setReadonlyColumn: function(row, col) { //設置標題名稱、檔案名稱、文獻集名稱只讀
+            let cellProperty = {
+            };
+            if(col == 1 || col == 2 || col == 3) {
+                cellProperty.readOnly = true;
+            }
+            return cellProperty;
+        },
+
         closeEventHandler: function () {
             this.$refs.multiselect.isOpen = true;
         },
