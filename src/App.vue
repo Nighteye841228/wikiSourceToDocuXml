@@ -516,20 +516,17 @@
                             <nav class="level">
                                 <div class="level-left">
                                     <div class="level-item">
-                                        <label class="label is-large">輸出資料｜</label>
-                                    </div>
-                                    <div class="level-item">
-                                        <div class="buttons">
-                                            <b-button class="is-success" @click="copyXML" outlined>複製DocuXML到剪貼簿</b-button>
-                                            <b-button class="is-success" @click="downloadXML" outlined>下載XML檔案進一步編輯</b-button>
-                                            <b-button class="is-success" @click="openLoginModal" outlined>直接上傳到DocuSky建庫</b-button>
-                                        </div>
+                                        <label class="label is-large">輸出資料</label>
                                     </div>
                                 </div>
                             </nav>                            
                         </section>
                         <section class="section wow">
-                            <SimpleXml :xml="xml" :step="activeStep" />
+                            <div class="box">
+                                <div class="column"><b-button class="is-medium is-success" @click="copyXML" outlined expanded>複製DocuXML到剪貼簿</b-button></div>
+                                <div class="column"><b-button class="is-medium is-success" @click="downloadXML" outlined expanded>下載XML檔案進一步編輯</b-button></div>
+                                <div class="column"><b-button class="is-medium is-success" @click="openLoginModal" outlined expanded>直接上傳到DocuSky建庫</b-button></div>
+                            </div>
                         </section>
                     </b-step-item>
 
@@ -575,7 +572,6 @@ import {
 import BookChildContent from './components/BookChildContent.vue';
 import TagEdit from './components/TagEdit';
 import GetTableContent from './components/GetTableContent';
-import SimpleXml from './components/SimpleXml';
 import FileOrder from './components/FileOrder';
 import draggable from 'vuedraggable';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
@@ -616,14 +612,10 @@ export default {
         Multiselect,
         TagEdit,
         GetTableContent,
-        SimpleXml,
         draggable,
         FileOrder
     },
     computed: {
-        xml: function () {
-            return this.showXmlString.replace(/\n/g, '');
-        },
         dragOptions() {
             return {
                 animation: 200,
@@ -747,7 +739,10 @@ export default {
             overlaySideBar: true,
             fullheightSideBar: true,
             fullwidthSideBar: false,
-            rightSideBar: false
+            rightSideBar: false,
+
+            //查看輸出文件
+            isCheckFinalCode: false,
         };
     },
     methods: {
