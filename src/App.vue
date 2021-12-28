@@ -169,7 +169,7 @@
                         label="headerName"
                         track-by="headerName"
                         :preselect-first="true"
-                        :max-height="400"
+                        :max-height="300"
                         @close="closeEventHandler"
                         ref="multiselect"
                     >

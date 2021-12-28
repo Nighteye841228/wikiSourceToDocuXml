@@ -8,6 +8,22 @@ const columnDefinition = [
         headerName: '文件來源',
     },
     {
+        field: 'compilation_name',
+        headerName: '文件出處',
+    },
+    {
+        field: 'compilation_vol',
+        headerName: '文件出處的冊數',
+    },
+    {
+        field: 'topic',
+        headerName: '文件主題',
+    },
+    {
+        field: 'geo',
+        headerName: '文件地域名稱',
+    },
+    {
         field: 'doc_topic_l1',
         headerName: '文件主題階層一',
     },
@@ -111,15 +127,26 @@ const columnDefinition = [
         field: 'timeseq_not_after',
         headerName: '文件結束時間',
     },
+    //
+    
     {
-        field: 'doc_attachment',
-        headerName: '文件圖檔',
+        field: 'date_not_before',
+        headerName: '文件在某日期之後的時間',
     },
     {
-        field: 'doc_att_caption',
-        headerName: '文件圖檔的圖說',
+        field: 'date_not_after',
+        headerName: '文件在某日期之前的時間',
     },
+    {
+        field: 'date_number',
+        headerName: '文件的日期',
+    },
+    {
+        field: 'doc_seq_number',
+        headerName: '文件的時間順序',
+    }
 ];
+
 
 const colHeader = [
     '文件標題',
@@ -152,9 +179,15 @@ const colHeader = [
     '文件順序',
     '文件起始時間',
     '文件結束時間',
-    '文件圖檔',
-    '文件圖檔的圖說',
     '文件內容',
+    '文件出處',
+    '文件出處的冊數',
+    '文件主題',
+    '文件地域名稱',
+    '文件在某日期之後的時間',
+    '文件在某日期之前的時間',
+    '文件的日期',
+    '文件的時間順序',
 ];
 
 const columns = [
