@@ -628,6 +628,29 @@ export default {
             return this.splitCompleteWikiContents.length;
         }
     },
+    watch: {
+        activeStep: {
+            immediate: true,
+            handler(newValue, oldValue) {
+                if(newValue == 3) {
+                    this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+                        return x.doc_content;
+                    });
+                    this.splitCompleteWikiContents.forEach(element => {
+                        element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+                    });
+                }
+
+                if(oldValue == 3) {
+                    setTimeout(()=>{
+                        this.splitCompleteWikiContents.forEach((element, index) => {
+                            element.doc_content = this.tempSplitContents[index];
+                        });
+                    }, 3000);
+                }
+            }
+        }
+    },
     data() {
         return {
             activeStep: 0,
@@ -859,21 +882,21 @@ export default {
                 this.selectedMetaDataColumns.map((x) => x.headerName)
             );
             this.colHeaders = this.colHeaders.concat('文件次序編碼');
-            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
-                return x.doc_content;
-            });
-            this.splitCompleteWikiContents.forEach(element => {
-                element.doc_content = element.doc_content.replace(/(.{0,50})(.|\n)*/g, '$1');
-            });
+            // this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+            //     return x.doc_content;
+            // });
+            // this.splitCompleteWikiContents.forEach(element => {
+            //     element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+            // });
             this.isEditMetaTable = false;
             this.activeStep = 3;
         },
         combineOrigin: function() {
-            setTimeout(()=>{
-                this.splitCompleteWikiContents.forEach((element, index) => {
-                    element.doc_content = this.tempSplitContents[index];
-                });
-            }, 3000);
+            // setTimeout(()=>{
+            //     this.splitCompleteWikiContents.forEach((element, index) => {
+            //         element.doc_content = this.tempSplitContents[index];
+            //     });
+            // }, 3000);
             this.activeStep = 4;
         },
         reOrderFile: function() {
@@ -905,9 +928,9 @@ export default {
         download: function () {
             let element = document.createElement('a');
             let filename =
-        this.filename == ''
-            ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
-            : this.filename;
+            this.filename == ''
+                ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
+                : this.filename;
             element.setAttribute(
                 'href',
                 'data:text/xml;charset=utf-8,' + encodeURIComponent(this.wikiContents)
@@ -944,6 +967,9 @@ export default {
             };
             if(col == 1 || col == 2 || col == 3) {
                 cellProperty.readOnly = true;
+            }
+            if(col == 1){
+                cellProperty.className = 'cell-edit';
             }
             return cellProperty;
         },
@@ -1085,5 +1111,9 @@ export default {
 <style>
 .step-custom .step-items {
     padding-top: 6rem !important; 
+}
+.cell-edit {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
