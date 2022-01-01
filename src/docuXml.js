@@ -9,7 +9,7 @@ export function composeDocuXmlFile(wikiDocuments, metaArray, tags, corpusName) {
         headerName: '文本內容',
     },
     {
-        field: 'fileName',
+        field: 'filename',
         headerName: '檔案名稱',
     },
     {
@@ -51,14 +51,14 @@ function composeDocuXmlDocument(wikiDocuments) {
     let combineDocument = wikiDocuments.map((wikiDocument) => {
         let documentString = '';
         let docContentTemp = '';
-        let fileName = '';
+        let filename = '';
         for (const [key, value] of Object.entries(wikiDocument)) {
-            if (key !== 'doc_content' && key !== 'fileName') {
+            if (key !== 'doc_content' && key !== 'filename') {
                 documentString += bindXmlVal(key, value, false, [0, 1]);
             } else if (key === 'doc_content') {
                 docContentTemp = value;
-            } else if (key === 'fileName'){
-                fileName = value;
+            } else if (key === 'filename'){
+                filename = value;
             }            
         }
         docContentTemp = addPara(transMarkToTag(docContentTemp));
@@ -66,7 +66,7 @@ function composeDocuXmlDocument(wikiDocuments) {
         documentString += bindXmlVal('doc_content', docContentTemp, false, [1, 1]);
         documentString += bindXmlVal('xml_metadata', xmlString, false, [1, 1]);
         documentString = bindXmlVal('document', documentString, false, [1, 1]);
-        documentString = addAttr('fileName', fileName, documentString, false);
+        documentString = addAttr('filename', filename, documentString, false);
         return documentString;
     }).join('');
     return bindXmlVal('documents', combineDocument, false, [1, 1]);

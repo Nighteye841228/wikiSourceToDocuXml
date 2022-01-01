@@ -1,7 +1,7 @@
 <template>
     <div class="column is-12">
         <div class="content">
-            <b-button class="is-primary is-light" expanded static>{{ fileName }}
+            <b-button class="is-primary is-light" expanded static>{{ filename }}
             </b-button>
         </div>
 
@@ -16,7 +16,7 @@ export default {
         return {
         };
     },
-    props: ['fileName', 'content', 'index'],
+    props: ['filename', 'content', 'index'],
     methods: {
 
     }

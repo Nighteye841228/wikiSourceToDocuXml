@@ -1,7 +1,7 @@
 <template>
     <div ref="tagParent" class="column is-one-third">
         <div class="content">
-            <b-button class="is-primary" outlined expanded @click="isOpenTagModal = true">{{ fileName }}
+            <b-button class="is-primary" outlined expanded @click="isOpenTagModal = true">{{ filename }}
             </b-button>
         </div>
 
@@ -89,7 +89,7 @@ export default {
             wikiContent: ''
         };
     },
-    props: ['fileName', 'temp', 'index', 'tagOptions'],
+    props: ['filename', 'temp', 'index', 'tagOptions'],
     methods: {
         handleOut: function(evt) {
             this.isCheckTagName = false;

@@ -152,7 +152,7 @@
             </header>
             <section class="modal-card-body">
                 <b-field label="1. DocuSky分件檔案名稱前綴（輸入X則會顯示為X_01.txt）">
-                    <b-input v-model="fileNameMeta"></b-input>
+                    <b-input v-model="filenameMeta"></b-input>
                 </b-field>
                 <b-field label="2. 文獻集名稱取名">
                     <b-input v-model="corpusNameMeta"></b-input>
@@ -449,8 +449,8 @@
                                 <div class="columns is-multiline">
                                     <TagEdit
                                         v-for="(document, order) in splitCompleteWikiContents"
-                                        :key="document.fileName"
-                                        :fileName="document.title + '/' + document.fileName"
+                                        :key="document.filename"
+                                        :filename="document.title + '/' + document.filename"
                                         :temp="tempSplitContents[order]"
                                         :index="order"
                                         :tagOptions="wikiTags"
@@ -496,8 +496,8 @@
                                 >
                                     <FileOrder
                                         v-for="(document, order) in splitCompleteWikiContents"
-                                        :key="document.fileName"
-                                        :fileName="document.title + '/' + document.fileName"
+                                        :key="document.filename"
+                                        :filename="document.title + '/' + document.filename"
                                         :content="document.doc_content"
                                         :index="order"
                                         ref="fileOrder"
@@ -715,7 +715,7 @@ export default {
             columns: [],
             isEditMetaTable: false,
             isSetGlobalDoc: false,
-            fileNameMeta: 'file',
+            filenameMeta: 'file',
             corpusNameMeta: '我的文獻集',
             uploadFileName: '我的文獻集',
             wikiTags: [],
@@ -868,7 +868,7 @@ export default {
             this.splitCompleteWikiContents = createMetadataRows(
                 this.splitCompleteWikiContents,
                 this.selectedMetaDataColumns,
-                this.fileNameMeta,
+                this.filenameMeta,
                 this.corpusNameMeta
             );
             this.isEditMetadata = true;

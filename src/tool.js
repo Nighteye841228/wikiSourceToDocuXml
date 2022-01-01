@@ -566,7 +566,7 @@ export function splitAndUrlHandler(unCutContents) {
 export function createMetadataRows(
     wikiFilesWithTitleAndDocuments,
     needColumns,
-    fileName,
+    filename,
     corpusName
 ) {
     let separateFiles = [];
@@ -592,7 +592,7 @@ export function createMetadataRows(
                     doc_content: document
                         .replace(/<Udef_wiki/g, '<mark tag="Udef_wiki"')
                         .replace(/\/Udef_wiki/g, '/mark'),
-                    fileName: `${fileName}_${padding(fileCount, filePaddingNum)}.txt`,
+                    filename: `${filename}_${padding(fileCount, filePaddingNum)}.txt`,
                     corpus: `${corpusName}`,
                 },
                 fileMeta,
