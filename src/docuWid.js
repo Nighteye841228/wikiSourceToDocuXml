@@ -211,7 +211,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
             e.preventDefault();
             $.ajaxSetup({
                 xhrFields: {
-                    withCredentials: true
+                    withCredentials: false
                 }
             });
             let url = me.urlLogout + ((SessionKey) ? ('?' + SessionKey) : '');        // 2021-02-06
@@ -320,11 +320,12 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
         //$.ajaxSetup({async:false});
         var postdata = {
             dsUname: username,
-            dsPword: password 
+            dsPword: password,
+            origin: '*',
         };     // camel style: to get dbCorpusDocuments
         $.ajaxSetup({
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             }
         });           // 2018-01-30: must add this for later CORS requests
         $.post(me.urlLogin, postdata, function(jsonObj) {
@@ -599,7 +600,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
 
         $.ajaxSetup({
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             }
         });
         $.get(url, function(data) {
@@ -684,7 +685,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
 
         $.ajaxSetup({
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             }
         });
         $.get(url, function(data) {
@@ -769,7 +770,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
 
         $.ajaxSetup({
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             }
         });
         $.get(url, function(data) {
@@ -894,7 +895,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
         //$.ajaxSetup({async:false});
         $.ajaxSetup({
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             }
         });
         $.get( url, function(data) {
@@ -1516,7 +1517,7 @@ var ClsDocuskyManageDbListSimpleUI = function(param) {       // constructor
             timeout: me.maxResponseTimeout,
             //async: false,          // not supported in CORS (Cross-Domain Resource Sharing)
             xhrFields: {
-                withCredentials: true
+                withCredentials: false
             },
             crossDomain: true,
             contentType: 'multipart/form-data; boundary=' + mul.myBoundary,

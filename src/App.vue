@@ -123,7 +123,7 @@
                     <b-input v-model="uploadFileName"></b-input>
                 </b-field>
                 <b-field label="帳號">
-                    <b-input v-model="account"></b-input>
+                    <b-input type="email" v-model="account" autocomplete="username"></b-input>
                 </b-field>
                 <b-field label="密碼">
                     <b-input type="password" v-model="password" @keypress.native.enter="login"></b-input>
@@ -227,12 +227,16 @@
                         <section class="section wow">
                             <div class="field has-addons">
                                 <div class="control">
+                                    <div style="display: none;">
+                                        <input type="text" autocomplete="username" />
+                                    </div>
                                     <input
                                         v-model="sourceWord"
                                         class="input"
-                                        type="text"
+                                        type="search"
                                         placeholder="鄭氏紀事"
                                         @keypress.enter="getQueryResult"
+                                        autocomplete="off"
                                     />
                                 </div>
                                 <div class="control">
@@ -1031,14 +1035,14 @@ export default {
             }
         },
         uploadXML: function() {
-            if(!this.xml) return Snackbar.open('Require Content...');
+            if(!this.showXmlString) return Snackbar.open('Require Content...');
             let formData = { 
                 dummy: {
                     name: 'dbTitleForImport', 
                     value: this.uploadFileName
                 }, 
                 file: {
-                    value: this.xml, 
+                    value: this.showXmlString.replace(/\n/g, ''), 
                     filename: this.uploadFileName + '.xml', 
                     name: 'importedFiles[]'
                 }
