@@ -19,15 +19,15 @@
                                 >
                                     首頁
                                 </a>
-                                <a class="navbar-item" target="_blank" href="../../userMain/">
+                                <a class="navbar-item" target="_blank" href="https://docusky.org.tw/DocuSky/docuTools/userMain/">
                                     我的資料庫
                                 </a>
                                 <a
                                     class="navbar-item"
                                     target="_blank"
-                                    href="https://imgur.com/a/or62eEO"
+                                    href="https://drive.google.com/file/d/1-CZDJmh4-jYTBDbXUCOb291mEt3k8S1W/view?usp=sharing"
                                 >
-                                    教學（暫）
+                                    教學文件
                                 </a>
                                 <a
                                     role="button"
