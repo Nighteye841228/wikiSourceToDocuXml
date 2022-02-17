@@ -1127,4 +1127,12 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.pagination-previous, .pagination-next{
+    background-color: rgba(124,89,207);
+}
+
+.pagination-previous > .icon, .pagination-next > .icon {
+    color: white;
+}
 </style>
