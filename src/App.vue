@@ -256,18 +256,18 @@
                                 :right="rightSideBar"
                                 :open.sync="openSideBar"
                             >
-                                <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+'0'">
+                                <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+numbooks">
                                     <div v-for="(article,index) in books.menu" :key="article+1">
                                         <nav class="level">
                                             <div class="level-left">
                                                 <div class="level-item">
-                                                    {{ article }} 
+                                                    <p style="font-size:1.2em">{{ article }} </p>
                                                 </div>
                                             </div>
                                             <div class="level-right">
                                                 <div class="level-item">
                                                     <a @click.stop="deleteBook({bookOrder: numbooks,chapOrder: index})">
-                                                        <b-icon icon-pack="fas" icon="delete">刪除</b-icon>
+                                                        <b-icon size="is-medium" icon-pack="fas" icon="delete">刪除</b-icon>
                                                     </a>
                                                 </div>
                                             </div>
@@ -300,7 +300,8 @@
                                 >
                                     <GetTableContent 
                                         :link="extendedLink" 
-                                        :index="index" 
+                                        :index="index"
+                                        :saved="selectedBookMenuPool[index]" 
                                         @contentTableAdd="addSelectedMenuItem" 
                                     />   
                                 </div>
@@ -540,8 +541,9 @@
                         #navigation="{previous, next}"
                     >
                         <b-button
+                            style="background-color:red;"
                             outlined
-                            type="is-danger"
+                            type="is-primary"
                             icon-pack="fas"
                             icon-left="backward"
                             :disabled="previous.disabled"
@@ -551,7 +553,7 @@
                         </b-button>
                         <b-button
                             outlined
-                            type="is-success"
+                            type="is-primary"
                             icon-pack="fas"
                             icon-right="forward"
                             :disabled="next.disabled"
@@ -817,7 +819,13 @@ export default {
             this.isAddExtendedLinks = true;
         },
         addSelectedMenuItem: function (val) {
-            this.selectedBookMenuPool.push(val);
+            let saveBook = this.selectedBookMenuPool.findIndex(book => book.index === val.index);
+            if(saveBook !== -1) {
+                this.selectedBookMenuPool[saveBook] = val;
+            }
+            else {
+                this.selectedBookMenuPool.push(val);
+            }
         },
         getRefLink: async function (index) {
             this.refLinks = [];

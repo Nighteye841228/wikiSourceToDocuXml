@@ -136,7 +136,7 @@
                                                 v-model.number="paragraphCutWay"
                                                 @change="getViewArray"
                                             >
-                                                以自由分段作為分件（以####作為語法輸入）
+                                                自訂分段作為分件（以####作為語法輸入）
                                             </b-radio></div>
                                         </div>
                                     </nav>
@@ -238,10 +238,15 @@ export default {
             if (this.paragraphCutWay === 2) {
                 re = /\n/;
             } else if (this.paragraphCutWay === 3) {
-                re = /####/;
+                re = '####';
             }
             let cutParas =
-            re === '' ? [useContent] : useContent.split(re).filter((text) => text);
+            re === '' ? [useContent] : useContent.split(re).filter((text) => {
+                //eslint-disable-next-line
+                const testEmpty = new RegExp('^[\n \r]*$', 'sg');
+                return !testEmpty.test(text);
+                // return text;
+            });
             this.$nextTick(function () {
                 this.viewContents = cutParas;
             });

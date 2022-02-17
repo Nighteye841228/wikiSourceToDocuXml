@@ -42,7 +42,7 @@
                 <button class="button is-success" @click="addSelectedMenuItem">
                     保存結果
                 </button>
-                <button class="button" @click="isAddMenuToDownload = false">
+                <button class="button" @click="cancelBookSelect">
                     取消
                 </button>
             </footer>
@@ -55,7 +55,7 @@
                     </div>
                     <div class="level-right">
                         <b-button class="button is-primary is-medium" @click="getMenuOfContent">
-                            <b-icon v-if="selectChapLen == 0" icon="search" pack="fas"></b-icon>
+                            <b-icon v-if="selectChapLen === 0 || selectChapLen === undefined" icon="search" pack="fas"></b-icon>
                             <div v-if="selectChapLen != 0">{{ selectChapLen }}</div>
                         </b-button>
                     </div>
@@ -92,11 +92,6 @@ export default {
     components: {
         Treeselect,
         // VJstree
-    },
-    computed: {
-        selectChapLen: function() {
-            return this.tempSelectMenu.length;
-        }
     },
     data: function() {
         return {
@@ -479,9 +474,22 @@ export default {
                     'dropDisabled': true
                 }
             ],
+            saveTemp: []
         };
     },
-    props: ['link', 'index'],
+    props: ['link', 'index', 'saved'],
+    computed: {
+        selectChapLen() {
+            return this.saved === undefined ? 0 : this.saved.menu.length;
+        }
+    },
+    watch: {
+        tempSelectMenu() {
+            if( this.saved !== undefined ){
+                this.tempSelectMenu = this.saved.menu;
+            }
+        }
+    },
     methods: {
         getMenuOfContent: async function () {
             try {
@@ -504,8 +512,13 @@ export default {
                 searchName: this.link,
                 menu: this.tempSelectMenu,
             });
+            this.saveTemp = this.tempSelectMenu;
             this.isAddMenuToDownload = false;
         },
+        cancelBookSelect: function() {
+            this.tempSelectMenu = this.saveTemp;
+            this.isAddMenuToDownload = false;
+        }
     }
 };
 </script>
