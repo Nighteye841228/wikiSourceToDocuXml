@@ -608,14 +608,14 @@ export function createMetadataRows(
 
 export function splitAriaConvert(pureTextWithCutVal, urlVal) {
     let splitStrings = urlVal.match(
-        /.{2}<Udef_wiki[^<]*>[^<]*<\/Udef_wiki>.{2}/g
+        /.{0,2}<Udef_wiki[^>]*>[^<]*<\/Udef_wiki>.{0,2}/g
     );
     if (splitStrings === null) return;
 
     let waitToAddUrlText = pureTextWithCutVal;
     splitStrings.forEach((url) => {
         let cleanUrlText = url.replace(
-            /(.{2})<Udef_wiki[^<]*>([^<]*)<\/Udef_wiki>(.{2})/,
+            /(.{0,2})<Udef_wiki[^>]*>([^<]*)<\/Udef_wiki>(.{0,2})/,
             '$1$2$3'
         );
         waitToAddUrlText = waitToAddUrlText.replace(cleanUrlText, url);

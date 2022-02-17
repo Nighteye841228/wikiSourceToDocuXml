@@ -263,7 +263,7 @@ export default {
         pureText: {
             get: function () {
                 return this.wikiText.hyperlinks.replace(
-                    /\n{0,1}<Udef_wiki[^<]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
+                    /\n{0,1}<Udef_wiki[^>]*>\n*([^<]*)\n*<\/Udef_wiki>\n{0,1}/gm,
                     '$1'
                 );
             },

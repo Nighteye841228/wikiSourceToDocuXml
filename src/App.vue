@@ -395,7 +395,6 @@
                                     :data.sync="splitCompleteWikiContents"
                                     :rowHeaders="true"
                                     :licenseKey="licenseKey"
-                                    height="580"
                                     :autoRowSize="true"
                                     :colHeaders="colHeaders"
                                     :manualRowResize="true"
