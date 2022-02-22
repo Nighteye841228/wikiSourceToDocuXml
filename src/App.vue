@@ -846,6 +846,10 @@ export default {
             });
         },
         handleWikiCutObj: function (param) {
+            let findBookIndex = this.wikiContentWaitCut.findIndex(book=>book.title === param.title);
+            if(findBookIndex !== -1) {
+                this.wikiContentWaitCut[findBookIndex] = param;
+            }
             this.wikiContentWaitCut.push(param);
             if(param.isUrlAllow && !this.wikiTagOptions.find(ele=>ele.tagLabel==='Wiki_url')) {
                 this.wikiTagOptions.push({
@@ -1089,6 +1093,12 @@ export default {
   overflow: auto;
 }
 
+@media screen and (max-width: 768px) {
+    .modal-card-body {
+        height: 30em;
+        overflow: auto;
+    }
+}
 
 
 .wow {
@@ -1135,4 +1145,11 @@ export default {
 .pagination-previous > .icon, .pagination-next > .icon {
     color: white;
 }
+
+.sidebar-content.is-light.is-fixed.is-fullheight {
+    width: 20rem;
+}
+
+
+
 </style>

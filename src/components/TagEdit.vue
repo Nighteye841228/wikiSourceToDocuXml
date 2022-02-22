@@ -172,4 +172,11 @@ export default {
   height: 37em;
   overflow: auto;
 }
+
+@media screen and (max-width: 768px) {
+    .modal-card-body {
+        height: 30em;
+        overflow: auto;
+    }
+}
 </style>

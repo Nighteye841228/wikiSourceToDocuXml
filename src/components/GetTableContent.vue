@@ -553,4 +553,11 @@ export default {
 .purple {
     color: purple;
 }
+
+@media screen and (max-width: 768px) {
+    .modal-card-body {
+        height: 30em;
+        overflow: auto;
+    }
+}
 </style>
