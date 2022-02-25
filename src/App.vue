@@ -146,7 +146,7 @@
                 </div>
             </footer>
         </b-modal>
-        <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep">
+        <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep" ref="chooseMetaProps">
             <header class="modal-card-head">
                 <label class="label">選擇需要的metadata欄位</label>
             </header>
@@ -384,6 +384,10 @@
                                     </div>
                                     <div class="level-item">
                                         <b-button class="is-success" @click="combineOrigin" outlined>完成編輯
+                                        </b-button>
+                                    </div>
+                                    <div class="level-item">
+                                        <b-button class="is-success" @click="saveTempMeta" outlined>暫時存檔（注意，此為試驗功能）
                                         </b-button>
                                     </div>
                                 </div>
@@ -773,6 +777,43 @@ export default {
             isCheckFinalCode: false,
         };
     },
+    created() {
+        if(window.localStorage.getItem('metaTable')) {
+            this.$buefy.dialog.confirm({
+                message: '有已存檔的MetaData編輯資料，是否載入？',
+                onConfirm: () => {
+                    this.isAddHyperlink = Boolean(window.localStorage.getItem('hyperlink'));
+                    if(this.isAddHyperlink) {
+                        this.wikiTagOptions.push({
+                            tagLabel: 'Wiki_url',
+                            tagName: 'Udef_wiki'
+                        });
+                        this.wikiTags.push({
+                            tagLabel: 'Wiki_url',
+                            tagName: 'Udef_wiki'
+                        });
+                    }
+                    this.activeStep = 3;
+                    this.isEditMetadata = true;
+                    this.selectedMetaDataColumns = JSON.parse(window.localStorage.getItem('columnNameList'));
+                    this.colHeaders = ['文件標題', '文本內容', '檔案名稱', '文獻集名稱'];
+                    this.colHeaders = this.colHeaders.concat(
+                        this.selectedMetaDataColumns.map((x) => x.headerName)
+                    );
+                    this.colHeaders = this.colHeaders.concat('文件次序編碼');
+                    this.$nextTick(() => {
+                        this.$nextTick(() => {
+                            this.splitCompleteWikiContents = JSON.parse(window.localStorage.getItem('metaTable'));
+                            this.$refs.hotTableComponent.hotInstance.loadData(
+                                this.splitCompleteWikiContents
+                            );
+                        });
+                    });
+                }
+            });
+        }
+
+    },
     methods: {
         undoHot: function () {
             this.$refs.hotTableComponent.hotInstance.undo();
@@ -905,6 +946,13 @@ export default {
             // });
             this.isEditMetaTable = false;
             this.activeStep = 3;
+        },
+        saveTempMeta() {
+            let myStorage = window.localStorage;
+            myStorage.clear();
+            myStorage.setItem('metaTable', JSON.stringify(this.splitCompleteWikiContents));
+            myStorage.setItem('hyperlink', this.isKeepHyperLink);
+            myStorage.setItem('columnNameList', JSON.stringify(this.selectedMetaDataColumns));
         },
         combineOrigin: function() {
             // setTimeout(()=>{
