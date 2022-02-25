@@ -953,6 +953,7 @@ export default {
             myStorage.setItem('metaTable', JSON.stringify(this.splitCompleteWikiContents));
             myStorage.setItem('hyperlink', this.isKeepHyperLink);
             myStorage.setItem('columnNameList', JSON.stringify(this.selectedMetaDataColumns));
+            this.$buefy.snackbar.open('已完成儲存');
         },
         combineOrigin: function() {
             // setTimeout(()=>{
