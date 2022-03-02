@@ -938,6 +938,18 @@ export default {
                 this.selectedMetaDataColumns.map((x) => x.headerName)
             );
             this.colHeaders = this.colHeaders.concat('文件次序編碼');
+
+            this.$nextTick(()=> {
+                for(let i in this.splitCompleteWikiContents) {
+                    this.$refs.hotTableComponent.hotInstance
+                        .setCellMeta(
+                            i,
+                            Object.keys(this.splitCompleteWikiContents[0]).length-1,
+                            'readOnly',
+                            true);
+                }
+            });
+
             // this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
             //     return x.doc_content;
             // });

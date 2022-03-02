@@ -553,8 +553,12 @@ export function splitAndUrlHandler(unCutContents) {
             re = /####/;
         }
         let cutParas =
-      re === '' ? [useContent] : useContent.split(re).filter((text) => text);
-        // console.log('print: ', cutParas);
+            re === '' ? [useContent] : useContent.split(re).map(x=>x.trim()).filter((text) => {
+                //eslint-disable-next-line
+                const testEmpty = new RegExp('^$', 'sg');
+                return !testEmpty.test(text);
+                // return text;
+            });
         splitParagraphs.push({
             title: content.title,
             documents: cutParas,
@@ -610,7 +614,7 @@ export function splitAriaConvert(pureTextWithCutVal, urlVal) {
     let splitStrings = urlVal.match(
         /.{0,2}<Udef_wiki[^>]*>[^<]*<\/Udef_wiki>.{0,2}/g
     );
-    if (splitStrings === null) return;
+    if (splitStrings === null) return pureTextWithCutVal;
 
     let waitToAddUrlText = pureTextWithCutVal;
     splitStrings.forEach((url) => {

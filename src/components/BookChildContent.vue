@@ -241,9 +241,9 @@ export default {
                 re = '####';
             }
             let cutParas =
-            re === '' ? [useContent] : useContent.split(re).filter((text) => {
+            re === '' ? [useContent] : useContent.split(re).map(x=>x.trim()).filter((text) => {
                 //eslint-disable-next-line
-                const testEmpty = new RegExp('^[\n \r]*$', 'sg');
+                const testEmpty = new RegExp('^$', 'sg');
                 return !testEmpty.test(text);
                 // return text;
             });
