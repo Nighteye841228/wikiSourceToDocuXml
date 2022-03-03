@@ -126,7 +126,10 @@ export function parseHtmlText(htmlContent, title) {
         let parseSentenceWithHtml = $(element)
             .html()
             .replace(/&lt;(\W+)&gt;/g, '【$1】');
-        if (!/(屬於公有領域)/gm.test(parseSentence) && parseSentence != '') {
+        if (!/(屬於公有領域)/gm.test(parseSentence) 
+        && !/(\.mw-parser-output\.kaiti)/gm.test(parseSentence) 
+        && parseSentence != ''
+        ) {
             wikiContentSeperateParagraph.push({
                 paragraphs: parseSentence,
                 hyperlinks: parseSentenceWithHtml
