@@ -809,6 +809,14 @@ export default {
                             );
                         });
                     });
+                },
+                onCancel: () => {
+                    this.$buefy.dialog.confirm({
+                        message: '要刪除Metadata已存檔案嗎？',
+                        onConfirm: () => {
+                            window.localStorage.clear();
+                        }
+                    });
                 }
             });
         }
