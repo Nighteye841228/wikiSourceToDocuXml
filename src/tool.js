@@ -127,7 +127,7 @@ export function parseHtmlText(htmlContent, title) {
             .html()
             .replace(/&lt;(\W+)&gt;/g, '【$1】');
         if (!/(屬於公有領域)/gm.test(parseSentence) 
-        && !/(\.mw-parser-output\.kaiti)/gm.test(parseSentence) 
+        && !/(\.mw-parser-output\.kaiti)/gm.test(parseSentence)  //過濾規則新增
         && parseSentence != ''
         ) {
             wikiContentSeperateParagraph.push({

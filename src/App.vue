@@ -95,7 +95,7 @@
                 </b-checkbox>
             </section>
             <footer class="modal-card-foot">
-                <b-button type="is-primary" @click="openEditTable">確認</b-button>
+                <b-button type="is-primary" @click="confirmGlobalSet">確認</b-button>
             </footer>
         </b-modal>
         <b-modal v-model="isOpenUploadModal" :width="400">
@@ -202,115 +202,118 @@
 
 
         
-        <section class="section">
-            <div class="container is-max-widescreen">
-                <b-steps
-                    v-model="activeStep"
-                    :animated="isAnimated"
-                    :rounded="isRounded"
-                    :has-navigation="hasNavigation"
-                    :icon-prev="prevIcon"
-                    :icon-next="nextIcon"
-                    :label-position="labelPosition"
-                    :mobile-mode="mobileMode"
-                    position="is-right"
-                    :class="stepClass"
-                    vertical
-                    ref="control"
-                    class="step-custom"
-                >
-                    <b-step-item step="1" label="關鍵字搜索" :clickable="isStepsClickable">
-                        <section class="section">
-                            <label class="label is-large" title="不需完整標題">文本關鍵字搜索
-                            </label>
-                        </section>
-                        <section class="section wow">
-                            <div class="field has-addons">
-                                <div class="control">
-                                    <div style="display: none;">
-                                        <input type="text" autocomplete="username" />
-                                    </div>
-                                    <input
-                                        v-model="sourceWord"
-                                        class="input"
-                                        type="search"
-                                        placeholder="鄭氏紀事"
-                                        @keypress.enter="getQueryResult"
-                                        autocomplete="off"
-                                    />
+        <section class="section" style="padding: 24px 12px 24px 12px;">
+            <!-- <div class="container is-max-widescreen"> -->
+            <b-steps
+                v-model="activeStep"
+                :animated="isAnimated"
+                :rounded="isRounded"
+                :has-navigation="hasNavigation"
+                :icon-prev="prevIcon"
+                :icon-next="nextIcon"
+                :label-position="labelPosition"
+                :mobile-mode="mobileMode"
+                position="is-right"
+                :class="stepClass"
+                vertical
+                ref="control"
+                class="step-custom"
+            >
+                <b-step-item class="main-dish" step="1" label="關鍵字搜索" :clickable="isStepsClickable">
+                    <section class="section headline">
+                        <label class="label is-large" title="不需完整標題">文本關鍵字搜索
+                        </label>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow" style="padding-top:20px">
+                        <div class="field has-addons">
+                            <div class="control">
+                                <div style="display: none;">
+                                    <input type="text" autocomplete="username" />
                                 </div>
-                                <div class="control">
-                                    <a class="button is-link" @click="getQueryResult"> 搜尋 </a>
-                                </div>
+                                <input
+                                    v-model="sourceWord"
+                                    class="input"
+                                    type="search"
+                                    placeholder="鄭氏紀事"
+                                    @keypress.enter="getQueryResult"
+                                    autocomplete="off"
+                                />
                             </div>
-                        </section>              
-                    </b-step-item>
+                            <div class="control">
+                                <b-button class="button is-link" @click="getQueryResult"> 搜尋 </b-button>
+                            </div>
+                        </div>
+                    </section>              
+                </b-step-item>
 
-                    <b-step-item step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section>
-                            <b-sidebar
-                                type="is-light"
-                                :fullheight="fullheightSideBar"
-                                :fullwidth="fullwidthSideBar"
-                                :overlay="overlaySideBar"
-                                :right="rightSideBar"
-                                :open.sync="openSideBar"
-                            >
-                                <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+numbooks">
-                                    <div v-for="(article,index) in books.menu" :key="article+1">
-                                        <nav class="level">
-                                            <div class="level-left">
-                                                <div class="level-item">
-                                                    <p style="font-size:1.2em">{{ article }} </p>
-                                                </div>
+                <b-step-item class="main-dish" step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section>
+                        <b-sidebar
+                            type="is-light"
+                            :fullheight="fullheightSideBar"
+                            :fullwidth="fullwidthSideBar"
+                            :overlay="overlaySideBar"
+                            :right="rightSideBar"
+                            :open.sync="openSideBar"
+                        >
+                            <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+numbooks">
+                                <div v-for="(article,index) in books.menu" :key="article+1">
+                                    <nav class="level">
+                                        <div class="level-left">
+                                            <div class="level-item">
+                                                <p style="font-size:1.2em">{{ article }} </p>
                                             </div>
-                                            <div class="level-right">
-                                                <div class="level-item">
-                                                    <a @click.stop="deleteBook({bookOrder: numbooks,chapOrder: index})">
-                                                        <b-icon size="is-medium" icon-pack="fas" icon="delete">刪除</b-icon>
-                                                    </a>
-                                                </div>
+                                        </div>
+                                        <div class="level-right">
+                                            <div class="level-item">
+                                                <a @click.stop="deleteBook({bookOrder: numbooks,chapOrder: index})">
+                                                    <b-icon size="is-medium" icon-pack="fas" icon="delete">刪除</b-icon>
+                                                </a>
                                             </div>
-                                        </nav>
-                                    </div>
-                                </div>
-                            </b-sidebar>
-                        </section>
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">書本目錄檢視與選取｜</label>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-primary" @click="openSideBar = !openSideBar" outlined>
-                                            檢視已選文件</b-button>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-success" @click="activeStep = 2" outlined>
-                                            已選取完畢，進入下一步</b-button>
-                                    </div>
-                                </div>
-                            </nav>
-                        </section>
-                        <section class="section wow" v-if="isInputDataValid">
-                            <div class="columns is-multiline">
-                                <div v-for="(extendedLink, index) in extendedLinks"
-                                     :key="index" class="column is-half"
-                                >
-                                    <GetTableContent 
-                                        :link="extendedLink" 
-                                        :index="index"
-                                        :saved="selectedBookMenuPool[index]" 
-                                        @contentTableAdd="addSelectedMenuItem" 
-                                    />   
+                                        </div>
+                                    </nav>
                                 </div>
                             </div>
-                        </section>
-                    </b-step-item>
+                        </b-sidebar>
+                    </section>
+                    <section class="section headline">
+                        <label class="label is-large">書本目錄檢視與選取</label>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow" v-if="isInputDataValid">
+                        <div class="columns is-multiline">
+                            <div v-for="(extendedLink, index) in extendedLinks"
+                                 :key="index" class="column is-half"
+                            >
+                                <GetTableContent 
+                                    :link="extendedLink" 
+                                    :index="index"
+                                    :saved="selectedBookMenuPool[index]" 
+                                    @contentTableAdd="addSelectedMenuItem" 
+                                />   
+                            </div>
+                        </div>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section tool-button-line">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <b-button type="is-primary" @click="openSideBar = !openSideBar" outlined>
+                                        檢視已選文件</b-button>
+                                </div>
+                                <div class="level-item">
+                                    <b-button type="is-success" @click="activeStep = 2" outlined>
+                                        進入下一步</b-button>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                </b-step-item>
                     
 
-                    <!-- <div class="level-item">
+                <!-- <div class="level-item">
                                         <p>
                                             未處理文件：
                                         </p>
@@ -326,249 +329,291 @@
                                         </b-checkbox>
                                     </div> -->
 
-                    <b-step-item step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">
-                                            目前已下載卷數檢視 & 分件｜
-                                        </label>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-success" @click="confirmGlobalSet" outlined>
-                                            完成自訂修改，批次處理所有分件
-                                        </b-button>
-                                    </div>
+                <b-step-item class="main-dish" step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section class="section headline">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="label is-large">
+                                        目前已下載卷數檢視 & 分件
+                                    </label>
                                 </div>
-                            </nav>
-                        </section>
-                        <section class="section wow">
+                            </div>
+                        </nav>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow">
+                        <div
+                            class="columns is-multiline"
+                            v-for="(book, index) in selectedBookMenuPool"
+                            :key="index"
+                        >
                             <div
+                                class="column is-one-third"
+                                v-for="(chap, chapCount) in book.menu"
+                                :key="chapCount"
+                            >
+                                <BookChildContent
+                                    @handle-wiki="handleWikiCutObj"
+                                    @delete-book="deleteBook"
+                                    ref="contentTable"
+                                    :wiki-book="chap"
+                                    :bookOrder="index"
+                                    :order="chapCount"
+                                ></BookChildContent>
+                            </div>
+                        </div>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section tool-button-line">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <b-button type="is-primary" @click="isSetGlobalDoc = true" outlined>
+                                        處理所有未點擊分件
+                                    </b-button>
+                                </div>
+                                <div class="level-item">
+                                    <b-button type="is-success" @click="activeStep = 3" outlined>
+                                        完成自訂修改
+                                    </b-button>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                </b-step-item>
+
+                <b-step-item class="main-dish" step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section class="section headline">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="label is-large">編輯metadata區域｜</label>
+                                    <b-button type="is-primary" @click="openEditTable" outlined>
+                                        選擇需要的Metadata欄位
+                                    </b-button>
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <b-button type="is-primary" @click="undoHot" outlined>
+                                        <b-icon icon="undo" icon-pack="fas"></b-icon>
+                                    </b-button>
+                                </div>
+                                <div class="level-item">
+                                    <b-button type="is-primary" @click="redoHot" outlined>
+                                        <b-icon icon="redo" icon-pack="fas"></b-icon>
+                                    </b-button>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="dataHandsonTable wow">                            
+                        <div v-show="isEditMetadata">
+                            <hot-table
+                                :data.sync="splitCompleteWikiContents"
+                                :rowHeaders="true"
+                                :licenseKey="licenseKey"
+                                :autoRowSize="true"
+                                :colHeaders="colHeaders"
+                                :manualRowResize="true"
+                                :manualColumnResize="[200, 250]"
+                                :wordWrap="false"
+                                :autoWrapCol="false"
+                                ref="hotTableComponent"
+                                :cells="setReadonlyColumn"
+                            >
+                            </hot-table>
+                        </div>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section tool-button-line">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <b-button class="is-success" @click="saveTempMeta" outlined>
+                                        暫時存檔（注意，此為試驗功能）
+                                    </b-button>
+                                </div>
+                                <div class="level-item">
+                                    <b-button class="is-success" @click="combineOrigin" outlined>
+                                        完成編輯
+                                    </b-button>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                </b-step-item>
+
+                <b-step-item class="main-dish" step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section class="section headline">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="label is-large">點擊檢視文本 & 編輯Tag</label>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow">
+                        <b-field label="1. 選擇DocuSky預設Tag" custom-class="is-medium has-text-primary">
+                            <div v-for="option in wikiCheckTagOptions" :key="option.tagLabel+'20'">
+                                <b-checkbox :native-value="option" v-model="wikiTags">
+                                    {{ option.tagLabel }}
+                                </b-checkbox>
+                            </div>
+                        </b-field>
+                        <b-field label="2. 增加個人設定Tag(於DocuSky顯示為Udef_'使用者自訂名稱')" custom-class="is-medium has-text-primary">
+                            <multiselect 
+                                v-model="wikiTags" 
+                                tag-placeholder="新增自訂tag" 
+                                placeholder="輸入自訂的tag名稱(請用英文)" 
+                                label="tagLabel" 
+                                track-by="tagName" 
+                                :close-on-select="false"
+                                :clear-on-select="false"
+                                :options="wikiTagOptions" 
+                                :multiple="true" 
+                                :taggable="true" 
+                                @remove="deleteAllTag"
+                                @tag="addContentTag"
+                            >
+                            </multiselect>
+                        </b-field>
+                        <b-field label="3. 選擇文本進行Tag" custom-class="is-medium has-text-primary">
+                            <div class="columns is-multiline">
+                                <TagEdit
+                                    v-for="(document, order) in splitCompleteWikiContents"
+                                    :key="document.filename"
+                                    :filename="document.title + '/' + document.filename"
+                                    :temp="tempSplitContents[order]"
+                                    :index="order"
+                                    :tagOptions="wikiTags"
+                                    @handle-tag="handleWikiTag"
+                                    ref="editTag"
+                                >
+                                </TagEdit>
+                            </div>
+                        </b-field>
+                            
+                            
+
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section tool-button-line">
+                        <b-button type="is-success" outlined @click="activeStep = 5">
+                            完成Tag
+                        </b-button>
+                    </section>
+                </b-step-item>
+
+                <b-step-item class="main-dish" step="6" label="排列文本次序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section class="section headline">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="label is-large">排列文本次序</label>
+                                </div>
+                            </div>
+                        </nav>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow">
+                        <draggable 
+                            v-model="splitCompleteWikiContents"
+                            v-bind="dragOptions"
+                            @start="drag = true"
+                            @end="drag = false"
+                        >
+                            <transition-group 
                                 class="columns is-multiline"
-                                v-for="(book, index) in selectedBookMenuPool"
-                                :key="index"
+                                type="transition" :name="!drag ? 'flip-list' : null"
                             >
-                                <div
-                                    class="column is-one-third"
-                                    v-for="(chap, chapCount) in book.menu"
-                                    :key="chapCount"
+                                <FileOrder
+                                    v-for="(document, order) in splitCompleteWikiContents"
+                                    :key="document.filename"
+                                    :filename="document.title + '/' + document.filename"
+                                    :content="document.doc_content"
+                                    :index="order"
+                                    ref="fileOrder"
                                 >
-                                    <BookChildContent
-                                        @handle-wiki="handleWikiCutObj"
-                                        @delete-book="deleteBook"
-                                        ref="contentTable"
-                                        :wiki-book="chap"
-                                        :bookOrder="index"
-                                        :order="chapCount"
-                                    ></BookChildContent>
-                                </div>
-                            </div>
-                        </section>
-                    </b-step-item>
+                                </FileOrder>
 
-                    <b-step-item step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">編輯metadata區域｜</label>
-                                        <div class="buttons">
-                                            <b-button type="is-primary" @click="undoHot" outlined>
-                                                <b-icon icon="undo" icon-pack="fas"></b-icon>
-                                            </b-button>
-                                            <b-button type="is-primary" @click="redoHot" outlined>
-                                                <b-icon icon="redo" icon-pack="fas"></b-icon>
-                                            </b-button>
-                                        </div>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button class="is-success" @click="combineOrigin" outlined>完成編輯
-                                        </b-button>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button class="is-success" @click="saveTempMeta" outlined>暫時存檔（注意，此為試驗功能）
-                                        </b-button>
-                                    </div>
-                                </div>
-                            </nav>
-                        </section>
-                        <section class="dataHandsonTable wow">                            
-                            <div v-show="isEditMetadata">
-                                <hot-table
-                                    :data.sync="splitCompleteWikiContents"
-                                    :rowHeaders="true"
-                                    :licenseKey="licenseKey"
-                                    :autoRowSize="true"
-                                    :colHeaders="colHeaders"
-                                    :manualRowResize="true"
-                                    :manualColumnResize="[200, 250]"
-                                    :wordWrap="false"
-                                    :autoWrapCol="false"
-                                    ref="hotTableComponent"
-                                    :cells="setReadonlyColumn"
-                                >
-                                </hot-table>
-                            </div>
-                        </section>
-                    </b-step-item>
-
-                    <b-step-item step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">點擊檢視文本 & 編輯Tag｜</label>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-success" outlined @click="activeStep = 5">
-                                            完成Tag
-                                        </b-button>
-                                    </div>
-                                </div>
-                            </nav>
-                        </section>
-                        <section class="section wow">
-                            <b-field label="1. 選擇DocuSky預設Tag" custom-class="is-medium has-text-primary">
-                                <div v-for="option in wikiCheckTagOptions" :key="option.tagLabel+'20'">
-                                    <b-checkbox :native-value="option" v-model="wikiTags">
-                                        {{ option.tagLabel }}
-                                    </b-checkbox>
-                                </div>
-                            </b-field>
-                            <b-field label="2. 增加個人設定Tag(於DocuSky顯示為Udef_'使用者自訂名稱')" custom-class="is-medium has-text-primary">
-                                <multiselect 
-                                    v-model="wikiTags" 
-                                    tag-placeholder="新增自訂tag" 
-                                    placeholder="輸入自訂的tag名稱(請用英文)" 
-                                    label="tagLabel" 
-                                    track-by="tagName" 
-                                    :close-on-select="false"
-                                    :clear-on-select="false"
-                                    :options="wikiTagOptions" 
-                                    :multiple="true" 
-                                    :taggable="true" 
-                                    @remove="deleteAllTag"
-                                    @tag="addContentTag"
-                                >
-                                </multiselect>
-                            </b-field>
-                            <b-field label="3. 選擇文本進行Tag" custom-class="is-medium has-text-primary">
-                                <div class="columns is-multiline">
-                                    <TagEdit
-                                        v-for="(document, order) in splitCompleteWikiContents"
-                                        :key="document.filename"
-                                        :filename="document.title + '/' + document.filename"
-                                        :temp="tempSplitContents[order]"
-                                        :index="order"
-                                        :tagOptions="wikiTags"
-                                        @handle-tag="handleWikiTag"
-                                        ref="editTag"
-                                    >
-                                    </TagEdit>
-                                </div>
-                            </b-field>
-                            
-                            
-
-                        </section>
-                    </b-step-item>
-
-                    <b-step-item step="6" label="排列文本次序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">排列文本次序｜</label>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button class="is-primary" @click="reOrderFile" outlined>重置排序
-                                        </b-button>
-                                    </div>
-                                    <div class="level-item">
-                                        <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
-                                    </div>
-                                </div>
-                            </nav>
-                        </section>
-                        <section class="section wow">
-                            <draggable 
-                                v-model="splitCompleteWikiContents"
-                                v-bind="dragOptions"
-                                @start="drag = true"
-                                @end="drag = false"
-                            >
-                                <transition-group 
-                                    class="columns is-multiline"
-                                    type="transition" :name="!drag ? 'flip-list' : null"
-                                >
-                                    <FileOrder
-                                        v-for="(document, order) in splitCompleteWikiContents"
-                                        :key="document.filename"
-                                        :filename="document.title + '/' + document.filename"
-                                        :content="document.doc_content"
-                                        :index="order"
-                                        ref="fileOrder"
-                                    >
-                                    </FileOrder>
-
-                                </transition-group>
+                            </transition-group>
                                 
-                            </draggable>
-                        </section>
-                    </b-step-item>
-
-
-                    <b-step-item step="7" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
-                        <section class="section">
-                            <nav class="level">
-                                <div class="level-left">
-                                    <div class="level-item">
-                                        <label class="label is-large">輸出資料</label>
-                                    </div>
+                        </draggable>
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section tool-button-line">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <b-button class="is-primary" @click="reOrderFile" outlined>重置排序
+                                    </b-button>
                                 </div>
-                            </nav>                            
-                        </section>
-                        <section class="section wow">
-                            <div class="box">
-                                <div class="column"><b-button class="is-medium is-success" @click="copyXML" outlined expanded>複製DocuXML到剪貼簿</b-button></div>
-                                <div class="column"><b-button class="is-medium is-success" @click="downloadXML" outlined expanded>下載XML檔案進一步編輯</b-button></div>
-                                <div class="column"><b-button class="is-medium is-success" @click="openLoginModal" outlined expanded>直接上傳到DocuSky建庫</b-button></div>
+                                <div class="level-item">
+                                    <b-button type="is-success" outlined @click="generateXml">輸出XML</b-button>
+                                </div>
                             </div>
-                        </section>
-                    </b-step-item>
+                        </nav>
+                    </section>
+                </b-step-item>
 
 
-                    <template
-                        v-if="customNavigation"
-                        #navigation="{previous, next}"
-                    >
+                <b-step-item class="main-dish" step="7" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                    <section class="section headline">
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="label is-large">輸出資料</label>
+                                </div>
+                            </div>
+                        </nav>                            
+                    </section>
+                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <section class="section wow">
+                        <div class="box">
+                            <div class="column"><b-button class="is-medium is-success" @click="copyXML" outlined expanded>複製DocuXML到剪貼簿</b-button></div>
+                            <div class="column"><b-button class="is-medium is-success" @click="downloadXML" outlined expanded>下載XML檔案進一步編輯</b-button></div>
+                            <div class="column"><b-button class="is-medium is-success" @click="openLoginModal" outlined expanded>直接上傳到DocuSky建庫</b-button></div>
+                        </div>
+                    </section>
+                    <section class="section tool-button-line">
+                        <b-button style="visibility:hidden"></b-button>
+                    </section>
+                </b-step-item>
+
+                    
+                <template
+                    v-if="customNavigation"
+                    v-slot:navigation="{previous, next}"
+                >
+                    <nav class="step-navigation">
                         <b-button
-                            style="background-color:red;"
-                            outlined
                             type="is-primary"
                             icon-pack="fas"
-                            icon-left="backward"
-                            :disabled="previous.disabled"
+                            icon-left="arrow-up"
+                            :disabled="previous.disabled || pre_step_condition" 
                             @click.prevent="previous.action"
+                            style="bottom: 5px;"
                         >
-                            Previous
                         </b-button>
                         <b-button
-                            outlined
                             type="is-primary"
                             icon-pack="fas"
-                            icon-right="forward"
-                            :disabled="next.disabled"
+                            icon-right="arrow-down"
+                            :disabled="next.disabled || next_step_condition"
                             @click.prevent="next.action"
                         >
-                            Next
                         </b-button>
-                    </template>
-                </b-steps>
+                    </nav>
+                </template>
+            </b-steps>
 
                 
-            </div>
+            <!-- </div> -->
         </section>
     </div>
 </template>
@@ -641,14 +686,14 @@ export default {
         activeStep: {
             immediate: true,
             handler(newValue, oldValue) {
-                if(newValue == 3) {
-                    this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
-                        return x.doc_content;
-                    });
-                    this.splitCompleteWikiContents.forEach(element => {
-                        element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
-                    });
-                }
+                // if(newValue == 3) {
+                //     this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+                //         return x.doc_content;
+                //     });
+                //     this.splitCompleteWikiContents.forEach(element => {
+                //         element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+                //     });
+                // }
 
                 if(oldValue == 3) {
                     setTimeout(()=>{
@@ -670,14 +715,16 @@ export default {
             isStepsClickable: false,
 
             hasNavigation: true,
-            customNavigation: false,
+            customNavigation: true,
             isProfileSuccess: false,
 
-            prevIcon: 'chevron-left',
-            nextIcon: 'chevron-right',
+            prevIcon: 'arrow-up',
+            nextIcon: 'arrow-down',
             labelPosition: 'left',
             mobileMode: 'minimalist',
             stepClass: 'step-class',
+            pre_step_condition: false,
+            next_step_condition: true,
             //above are step variable
 
             isInputDataValid: true,
@@ -885,10 +932,16 @@ export default {
             this.isCheckBook = true;
         },
         confirmGlobalSet() {
-            this.isSetGlobalDoc = true;
+            this.$refs.contentTable.forEach((element) => {
+                if (!element.isViewed) {
+                    if(this.isCutFileByPara) element.paragraphCutWay = 2;
+                    if(this.isKeepHyperLink) element.isUrlAllow = true;
+                    element.sendWikiCutObj();
+                }
+            });
+            this.isSetGlobalDoc = false;
         },
         openEditTable: function () {
-            this.isSetGlobalDoc = false;
             this.isEditMetaTable = true;
             this.$nextTick(function () {
                 this.$refs.multiselect.activate();
@@ -916,13 +969,6 @@ export default {
             this.tempSplitContents[param.index] = param.newContent;
         },
         splitWikiContents: function () {
-            this.$refs.contentTable.forEach((element) => {
-                if (!element.isViewed) {
-                    if(this.isCutFileByPara) element.paragraphCutWay = 2;
-                    if(this.isKeepHyperLink) element.isUrlAllow = true;
-                    element.sendWikiCutObj();
-                }
-            });
             this.wikiContentWaitCut.sort(function (a, b) {
                 return a.order > b.order ? 1 : -1;
             });
@@ -964,8 +1010,15 @@ export default {
             // this.splitCompleteWikiContents.forEach(element => {
             //     element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
             // });
+            
+            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+                return x.doc_content;
+            });
+            this.splitCompleteWikiContents.forEach(element => {
+                element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+            });
+
             this.isEditMetaTable = false;
-            this.activeStep = 3;
         },
         saveTempMeta() {
             let myStorage = window.localStorage;
@@ -1072,8 +1125,8 @@ export default {
                 this.wikiTags,
                 this.corpusNameMeta
             );
-            this.activeStep = 6;  
-            
+            this.activeStep = 6; 
+            this.next_step_condition = false;
         },
         copyXML: async function () {
             await navigator.clipboard.writeText(this.showXmlString);
@@ -1171,8 +1224,9 @@ export default {
 
 
 .wow {
-    max-width: 59rem;
-    height: 29rem;
+    max-width: 100%;
+    height: 70vh;
+    padding-top:20px;
     overflow: auto;
     padding-top: inherit;
 }
@@ -1196,9 +1250,20 @@ export default {
   background: #c8ebfb;
 }
 
+.tool-button-line, .headline {
+    padding: 10px 10px 10px 24px;
+}
+
 </style>
 
 <style>
+
+html,body{
+    height: 100%; 
+    margin: 0; 
+    padding: 0;
+}
+
 .step-custom .step-items {
     padding-top: 6rem !important; 
 }
@@ -1219,6 +1284,22 @@ export default {
     width: 20rem;
 }
 
+.steps.has-label-left.is-animated.is-rounded.mobile-minimalist {
+    display: flex;
+    padding-right: 10px;
+}
+
+.step-navigation {
+    flex-basis: 4% !important;
+    order: -1;
+    margin-top: 20rem;
+}
+
+
+.step-content {
+    width: 80%;
+    height: 85vh;
+}
 
 
 </style>
