@@ -304,7 +304,7 @@
                                         檢視已選文件</b-button>
                                 </div>
                                 <div class="level-item">
-                                    <b-button type="is-success" @click="activeStep = 2" outlined>
+                                    <b-button type="is-success" @click="releaseGate" outlined>
                                         進入下一步</b-button>
                                 </div>
                             </div>
@@ -374,7 +374,7 @@
                                     </b-button>
                                 </div>
                                 <div class="level-item">
-                                    <b-button type="is-success" @click="activeStep = 3" outlined>
+                                    <b-button type="is-success" @click="releaseGate" outlined>
                                         完成自訂修改
                                     </b-button>
                                 </div>
@@ -503,7 +503,7 @@
                     </section>
                     <hr style="margin:5px;padding-left:24px;width:100%;">
                     <section class="section tool-button-line">
-                        <b-button type="is-success" outlined @click="activeStep = 5">
+                        <b-button type="is-success" outlined @click="releaseGate">
                             完成Tag
                         </b-button>
                     </section>
@@ -595,7 +595,7 @@
                             type="is-primary"
                             icon-pack="fas"
                             icon-left="arrow-up"
-                            :disabled="previous.disabled || pre_step_condition" 
+                            :disabled="previous.disabled" 
                             @click.prevent="previous.action"
                             style="bottom: 5px;"
                         >
@@ -604,7 +604,7 @@
                             type="is-primary"
                             icon-pack="fas"
                             icon-right="arrow-down"
-                            :disabled="next.disabled || next_step_condition"
+                            :disabled="next.disabled || isOpenGate"
                             @click.prevent="next.action"
                         >
                         </b-button>
@@ -680,6 +680,9 @@ export default {
         },
         countSplitContents() {
             return this.splitCompleteWikiContents.length;
+        },
+        isOpenGate() {
+            return this.isProcessDisable[this.activeStep];
         }
     },
     watch: {
@@ -723,8 +726,7 @@ export default {
             labelPosition: 'left',
             mobileMode: 'minimalist',
             stepClass: 'step-class',
-            pre_step_condition: false,
-            next_step_condition: true,
+            isProcessDisable: [true, true, true, true, true, true, true],
             //above are step variable
 
             isInputDataValid: true,
@@ -840,6 +842,9 @@ export default {
                             tagName: 'Udef_wiki'
                         });
                     }
+                    this.isProcessDisable[0] = false;
+                    this.isProcessDisable[1] = false;
+                    this.isProcessDisable[2] = false;
                     this.activeStep = 3;
                     this.isEditMetadata = true;
                     this.selectedMetaDataColumns = JSON.parse(window.localStorage.getItem('columnNameList'));
@@ -1029,12 +1034,7 @@ export default {
             this.$buefy.snackbar.open('已完成儲存');
         },
         combineOrigin: function() {
-            // setTimeout(()=>{
-            //     this.splitCompleteWikiContents.forEach((element, index) => {
-            //         element.doc_content = this.tempSplitContents[index];
-            //     });
-            // }, 3000);
-            this.activeStep = 4;
+            this.releaseGate();
         },
         reOrderFile: function() {
             this.splitCompleteWikiContents = this.splitCompleteWikiContents.sort((a, b)=>{return a.fileOrder-b.fileOrder;});
@@ -1050,7 +1050,7 @@ export default {
         confirmAdd: function (flag) {
             if (flag) {
                 this.extendedLinks = this.extendedLinks.concat(this.selectRefLinks);
-                this.activeStep = 1;
+                this.releaseGate();
             }
             this.selectRefLinks = [];
             this.isAddExtendedLinks = false;
@@ -1125,8 +1125,7 @@ export default {
                 this.wikiTags,
                 this.corpusNameMeta
             );
-            this.activeStep = 6; 
-            this.next_step_condition = false;
+            this.releaseGate();
         },
         copyXML: async function () {
             await navigator.clipboard.writeText(this.showXmlString);
@@ -1189,6 +1188,11 @@ export default {
                     Snackbar.open('Upload Failed...');
                 }
             );
+        },
+
+        releaseGate() {
+            this.isProcessDisable[this.activeStep] = false;
+            this.activeStep++;
         }
     }
 };
