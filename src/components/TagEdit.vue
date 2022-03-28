@@ -6,10 +6,10 @@
         </div>
 
         <div class="selectTagBox" ref="selbox" v-if="isTagOpen">
-            <span v-for="(tag, index) in tagOptions" :key="index">
+            <!-- <span v-for="(tag, index) in tagOptions" :key="index">
                 <b-radio type="radio" v-model="selectTag" :native-value="tag.tagName">
                     {{ tag.tagLabel }}</b-radio>
-            </span>
+            </span> -->
             <div>
                 <b-button type="is-small" @click="setTag">確認</b-button>
                 <b-button type="is-small" @click="isTagOpen = false">取消</b-button>
@@ -22,16 +22,44 @@
 
         <b-modal v-model="isOpenTagModal" :width="1000" scroll="keep">
             <header class="modal-card-head">
-                <nav class="level">
+                <!-- <nav class="level">
                     <div class="level-left">
                         <div class="level-item">
-                            <p class="modal-card-title">編輯Tag</p>
+                            
                         </div>
                         <div class="level-item">
-                            <h6>劃記後選擇Tag名稱，再次點擊Tag即可刪除</h6>
+                            
                         </div>
                     </div>
+                    <div class="level-right">
+                        <div class="level-item">
+                            
+                        </div>
+                    </div>
+                </nav> -->
+                <p class="modal-card-title">編輯Tag</p>
+
+                <nav class="level">
+                    <div class="level-item" style="padding-right:0.5em"><h6>選擇Tag名稱，劃記後確認。再次點擊Tag即可刪除</h6></div>
+                    <div class="level-item"><b-field>
+                        <b-select 
+                            placeholder="選擇標籤名稱" 
+                            v-model="selectTag" 
+                            size="is-small"
+                        >
+                            <option
+                                v-for="(tag, index) in tagOptions" 
+                                :key="index"
+                                :native-value="tag.tagName"
+                            >
+                                {{ tag.tagLabel }}
+                            </option>
+                        </b-select>
+                    </b-field></div>
                 </nav>
+                
+                
+                
             </header>
             <section class="modal-card-body">
                 <div>

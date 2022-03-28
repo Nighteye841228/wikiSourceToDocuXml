@@ -715,7 +715,7 @@ export default {
             showSocial: false,
             isAnimated: true,
             isRounded: true,
-            isStepsClickable: false,
+            isStepsClickable: true,
 
             hasNavigation: true,
             customNavigation: true,
