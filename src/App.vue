@@ -646,9 +646,9 @@ import {
 import {
     composeDocuXmlFile
 } from './docuXml';
-import {
-    docuskyManageDbListSimpleUI 
-} from './docuWid';
+// import {
+//     docuskyManageDbListSimpleUI 
+// } from './docuWid';
 import {
     SnackbarProgrammatic as Snackbar 
 } from 'buefy';
@@ -806,7 +806,6 @@ export default {
             account: '',
             password: '',
             isUploadable: false,
-            widget: docuskyManageDbListSimpleUI,
 
             //拖曳
             drag: false,
@@ -856,6 +855,12 @@ export default {
                     this.$nextTick(() => {
                         this.$nextTick(() => {
                             this.splitCompleteWikiContents = JSON.parse(window.localStorage.getItem('metaTable'));
+                            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+                                return x.doc_content;
+                            });
+                            this.splitCompleteWikiContents.forEach(element => {
+                                element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+                            });
                             this.$refs.hotTableComponent.hotInstance.loadData(
                                 this.splitCompleteWikiContents
                             );
@@ -1026,9 +1031,13 @@ export default {
             this.isEditMetaTable = false;
         },
         saveTempMeta() {
+            let tempFile = cloneDeep(this.splitCompleteWikiContents);
+            tempFile.forEach((element, index) => {
+                element.doc_content = this.tempSplitContents[index];
+            });
             let myStorage = window.localStorage;
             myStorage.clear();
-            myStorage.setItem('metaTable', JSON.stringify(this.splitCompleteWikiContents));
+            myStorage.setItem('metaTable', JSON.stringify(tempFile));
             myStorage.setItem('hyperlink', this.isKeepHyperLink);
             myStorage.setItem('columnNameList', JSON.stringify(this.selectedMetaDataColumns));
             this.$buefy.snackbar.open('已完成儲存');
@@ -1151,7 +1160,8 @@ export default {
                 fail(); 
                 return;
             }
-            this.widget.login(
+            // eslint-disable-next-line
+            docuskyManageDbListSimpleUI.login(
                 this.account, 
                 this.password, 
                 () => { 
@@ -1179,8 +1189,9 @@ export default {
                     name: 'importedFiles[]'
                 }
             };
-            this.widget.uploadMultipart(
-                formData, 
+            // eslint-disable-next-line
+            docuskyManageDbListSimpleUI.uploadMultipart( 
+                formData,
                 function() {
                     Snackbar.open('Upload Success!');
                 }, 
