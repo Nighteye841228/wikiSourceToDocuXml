@@ -55,7 +55,7 @@
                     </div>
                     <div class="level-right">
                         <b-button class="button is-primary is-medium" @click="getMenuOfContent">
-                            <b-icon v-if="selectChapLen === 0 || selectChapLen === undefined" icon="search" pack="fas"></b-icon>
+                            <span v-if="selectChapLen === 0 || selectChapLen === undefined">檢選</span>
                             <div v-if="selectChapLen != 0">{{ selectChapLen }}</div>
                         </b-button>
                     </div>
