@@ -72,7 +72,7 @@ export async function searchWord(title) {
 export function parseHtmlText(htmlContent, title) {
     let doc = new DOMParser().parseFromString(htmlContent, 'text/html');
     let wikiContentSeperateParagraph = [];
-    let mainContent = $(doc).find('.mw-parser-output p,.mw-parser-output dd');
+    let mainContent = $(doc).find('td[align="center"],.mw-headline,.mw-parser-output p,.mw-parser-output dd');
 
     if (
         $(mainContent).text() !== undefined &&
@@ -122,7 +122,8 @@ export function parseHtmlText(htmlContent, title) {
             .replace(/\s/gm, '')
             .replace(/^\r\n|^\n/gm, '')
             .replace(/（并请在校对之后从条目的源代码中删除本模版：{{简转繁}}）/gm, '')
-            .replace(/&lt;(\W+)&gt;/g, '【$1】');
+            .replace(/&lt;(\W+)&gt;/g, '【$1】')
+            .replace(/↑返回頂部/g, '');
         let parseSentenceWithHtml = $(element)
             .html()
             .replace(/&lt;(\W+)&gt;/g, '【$1】');
@@ -391,13 +392,13 @@ export async function getWikisourceJson(
         apiBackJson = apiBackJson.data;
         let wikiDocNum = getWikiNum(apiBackJson.query.pages);
         let dirtyText = apiBackJson.query.pages[wikiDocNum].revisions[0]['*'];
-        let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm);
+        let cleanText = dirtyText.match(/.*\[\[(\/*.*)\|*.*\]\]/gm) || [];
         let wikiTitle = apiBackJson.query.pages[wikiDocNum].title;
         let checkTitle = title.match(/^[^/]*/); //篩選出title的第一個斜線之前的字（就是書名）
         cleanText = cleanText.join('\n')
             .replace(/^\n/gm, '')
             .replace(/^\n/gm, '')
-            .match(/^[=*#!].*\[\[(.*)\|*.*\]\]/gm);
+            .match(/^[=*#!].*\[\[(.*)\|*.*\]\]/gm) || '';
         if (cleanText) {
             if (checkTitle) {
                 cleanText = cleanText.filter(x => x);    

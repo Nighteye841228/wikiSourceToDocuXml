@@ -54,10 +54,19 @@
                         <h4 class="title is-4" :class="selectChapLen == 0 ? '' : 'purple' ">{{ link }}</h4>
                     </div>
                     <div class="level-right">
-                        <b-button class="button is-primary is-medium" @click="getMenuOfContent">
-                            <span v-if="selectChapLen === 0 || selectChapLen === undefined">檢選</span>
-                            <div v-if="selectChapLen != 0">{{ selectChapLen }}</div>
-                        </b-button>
+                        <b-field grouped>
+                            <p class="control">
+                                <b-button class="button is-primary is-small" @click="addSelectedMenuItem(1)">
+                                    內文全選
+                                </b-button>
+                            </p>
+                            <p class="control">
+                                <b-button class="button is-primary is-small" @click="getMenuOfContent">
+                                    <span v-if="selectChapLen === 0 || selectChapLen === undefined">目錄檢選</span>
+                                    <div v-if="selectChapLen != 0">{{ selectChapLen }}</div>
+                                </b-button>
+                            </p>
+                        </b-field>
                     </div>
                 </nav>
             </div>
@@ -130,7 +139,16 @@ export default {
                 console.log('獲取失敗。');
             }
         },
-        addSelectedMenuItem: function() {
+        addSelectedMenuItem: async function(flag = 0) {
+            if(flag == 1) {
+                await this.getMenuOfContent();
+                if(this.treeShowMenu[0].children.length > 0) {
+                    this.tempSelectMenu = this.treeShowMenu[0].children.map(x=>x.id);
+                } else {
+                    this.tempSelectMenu = this.treeShowMenu.map(x=>x.id);
+                }
+                this.isAddMenuToDownload = false;
+            }
             this.$emit('contentTableAdd', {
                 index: this.index,
                 searchName: this.link,

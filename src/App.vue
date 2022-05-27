@@ -19,7 +19,11 @@
                                 >
                                     首頁
                                 </a>
-                                <a class="navbar-item" target="_blank" href="https://docusky.org.tw/DocuSky/docuTools/userMain/">
+                                <a
+                                    class="navbar-item"
+                                    target="_blank"
+                                    href="https://docusky.org.tw/DocuSky/docuTools/userMain/"
+                                >
                                     我的資料庫
                                 </a>
                                 <a
@@ -40,7 +44,6 @@
                                     <span aria-hidden="true"></span>
                                 </a>
                             </div>
-                        
                         </div>
                     </div>
                 </nav>
@@ -48,7 +51,9 @@
         </section>
         <b-modal v-model="isAddExtendedLinks" :width="1000" scroll="keep">
             <header class="modal-card-head">
-                <p class="modal-card-title">選擇需要的關鍵字</p>
+                <p class="modal-card-title">
+                    選擇需要的書本（或單篇），並於下一頁選擇書本需要的篇章
+                </p>
                 <button
                     class="delete"
                     aria-label="close"
@@ -57,12 +62,19 @@
             </header>
             <section class="modal-card-body">
                 <div v-for="(link, index) in refLinks" :key="index">
-                    <b-checkbox size="is-medium" :native-value="link" v-model="selectRefLinks">{{
-                        link
-                    }}</b-checkbox>
+                    <b-checkbox
+                        size="is-medium"
+                        :native-value="link"
+                        v-model="selectRefLinks"
+                    >{{ link }}</b-checkbox>
                 </div>
             </section>
             <footer class="modal-card-foot">
+                <b-button
+                    type="is-primary"
+                    @click="selectRefLinks = refLinks.map((x) => x)"
+                >全選</b-button>
+                <b-button type="is-primary" @click="selectRefLinks = []">全不選</b-button>
                 <button class="button is-success" @click="confirmAdd(1)">
                     保存結果
                 </button>
@@ -82,14 +94,10 @@
         </b-modal>
         <b-modal v-model="isSetGlobalDoc" scroll="keep">
             <header class="modal-card-head">
-                <p class="title">
-                    未確認分件方式的文檔處理方式
-                </p>
+                <p class="title">未確認分件方式的文檔處理方式</p>
             </header>
-            <section class="modal-card-body" style="max-height:4em">
-                <b-checkbox v-model="isKeepHyperLink">
-                    保留超連結
-                </b-checkbox>
+            <section class="modal-card-body" style="max-height: 4em">
+                <b-checkbox v-model="isKeepHyperLink"> 保留超連結 </b-checkbox>
                 <b-checkbox v-model="isCutFileByPara">
                     以段分件（若未勾選則保留原來的全卷為一件）
                 </b-checkbox>
@@ -99,23 +107,23 @@
             </footer>
         </b-modal>
         <b-modal v-model="isOpenUploadModal" :width="400">
-            <header class="modal-card-head" style="justify-content: space-between;">
+            <header class="modal-card-head" style="justify-content: space-between">
                 <p class="modal-card-title">上傳到DocuSky</p>
-                <b-tooltip label="到DocuSky看看結果吧！"
-                           position="is-left"
-                >
-                    <a href="https://docusky.org.tw/DocuSky/docuTools/userMain/" target="_blank">
+                <b-tooltip label="到DocuSky看看結果吧！" position="is-left">
+                    <a
+                        href="https://docusky.org.tw/DocuSky/docuTools/userMain/"
+                        target="_blank"
+                    >
                         <nav class="level">
                             <div class="level-item">
-                                <img src="../public/C_4C_small.png" alt="">
+                                <img src="../public/C_4C_small.png" alt="" />
                             </div>
-                            <div class="level-item" style="padding-top: 5px;">
+                            <div class="level-item" style="padding-top: 5px">
                                 <b-icon icon="upload" pack="fas"></b-icon>
                             </div>
                         </nav>
                     </a>
                 </b-tooltip>
-                
             </header>
 
             <section class="modal-card-body login">
@@ -123,30 +131,50 @@
                     <b-input v-model="uploadFileName"></b-input>
                 </b-field>
                 <b-field label="帳號">
-                    <b-input type="email" v-model="account" autocomplete="username"></b-input>
+                    <b-input
+                        type="email"
+                        v-model="account"
+                        autocomplete="username"
+                    ></b-input>
                 </b-field>
                 <b-field label="密碼">
-                    <b-input type="password" v-model="password" @keypress.native.enter="login"></b-input>
+                    <b-input
+                        type="password"
+                        v-model="password"
+                        @keypress.native.enter="login"
+                    ></b-input>
                 </b-field>
             </section>
 
-            <footer class="modal-card-foot" style="justify-content: space-between;">
+            <footer class="modal-card-foot" style="justify-content: space-between">
                 <div>
-                    <b-button type="is-success" @click="login" outlined>
-                        登入
-                    </b-button>
-                    <b-button type="is-success" @click="uploadXML" outlined :disabled="!isUploadable">
+                    <b-button type="is-success" @click="login" outlined> 登入 </b-button>
+                    <b-button
+                        type="is-success"
+                        @click="uploadXML"
+                        outlined
+                        :disabled="!isUploadable"
+                    >
                         上傳
                     </b-button>
                 </div>
                 <div>
-                    <b-button type="is-primary" @click="isOpenUploadModal = false" outlined>
+                    <b-button
+                        type="is-primary"
+                        @click="isOpenUploadModal = false"
+                        outlined
+                    >
                         取消
                     </b-button>
                 </div>
             </footer>
         </b-modal>
-        <b-modal v-model="isEditMetaTable" :width="1000" scroll="keep" ref="chooseMetaProps">
+        <b-modal
+            v-model="isEditMetaTable"
+            :width="1000"
+            scroll="keep"
+            ref="chooseMetaProps"
+        >
             <header class="modal-card-head">
                 <label class="label">選擇需要的metadata欄位</label>
             </header>
@@ -196,13 +224,8 @@
                 </b-tooltip>
             </footer>
         </b-modal>
-        
 
-        
-
-
-        
-        <section class="section" style="padding: 24px 12px 24px 12px;">
+        <section class="section" style="padding: 24px 12px 24px 12px">
             <!-- <div class="container is-max-widescreen"> -->
             <b-steps
                 v-model="activeStep"
@@ -219,35 +242,54 @@
                 ref="control"
                 class="step-custom"
             >
-                <b-step-item class="main-dish" step="1" label="關鍵字搜索" :clickable="isStepsClickable">
+                <b-step-item
+                    class="main-dish"
+                    step="1"
+                    label="書本標題名搜索"
+                    :clickable="isStepsClickable"
+                >
                     <section class="section headline">
-                        <label class="label is-large" title="不需完整標題">文本關鍵字搜索
+                        <label class="label is-large" title="不需完整標題">書本標題名搜索
                         </label>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
-                    <section class="section wow" style="padding-top:20px">
-                        <div class="field has-addons">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
+                    <section class="section wow" style="padding-top: 20px">
+                        <div class="field has-addons" expand>
                             <div class="control">
-                                <div style="display: none;">
+                                <div style="display: none">
                                     <input type="text" autocomplete="username" />
                                 </div>
                                 <input
+                                    style="font-size: 80px"
                                     v-model="sourceWord"
                                     class="input"
                                     type="search"
                                     placeholder="鄭氏紀事"
                                     @keypress.enter="getQueryResult"
                                     autocomplete="off"
+                                    expanded
                                 />
                             </div>
                             <div class="control">
-                                <b-button class="button is-link" @click="getQueryResult"> 搜尋 </b-button>
+                                <b-button
+                                    style="font-size: 80px"
+                                    class="button is-link"
+                                    @click="getQueryResult"
+                                >
+                                    搜尋
+                                </b-button>
                             </div>
                         </div>
-                    </section>              
+                    </section>
                 </b-step-item>
 
-                <b-step-item class="main-dish" step="2" label="選擇文本" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="2"
+                    label="選擇文本"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section>
                         <b-sidebar
                             type="is-light"
@@ -257,17 +299,28 @@
                             :right="rightSideBar"
                             :open.sync="openSideBar"
                         >
-                            <div v-for="(books,numbooks) in selectedBookMenuPool" label="已選書單" :key="books+numbooks">
-                                <div v-for="(article,index) in books.menu" :key="article+1">
+                            <div
+                                v-for="(books, numbooks) in selectedBookMenuPool"
+                                label="已選書單"
+                                :key="books + numbooks"
+                            >
+                                <div v-for="(article, index) in books.menu" :key="article + 1">
                                     <nav class="level">
                                         <div class="level-left">
                                             <div class="level-item">
-                                                <p style="font-size:1.2em">{{ article }} </p>
+                                                <p style="font-size: 1.2em">{{ article }}</p>
                                             </div>
                                         </div>
                                         <div class="level-right">
                                             <div class="level-item">
-                                                <a @click.stop="deleteBook({bookOrder: numbooks,chapOrder: index})">
+                                                <a
+                                                    @click.stop="
+                                                        deleteBook({
+                                                            bookOrder: numbooks,
+                                                            chapOrder: index,
+                                                        })
+                                                    "
+                                                >
                                                     <b-icon size="is-medium" icon-pack="fas" icon="delete">刪除</b-icon>
                                                 </a>
                                             </div>
@@ -280,27 +333,33 @@
                     <section class="section headline">
                         <label class="label is-large">書本目錄檢視與選取</label>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section wow" v-if="isInputDataValid">
                         <div class="columns is-multiline">
-                            <div v-for="(extendedLink, index) in extendedLinks"
-                                 :key="index" class="column is-half"
+                            <div
+                                v-for="(extendedLink, index) in extendedLinks"
+                                :key="index"
+                                class="column is-half"
                             >
-                                <GetTableContent 
-                                    :link="extendedLink" 
+                                <GetTableContent
+                                    :link="extendedLink"
                                     :index="index"
-                                    :saved="selectedBookMenuPool[index]" 
-                                    @contentTableAdd="addSelectedMenuItem" 
-                                />   
+                                    :saved="selectedBookMenuPool[index]"
+                                    @contentTableAdd="addSelectedMenuItem"
+                                />
                             </div>
                         </div>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section tool-button-line">
                         <nav class="level">
                             <div class="level-left">
                                 <div class="level-item">
-                                    <b-button type="is-primary" @click="openSideBar = !openSideBar" outlined>
+                                    <b-button
+                                        type="is-primary"
+                                        @click="openSideBar = !openSideBar"
+                                        outlined
+                                    >
                                         檢視已選文件</b-button>
                                 </div>
                                 <div class="level-item">
@@ -311,7 +370,6 @@
                         </nav>
                     </section>
                 </b-step-item>
-                    
 
                 <!-- <div class="level-item">
                                         <p>
@@ -329,7 +387,13 @@
                                         </b-checkbox>
                                     </div> -->
 
-                <b-step-item class="main-dish" step="3" label="選擇分件方式" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="3"
+                    label="選擇分件方式"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section class="section headline">
                         <nav class="level">
                             <div class="level-left">
@@ -341,7 +405,7 @@
                             </div>
                         </nav>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section wow">
                         <div
                             class="columns is-multiline"
@@ -360,21 +424,46 @@
                                     :wiki-book="chap"
                                     :bookOrder="index"
                                     :order="chapCount"
-                                ></BookChildContent>
+                                >
+                                </BookChildContent>
                             </div>
                         </div>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section tool-button-line">
                         <nav class="level">
                             <div class="level-left">
                                 <div class="level-item">
-                                    <b-button type="is-primary" @click="isSetGlobalDoc = true" outlined>
+                                    <b-button
+                                        type="is-primary"
+                                        @click="isSetGlobalDoc = true"
+                                        outlined
+                                    >
                                         處理所有未點擊分件
                                     </b-button>
                                 </div>
                                 <div class="level-item">
-                                    <b-button type="is-success" @click="releaseGate" outlined>
+                                    <b-tooltip
+                                        label="確認其他未自訂的文件設定完成了嗎？"
+                                        multilined
+                                        position="is-right"
+                                        v-if="!isFinishSplit"
+                                    >
+                                        <b-button
+                                            type="is-success"
+                                            @click="releaseGate"
+                                            outlined
+                                            disabled
+                                        >
+                                            完成自訂修改
+                                        </b-button>
+                                    </b-tooltip>
+                                    <b-button
+                                        type="is-success"
+                                        @click="releaseGate"
+                                        v-if="isFinishSplit"
+                                        outlined
+                                    >
                                         完成自訂修改
                                     </b-button>
                                 </div>
@@ -383,7 +472,13 @@
                     </section>
                 </b-step-item>
 
-                <b-step-item class="main-dish" step="4" label="編輯Metadata" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="4"
+                    label="編輯Metadata"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section class="section headline">
                         <nav class="level">
                             <div class="level-left">
@@ -408,8 +503,11 @@
                             </div>
                         </nav>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
-                    <section class="dataHandsonTable wow">                            
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
+                    <section class="dataHandsonTable wow" v-if="!isShowTable">
+                        <span class="subtitle">請先點擊上方選擇需要的metadata欄位</span>
+                    </section>
+                    <section class="dataHandsonTable wow" v-if="isShowTable">
                         <div v-show="isEditMetadata">
                             <hot-table
                                 :data.sync="splitCompleteWikiContents"
@@ -427,13 +525,13 @@
                             </hot-table>
                         </div>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section tool-button-line">
                         <nav class="level">
                             <div class="level-left">
                                 <div class="level-item">
                                     <b-button class="is-success" @click="saveTempMeta" outlined>
-                                        暫時存檔（注意，此為試驗功能）
+                                        暫時存檔
                                     </b-button>
                                 </div>
                                 <div class="level-item">
@@ -446,7 +544,13 @@
                     </section>
                 </b-step-item>
 
-                <b-step-item class="main-dish" step="5" label="編輯Tag" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="5"
+                    label="編輯Tag"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section class="section headline">
                         <nav class="level">
                             <div class="level-left">
@@ -456,33 +560,45 @@
                             </div>
                         </nav>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section wow">
-                        <b-field label="1. 選擇DocuSky預設Tag" custom-class="is-medium has-text-primary">
-                            <div v-for="option in wikiCheckTagOptions" :key="option.tagLabel+'20'">
+                        <b-field
+                            label="1. 選擇DocuSky預設Tag"
+                            custom-class="is-medium has-text-primary"
+                        >
+                            <div
+                                v-for="option in wikiCheckTagOptions"
+                                :key="option.tagLabel + '20'"
+                            >
                                 <b-checkbox :native-value="option" v-model="wikiTags">
                                     {{ option.tagLabel }}
                                 </b-checkbox>
                             </div>
                         </b-field>
-                        <b-field label="2. 增加個人設定Tag(於DocuSky顯示為Udef_'使用者自訂名稱')" custom-class="is-medium has-text-primary">
-                            <multiselect 
-                                v-model="wikiTags" 
-                                tag-placeholder="新增自訂tag" 
-                                placeholder="輸入自訂的tag名稱(請用英文)" 
-                                label="tagLabel" 
-                                track-by="tagName" 
+                        <b-field
+                            label="2. 增加個人設定Tag(於DocuSky顯示為Udef_'使用者自訂名稱')"
+                            custom-class="is-medium has-text-primary"
+                        >
+                            <multiselect
+                                v-model="wikiTags"
+                                tag-placeholder="新增自訂tag"
+                                placeholder="輸入自訂的tag名稱(請用英文)"
+                                label="tagLabel"
+                                track-by="tagName"
                                 :close-on-select="false"
                                 :clear-on-select="false"
-                                :options="wikiTagOptions" 
-                                :multiple="true" 
-                                :taggable="true" 
+                                :options="wikiTagOptions"
+                                :multiple="true"
+                                :taggable="true"
                                 @remove="deleteAllTag"
                                 @tag="addContentTag"
                             >
                             </multiselect>
                         </b-field>
-                        <b-field label="3. 選擇文本進行Tag" custom-class="is-medium has-text-primary">
+                        <b-field
+                            label="3. 選擇文本進行Tag"
+                            custom-class="is-medium has-text-primary"
+                        >
                             <div class="columns is-multiline">
                                 <TagEdit
                                     v-for="(document, order) in splitCompleteWikiContents"
@@ -497,11 +613,8 @@
                                 </TagEdit>
                             </div>
                         </b-field>
-                            
-                            
-
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section tool-button-line">
                         <b-button type="is-success" outlined @click="releaseGate">
                             完成Tag
@@ -509,7 +622,13 @@
                     </section>
                 </b-step-item>
 
-                <b-step-item class="main-dish" step="6" label="排列文本次序" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="6"
+                    label="排列文本次序"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section class="section headline">
                         <nav class="level">
                             <div class="level-left">
@@ -519,17 +638,18 @@
                             </div>
                         </nav>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section wow">
-                        <draggable 
+                        <draggable
                             v-model="splitCompleteWikiContents"
                             v-bind="dragOptions"
                             @start="drag = true"
                             @end="drag = false"
                         >
-                            <transition-group 
+                            <transition-group
                                 class="columns is-multiline"
-                                type="transition" :name="!drag ? 'flip-list' : null"
+                                type="transition"
+                                :name="!drag ? 'flip-list' : null"
                             >
                                 <FileOrder
                                     v-for="(document, order) in splitCompleteWikiContents"
@@ -540,12 +660,10 @@
                                     ref="fileOrder"
                                 >
                                 </FileOrder>
-
                             </transition-group>
-                                
                         </draggable>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section tool-button-line">
                         <nav class="level">
                             <div class="level-left">
@@ -561,8 +679,13 @@
                     </section>
                 </b-step-item>
 
-
-                <b-step-item class="main-dish" step="7" label="輸出資料" :clickable="isStepsClickable" :type="{'is-success': isProfileSuccess}">
+                <b-step-item
+                    class="main-dish"
+                    step="7"
+                    label="輸出資料"
+                    :clickable="isStepsClickable"
+                    :type="{ 'is-success': isProfileSuccess }"
+                >
                     <section class="section headline">
                         <nav class="level">
                             <div class="level-left">
@@ -570,34 +693,57 @@
                                     <label class="label is-large">輸出資料</label>
                                 </div>
                             </div>
-                        </nav>                            
+                        </nav>
                     </section>
-                    <hr style="margin:5px;padding-left:24px;width:100%;">
+                    <hr style="margin: 5px; padding-left: 24px; width: 100%" />
                     <section class="section wow">
                         <div class="box">
-                            <div class="column"><b-button class="is-medium is-success" @click="copyXML" outlined expanded>複製DocuXML到剪貼簿</b-button></div>
-                            <div class="column"><b-button class="is-medium is-success" @click="downloadXML" outlined expanded>下載XML檔案進一步編輯</b-button></div>
-                            <div class="column"><b-button class="is-medium is-success" @click="openLoginModal" outlined expanded>直接上傳到DocuSky建庫</b-button></div>
+                            <div class="column">
+                                <b-button
+                                    class="is-medium is-success"
+                                    @click="copyXML"
+                                    outlined
+                                    expanded
+                                >複製DocuXML到剪貼簿
+                                </b-button>
+                            </div>
+                            <div class="column">
+                                <b-button
+                                    class="is-medium is-success"
+                                    @click="downloadXML"
+                                    outlined
+                                    expanded
+                                >
+                                    下載XML檔案進一步編輯</b-button>
+                            </div>
+                            <div class="column">
+                                <b-button
+                                    class="is-medium is-success"
+                                    @click="openLoginModal"
+                                    outlined
+                                    expanded
+                                >
+                                    直接上傳到DocuSky建庫</b-button>
+                            </div>
                         </div>
                     </section>
                     <section class="section tool-button-line">
-                        <b-button style="visibility:hidden"></b-button>
+                        <b-button style="visibility: hidden"></b-button>
                     </section>
                 </b-step-item>
 
-                    
                 <template
                     v-if="customNavigation"
-                    v-slot:navigation="{previous, next}"
+                    v-slot:navigation="{ previous, next }"
                 >
                     <nav class="step-navigation">
                         <b-button
                             type="is-primary"
                             icon-pack="fas"
                             icon-left="arrow-up"
-                            :disabled="previous.disabled" 
+                            :disabled="previous.disabled"
                             @click.prevent="previous.action"
-                            style="bottom: 5px;"
+                            style="bottom: 5px"
                         >
                         </b-button>
                         <b-button
@@ -612,7 +758,6 @@
                 </template>
             </b-steps>
 
-                
             <!-- </div> -->
         </section>
     </div>
@@ -642,21 +787,20 @@ import {
     searchWord,
     splitAndUrlHandler,
     createMetadataRows,
+    padding
 } from './tool.js';
 import {
-    composeDocuXmlFile
+    composeDocuXmlFile 
 } from './docuXml';
 // import {
-//     docuskyManageDbListSimpleUI 
+//     docuskyManageDbListSimpleUI
 // } from './docuWid';
 import {
     SnackbarProgrammatic as Snackbar 
 } from 'buefy';
 import {
-    cloneDeep
+    cloneDeep 
 } from 'lodash-es';
-
-
 
 export default {
     name: 'App',
@@ -667,7 +811,7 @@ export default {
         TagEdit,
         GetTableContent,
         draggable,
-        FileOrder
+        FileOrder,
     },
     computed: {
         dragOptions() {
@@ -675,7 +819,7 @@ export default {
                 animation: 200,
                 group: 'description',
                 disabled: false,
-                ghostClass: 'ghost'
+                ghostClass: 'ghost',
             };
         },
         countSplitContents() {
@@ -683,7 +827,7 @@ export default {
         },
         isOpenGate() {
             return this.isProcessDisable[this.activeStep];
-        }
+        },
     },
     watch: {
         activeStep: {
@@ -698,15 +842,15 @@ export default {
                 //     });
                 // }
 
-                if(oldValue == 3) {
-                    setTimeout(()=>{
+                if (oldValue == 3) {
+                    setTimeout(() => {
                         this.splitCompleteWikiContents.forEach((element, index) => {
                             element.doc_content = this.tempSplitContents[index];
                         });
                     }, 3000);
                 }
-            }
-        }
+            },
+        },
     },
     data() {
         return {
@@ -777,24 +921,23 @@ export default {
             corpusNameMeta: '我的文獻集',
             uploadFileName: '我的文獻集',
             wikiTags: [],
-            wikiTagOptions: [
-            ],
+            wikiTagOptions: [],
             wikiCheckTagOptions: [
                 {
                     tagLabel: 'PersonName',
-                    tagName: 'PersonName'
+                    tagName: 'PersonName',
                 },
                 {
                     tagLabel: 'LocName',
-                    tagName: 'LocName'
+                    tagName: 'LocName',
                 },
                 {
                     tagLabel: 'Date',
-                    tagName: 'Date'
+                    tagName: 'Date',
                 },
                 {
                     tagLabel: 'Office',
-                    tagName: 'Office'
+                    tagName: 'Office',
                 },
             ],
             showXmlString: '',
@@ -823,22 +966,30 @@ export default {
 
             //查看輸出文件
             isCheckFinalCode: false,
+
+            //跳出編輯metatable表
+            isShowTable: false,
+
+            //完成分件
+            isFinishSplit: false,
         };
     },
     created() {
-        if(window.localStorage.getItem('metaTable')) {
+        if (window.localStorage.getItem('metaTable')) {
             this.$buefy.dialog.confirm({
                 message: '有已存檔的MetaData編輯資料，是否載入？',
                 onConfirm: () => {
-                    this.isAddHyperlink = Boolean(window.localStorage.getItem('hyperlink'));
-                    if(this.isAddHyperlink) {
+                    this.isAddHyperlink = Boolean(
+                        window.localStorage.getItem('hyperlink')
+                    );
+                    if (this.isAddHyperlink) {
                         this.wikiTagOptions.push({
                             tagLabel: 'Wiki_url',
-                            tagName: 'Udef_wiki'
+                            tagName: 'Udef_wiki',
                         });
                         this.wikiTags.push({
                             tagLabel: 'Wiki_url',
-                            tagName: 'Udef_wiki'
+                            tagName: 'Udef_wiki',
                         });
                     }
                     this.isProcessDisable[0] = false;
@@ -846,7 +997,9 @@ export default {
                     this.isProcessDisable[2] = false;
                     this.activeStep = 3;
                     this.isEditMetadata = true;
-                    this.selectedMetaDataColumns = JSON.parse(window.localStorage.getItem('columnNameList'));
+                    this.selectedMetaDataColumns = JSON.parse(
+                        window.localStorage.getItem('columnNameList')
+                    );
                     this.colHeaders = ['文件標題', '文本內容', '檔案名稱', '文獻集名稱'];
                     this.colHeaders = this.colHeaders.concat(
                         this.selectedMetaDataColumns.map((x) => x.headerName)
@@ -854,12 +1007,19 @@ export default {
                     this.colHeaders = this.colHeaders.concat('文件次序編碼');
                     this.$nextTick(() => {
                         this.$nextTick(() => {
-                            this.splitCompleteWikiContents = JSON.parse(window.localStorage.getItem('metaTable'));
-                            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
-                                return x.doc_content;
-                            });
-                            this.splitCompleteWikiContents.forEach(element => {
-                                element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+                            this.splitCompleteWikiContents = JSON.parse(
+                                window.localStorage.getItem('metaTable')
+                            );
+                            this.tempSplitContents = this.splitCompleteWikiContents.map(
+                                (x) => {
+                                    return x.doc_content;
+                                }
+                            );
+                            this.splitCompleteWikiContents.forEach((element) => {
+                                element.doc_content = element.doc_content.replace(
+                                    /(.{0,200}).*/ms,
+                                    '$1'
+                                );
                             });
                             this.$refs.hotTableComponent.hotInstance.loadData(
                                 this.splitCompleteWikiContents
@@ -872,12 +1032,11 @@ export default {
                         message: '要刪除Metadata已存檔案嗎？',
                         onConfirm: () => {
                             window.localStorage.clear();
-                        }
+                        },
                     });
-                }
+                },
             });
         }
-
     },
     methods: {
         undoHot: function () {
@@ -889,20 +1048,25 @@ export default {
         deleteBook: function (val) {
             let bookOrder = val.bookOrder;
             let chapOrder = val.chapOrder;
-            if(this.selectedBookMenuPool.length){
+            if (this.selectedBookMenuPool.length) {
                 this.selectedBookMenuPool[bookOrder].menu.splice(chapOrder, 1);
             }
         },
         deleteAllTag: function (tag) {
             this.splitCompleteWikiContents.forEach((element) => {
-                element.doc_content = element.doc_content
-                    .replace(new RegExp(String.raw`<mark tag="${tag.tagName}">([^<]*)</mark>`, 'g'), '$1');
+                element.doc_content = element.doc_content.replace(
+                    new RegExp(
+                        String.raw`<mark tag="${tag.tagName}">([^<]*)</mark>`,
+                        'g'
+                    ),
+                    '$1'
+                );
             });
         },
         addContentTag: function (newTag) {
             const tag = {
                 tagLabel: newTag,
-                tagName: `Udef_${newTag}`
+                tagName: `Udef_${newTag}`,
             };
             this.wikiTagOptions.push(tag);
             this.wikiTags.push(tag);
@@ -921,14 +1085,15 @@ export default {
             this.tableOfContents = [];
             this.selectedBookMenuPool = [];
             this.refLinks = await searchWord(this.sourceWord);
-            this.isAddExtendedLinks = true;
+            this.confirmAdd(1);
         },
         addSelectedMenuItem: function (val) {
-            let saveBook = this.selectedBookMenuPool.findIndex(book => book.index === val.index);
-            if(saveBook !== -1) {
+            let saveBook = this.selectedBookMenuPool.findIndex(
+                (book) => book.index === val.index
+            );
+            if (saveBook !== -1) {
                 this.selectedBookMenuPool[saveBook] = val;
-            }
-            else {
+            } else {
                 this.selectedBookMenuPool.push(val);
             }
         },
@@ -944,12 +1109,13 @@ export default {
         confirmGlobalSet() {
             this.$refs.contentTable.forEach((element) => {
                 if (!element.isViewed) {
-                    if(this.isCutFileByPara) element.paragraphCutWay = 2;
-                    if(this.isKeepHyperLink) element.isUrlAllow = true;
+                    if (this.isCutFileByPara) element.paragraphCutWay = 2;
+                    if (this.isKeepHyperLink) element.isUrlAllow = true;
                     element.sendWikiCutObj();
                 }
             });
             this.isSetGlobalDoc = false;
+            this.isFinishSplit = true;
         },
         openEditTable: function () {
             this.isEditMetaTable = true;
@@ -958,24 +1124,30 @@ export default {
             });
         },
         handleWikiCutObj: function (param) {
-            let findBookIndex = this.wikiContentWaitCut.findIndex(book=>book.title === param.title);
-            if(findBookIndex !== -1) {
+            let findBookIndex = this.wikiContentWaitCut.findIndex(
+                (book) => book.title === param.title
+            );
+            if (findBookIndex !== -1) {
                 this.wikiContentWaitCut[findBookIndex] = param;
             }
             this.wikiContentWaitCut.push(param);
-            if(param.isUrlAllow && !this.wikiTagOptions.find(ele=>ele.tagLabel==='Wiki_url')) {
+            if (
+                param.isUrlAllow &&
+        !this.wikiTagOptions.find((ele) => ele.tagLabel === 'Wiki_url')
+            ) {
                 this.wikiTagOptions.push({
                     tagLabel: 'Wiki_url',
-                    tagName: 'Udef_wiki'
+                    tagName: 'Udef_wiki',
                 });
                 this.wikiTags.push({
                     tagLabel: 'Wiki_url',
-                    tagName: 'Udef_wiki'
+                    tagName: 'Udef_wiki',
                 });
             }
         },
         handleWikiTag: function (param) {
-            this.splitCompleteWikiContents[param.index].doc_content = param.newContent;
+            this.splitCompleteWikiContents[param.index].doc_content =
+        param.newContent;
             this.tempSplitContents[param.index] = param.newContent;
         },
         splitWikiContents: function () {
@@ -1003,14 +1175,14 @@ export default {
             );
             this.colHeaders = this.colHeaders.concat('文件次序編碼');
 
-            this.$nextTick(()=> {
-                for(let i in this.splitCompleteWikiContents) {
-                    this.$refs.hotTableComponent.hotInstance
-                        .setCellMeta(
-                            i,
-                            Object.keys(this.splitCompleteWikiContents[0]).length-1,
-                            'readOnly',
-                            true);
+            this.$nextTick(() => {
+                for (let i in this.splitCompleteWikiContents) {
+                    this.$refs.hotTableComponent.hotInstance.setCellMeta(
+                        i,
+                        Object.keys(this.splitCompleteWikiContents[0]).length - 1,
+                        'readOnly',
+                        true
+                    );
                 }
             });
 
@@ -1020,15 +1192,19 @@ export default {
             // this.splitCompleteWikiContents.forEach(element => {
             //     element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
             // });
-            
-            this.tempSplitContents = this.splitCompleteWikiContents.map((x)=>{
+
+            this.tempSplitContents = this.splitCompleteWikiContents.map((x) => {
                 return x.doc_content;
             });
-            this.splitCompleteWikiContents.forEach(element => {
-                element.doc_content = element.doc_content.replace(/(.{0,200}).*/sm, '$1');
+            this.splitCompleteWikiContents.forEach((element) => {
+                element.doc_content = element.doc_content.replace(
+                    /(.{0,200}).*/ms,
+                    '$1'
+                );
             });
 
             this.isEditMetaTable = false;
+            this.isShowTable = true;
         },
         saveTempMeta() {
             let tempFile = cloneDeep(this.splitCompleteWikiContents);
@@ -1039,14 +1215,21 @@ export default {
             myStorage.clear();
             myStorage.setItem('metaTable', JSON.stringify(tempFile));
             myStorage.setItem('hyperlink', this.isKeepHyperLink);
-            myStorage.setItem('columnNameList', JSON.stringify(this.selectedMetaDataColumns));
+            myStorage.setItem(
+                'columnNameList',
+                JSON.stringify(this.selectedMetaDataColumns)
+            );
             this.$buefy.snackbar.open('已完成儲存');
         },
-        combineOrigin: function() {
+        combineOrigin: function () {
             this.releaseGate();
         },
-        reOrderFile: function() {
-            this.splitCompleteWikiContents = this.splitCompleteWikiContents.sort((a, b)=>{return a.fileOrder-b.fileOrder;});
+        reOrderFile: function () {
+            this.splitCompleteWikiContents = this.splitCompleteWikiContents.sort(
+                (a, b) => {
+                    return a.fileOrder - b.fileOrder;
+                }
+            );
         },
         checkForm: function () {
             if (!this.wikiUrls) {
@@ -1058,7 +1241,7 @@ export default {
         },
         confirmAdd: function (flag) {
             if (flag) {
-                this.extendedLinks = this.extendedLinks.concat(this.selectRefLinks);
+                this.extendedLinks = this.refLinks;
                 this.releaseGate();
             }
             this.selectRefLinks = [];
@@ -1074,9 +1257,9 @@ export default {
         download: function () {
             let element = document.createElement('a');
             let filename =
-            this.filename == ''
-                ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
-                : this.filename;
+        this.filename == ''
+            ? `${dt.getFullYear()}_${dt.getMonth()}_${dt.getDate()}.xml`
+            : this.filename;
             element.setAttribute(
                 'href',
                 'data:text/xml;charset=utf-8,' + encodeURIComponent(this.wikiContents)
@@ -1108,13 +1291,14 @@ export default {
             });
         },
 
-        setReadonlyColumn: function(row, col) { //設置標題名稱、檔案名稱、文獻集名稱只讀
+        setReadonlyColumn: function (row, col) {
+            //設置標題名稱、檔案名稱、文獻集名稱只讀
             let cellProperty = {
             };
-            if(col == 1 || col == 2 || col == 3) {
+            if (col == 1 || col == 2 || col == 3) {
                 cellProperty.readOnly = true;
             }
-            if(col == 1){
+            if (col == 1) {
                 cellProperty.className = 'cell-edit';
             }
             return cellProperty;
@@ -1124,12 +1308,18 @@ export default {
             this.$refs.multiselect.isOpen = true;
         },
         generateXml: function () {
-            let finalFile = cloneDeep(this.splitCompleteWikiContents);
-            finalFile.forEach((ele)=>{
+            let wow = this.splitCompleteWikiContents;
+            let wikiLength = wow.length.toString().length + 1;
+            let tempComplete = this.splitCompleteWikiContents.map((text, index)=>{
+                text.filename = `${this.filenameMeta}_${padding(index+1, wikiLength)}.txt`;
+                return text;
+            });
+            let finalFile = cloneDeep(tempComplete);
+            finalFile.forEach((ele) => {
                 delete ele['fileOrder'];
             });
             this.showXmlString = composeDocuXmlFile(
-                finalFile, 
+                finalFile,
                 this.selectedMetaDataColumns,
                 this.wikiTags,
                 this.corpusNameMeta
@@ -1145,7 +1335,7 @@ export default {
             link.style.display = 'none';
             // 字元內容轉變成blob地址
             let blob = new Blob([this.showXmlString], {
-                type: 'text/xml'
+                type: 'text/xml',
             });
             link.href = URL.createObjectURL(blob);
             document.body.appendChild(link);
@@ -1155,47 +1345,55 @@ export default {
         openLoginModal: function () {
             this.isOpenUploadModal = true;
         },
-        login: function() {
-            if(!this.account || !this.password) { 
-                fail(); 
+        login: function () {
+            if (!this.account || !this.password) {
+                fail();
                 return;
             }
             // eslint-disable-next-line
-            docuskyManageDbListSimpleUI.login(
-                this.account, 
-                this.password, 
-                () => { 
+      docuskyManageDbListSimpleUI.login(
+                this.account,
+                this.password,
+                () => {
                     Snackbar.open('Login Success!');
                     this.isUploadable = true;
-                }, 
+                },
                 function () {
                     fail();
                 }
             );
-            function fail () {
+            function fail() {
                 Snackbar.open('Login Failed...');
             }
         },
-        uploadXML: function() {
-            if(!this.showXmlString) return Snackbar.open('Require Content...');
-            let formData = { 
+        uploadXML: function () {
+            const timeNow = new Date();
+            let corpusName =
+        this.uploadFileName === '我的文獻集'
+            ? String(`我的文獻集_${timeNow.toLocaleString()}`).replace(
+                /[/\s]/g,
+                '_'
+            )
+            : this.uploadFileName;
+            if (!this.showXmlString) return Snackbar.open('Require Content...');
+            let formData = {
                 dummy: {
-                    name: 'dbTitleForImport', 
-                    value: this.uploadFileName
-                }, 
+                    name: 'dbTitleForImport',
+                    value: corpusName,
+                },
                 file: {
-                    value: this.showXmlString.replace(/\n/g, ''), 
-                    filename: this.uploadFileName + '.xml', 
-                    name: 'importedFiles[]'
-                }
+                    value: this.showXmlString.replace(/\n/g, ''),
+                    filename: corpusName + '.xml',
+                    name: 'importedFiles[]',
+                },
             };
             // eslint-disable-next-line
-            docuskyManageDbListSimpleUI.uploadMultipart( 
+      docuskyManageDbListSimpleUI.uploadMultipart(
                 formData,
-                function() {
+                function () {
                     Snackbar.open('Upload Success!');
-                }, 
-                function() {
+                },
+                function () {
                     Snackbar.open('Upload Failed...');
                 }
             );
@@ -1204,8 +1402,8 @@ export default {
         releaseGate() {
             this.isProcessDisable[this.activeStep] = false;
             this.activeStep++;
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -1214,16 +1412,14 @@ export default {
   display: none;
 }
 
-
 .table {
   min-width: 100%;
 }
 
 .in-modal {
-    max-height:50em; 
-    overflow:auto;
- }
-
+  max-height: 50em;
+  overflow: auto;
+}
 
 .modal-card-body {
   height: 600px;
@@ -1231,19 +1427,18 @@ export default {
 }
 
 @media screen and (max-width: 768px) {
-    .modal-card-body {
-        height: 30em;
-        overflow: auto;
-    }
+  .modal-card-body {
+    height: 30em;
+    overflow: auto;
+  }
 }
 
-
 .wow {
-    max-width: 100%;
-    height: 70vh;
-    padding-top:20px;
-    overflow: auto;
-    padding-top: inherit;
+  max-width: 100%;
+  height: 70vh;
+  padding-top: 20px;
+  overflow: auto;
+  padding-top: inherit;
 }
 
 .handsontable.htRowHeaders.htColumnHeaders {
@@ -1251,70 +1446,72 @@ export default {
 }
 
 .login {
-    height: auto;
+  height: auto;
 }
 
 .flip-list-move {
   transition: transform 0.5s;
 }
+
 .no-move {
   transition: transform 0s;
 }
+
 .ghost {
   opacity: 0.5;
   background: #c8ebfb;
 }
 
-.tool-button-line, .headline {
-    padding: 10px 10px 10px 24px;
+.tool-button-line,
+.headline {
+  padding: 10px 10px 10px 24px;
 }
-
 </style>
 
 <style>
-
-html,body{
-    height: 100%; 
-    margin: 0; 
-    padding: 0;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .step-custom .step-items {
-    padding-top: 6rem !important; 
+  padding-top: 6rem !important;
 }
+
 .cell-edit {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pagination-previous, .pagination-next{
-    background-color: rgba(124,89,207);
+.pagination-previous,
+.pagination-next {
+  background-color: rgba(124, 89, 207);
 }
 
-.pagination-previous > .icon, .pagination-next > .icon {
-    color: white;
+.pagination-previous > .icon,
+.pagination-next > .icon {
+  color: white;
 }
 
 .sidebar-content.is-light.is-fixed.is-fullheight {
-    width: 20rem;
+  width: 20rem;
 }
 
 .steps.has-label-left.is-animated.is-rounded.mobile-minimalist {
-    display: flex;
-    padding-right: 10px;
+  display: flex;
+  padding-right: 10px;
 }
 
 .step-navigation {
-    flex-basis: 4% !important;
-    order: -1;
-    margin-top: 20rem;
+  flex-basis: 4% !important;
+  order: -1;
+  margin-top: 20rem;
 }
-
 
 .step-content {
-    width: 80%;
-    height: 85vh;
+  width: 80%;
+  height: 85vh;
 }
-
-
 </style>
