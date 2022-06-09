@@ -8,8 +8,8 @@ module.exports = {
         parser: 'babel-eslint',
     },
     rules: {
-        indent: [2, 4], // 縮排規則，index[0] 的數字代表含意為 關閉(0), 警告(1), 錯誤(2)
-        quotes: [2, 'single'], // 單引號, 雙引號
+        indent: [0, 2], // 縮排規則，index[0] 的數字代表含意為 關閉(0), 警告(1), 錯誤(2)
+        quotes: [0], // 單引號, 雙引號
         semi: [1, 'always'], // 句尾是否加上 ";"
         'no-use-before-define': [2, 'nofunc'], //變數是否一定要宣告賦值
         'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // 是否留下 console.log
@@ -32,7 +32,7 @@ module.exports = {
         ],
         'import/first': [0], // 雖說 import 都會先 Hoisting，在這些行數中間可否插入其他的變數或是函式
         'object-property-newline': [
-            2,
+            0,
             {
                 // Object 的撰寫規則，詳請請查閱官方文件
                 allowAllPropertiesOnSameLine: false,
@@ -60,7 +60,7 @@ module.exports = {
             },
         ],
         'vue/html-closing-bracket-newline': [
-            2,
+            1,
             {
                 // Vue 中的 html 的撰寫規則，詳請請查閱官方文件
                 singleline: 'never',
@@ -68,7 +68,7 @@ module.exports = {
             },
         ],
         'vue/html-closing-bracket-spacing': [
-            2,
+            1,
             {
                 // Vue 中的 html 的撰寫規則，詳請請查閱官方文件
                 selfClosingTag: 'always',

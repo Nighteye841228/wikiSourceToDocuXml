@@ -117,7 +117,7 @@ export default {
     props: ['link', 'index', 'saved'],
     computed: {
         selectChapLen() {
-            return this.tempSelectMenu.length;
+            return this.saved ? this.saved.menu.length : 0;
         }
     },
     methods: {
