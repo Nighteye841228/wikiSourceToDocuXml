@@ -15,7 +15,7 @@
                 <a
                   class="navbar-item"
                   target="_blank"
-                  href="../../../index2_20181204.html"
+                  href="https://docusky.org.tw/DocuSky/home/v4/"
                 >
                   首頁
                 </a>
@@ -535,6 +535,7 @@
                 :autoWrapCol="false"
                 ref="hotTableComponent"
                 :cells="setReadonlyColumn"
+                :manualRowMove="true"
               >
               </hot-table>
             </div>
@@ -552,6 +553,36 @@
                   <b-button class="is-primary" @click="exportCsvFile" outlined>
                     輸出CSV
                   </b-button>
+                </div>
+                <div class="level-item">
+                  <div
+                    class="dropdown is-up"
+                    :class="{ 'is-active': isActiveDownloadTxt ? true : false }"
+                  >
+                    <div class="dropdown-trigger">
+                      <button
+                        class="button is-primary is-outlined"
+                        aria-haspopup="true"
+                        aria-controls="dropdown-menu"
+                        @click="isActiveDownloadTxt = !isActiveDownloadTxt"
+                      >
+                        <span>輸出為TXT</span>
+                        <span class="icon is-small">
+                          <i class="fas fa-angle-down" aria-hidden="true"></i>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                      <div class="dropdown-content">
+                        <a class="dropdown-item" @click="exportTxtArchive">
+                          分檔輸出
+                        </a>
+                        <a class="dropdown-item" @click="exportTxtOneFile">
+                          單檔輸出（以####做為分隔符號）
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="level-item">
                   <b-button class="is-success" @click="combineOrigin" outlined>
@@ -805,6 +836,7 @@ import { HotTable } from "@handsontable/vue";
 import "handsontable/dist/handsontable.full.css";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+import * as JSZip from "jszip";
 import {
   dt,
   $,
@@ -863,10 +895,12 @@ export default {
 
         if (oldValue === 3) {
           this.$nextTick(function () {
-            this.splitCompleteWikiContents = this.splitCompleteWikiContents.map((element, index) => {
-              element.doc_content = this.tempSplitContents[index];
-              return element;
-            });
+            this.splitCompleteWikiContents = this.splitCompleteWikiContents.map(
+              (element, index) => {
+                element.doc_content = this.tempSplitContents[index];
+                return element;
+              }
+            );
           });
         }
       },
@@ -875,6 +909,7 @@ export default {
   data() {
     return {
       activeStep: 0,
+      isActiveDownloadTxt: false,
 
       showSocial: false,
       isAnimated: true,
@@ -892,6 +927,21 @@ export default {
       stepClass: "step-class",
       isProcessDisable: [true, true, true, true, true, true, true],
       //above are step variable
+
+      testContextMenu: {
+        items: {
+          row_above: {
+            name: "Insert row above this one (custom name)",
+          },
+          row_below: {},
+          clear_custom: {
+            name: "Clear all cells (custom)",
+            callback() {
+              this.clear();
+            },
+          },
+        },
+      },
 
       isInputDataValid: true,
       isMetadataComplete: true,
@@ -1032,13 +1082,15 @@ export default {
             this.tempSplitContents = this.splitCompleteWikiContents.map((x) => {
               return x.doc_content;
             });
-            this.splitCompleteWikiContents = this.splitCompleteWikiContents.map((element) => {
-              element.doc_content = element.doc_content.replace(
-                /(.{0,200}).*/ms,
-                "$1"
-              );
-              return element;
-            });
+            this.splitCompleteWikiContents = this.splitCompleteWikiContents.map(
+              (element) => {
+                element.doc_content = element.doc_content.replace(
+                  /(.{0,200}).*/ms,
+                  "$1"
+                );
+                return element;
+              }
+            );
             this.isShowTable = true;
             this.$nextTick(function () {
               this.$refs.hotTableComponent.hotInstance.loadData(
@@ -1224,13 +1276,15 @@ export default {
       this.tempSplitContents = this.splitCompleteWikiContents.map((x) => {
         return x.doc_content;
       });
-      this.splitCompleteWikiContents = this.splitCompleteWikiContents.map((element) => {
-        element.doc_content = element.doc_content.replace(
-          /(.{0,200}).*/ms,
-          "$1"
-        );
-        return element;
-      });
+      this.splitCompleteWikiContents = this.splitCompleteWikiContents.map(
+        (element) => {
+          element.doc_content = element.doc_content.replace(
+            /(.{0,200}).*/ms,
+            "$1"
+          );
+          return element;
+        }
+      );
 
       this.isEditMetaTable = false;
       this.isShowTable = true;
@@ -1255,33 +1309,89 @@ export default {
       tempFile.forEach((element, index) => {
         element.doc_content = this.tempSplitContents[index];
       });
-      let outCsvString = "文件標題,文本內容,檔案名稱,文獻集名稱,";
+      let outCsvString = '"文件標題","文本內容","檔案名稱","文獻集名稱",';
       outCsvString += this.selectedMetaDataColumns
-        .map((x) => x.headerName)
+        .map((x) => `"${x.headerName}"`)
         .join(",");
-      outCsvString += "\n";
+      outCsvString += "\r\n";
       outCsvString += tempFile
         .map((x) => {
           let temp = [];
           for (let item in x) {
             temp.push(`"${x[item]}"`);
           }
-          return temp.slice(0, -1).join(",");
+          return temp.slice(0, -1).join();
         })
-        .join("\n");
+        .join("\r\n");
       const timeNow = new Date();
       let element = document.createElement("a");
       let filename = `${timeNow.toLocaleString()}_備份.csv`;
-      element.setAttribute(
-        "href",
-        "data:text/xml;charset=utf-8," + encodeURIComponent(outCsvString)
-      );
+      let blob = new Blob(["\uFEFF", outCsvString], {
+        type: "text/csv; charset=utf-8",
+      });
+      element.setAttribute("href", window.URL.createObjectURL(blob));
       element.setAttribute("download", filename);
       element.style.display = "none";
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
       //   console.log(outCsvString);
+    },
+    exportTxtOneFile() {
+      let tempFile = cloneDeep(this.splitCompleteWikiContents);
+      let outputTxt = "";
+      tempFile.forEach((element, index) => {
+        element.doc_content = this.tempSplitContents[index];
+      });
+      tempFile.map((file, index) => {
+        outputTxt += file.filename;
+        outputTxt += "\n\n";
+        outputTxt += file.doc_content;
+        if (index !== tempFile.length - 1) {
+          outputTxt += "\n####\n\n";
+        }
+      });
+      let element = document.createElement("a");
+      const timeNow = new Date();
+      let filename = `${timeNow.toLocaleString()}_備份.txt`;
+      element.setAttribute(
+        "href",
+        "data:text/xml;charset=utf-8," + encodeURIComponent(outputTxt)
+      );
+      element.setAttribute("download", filename);
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      console.log("wow");
+    },
+    exportTxtArchive() {
+      let tempFile = cloneDeep(this.splitCompleteWikiContents);
+      tempFile.forEach((element, index) => {
+        element.doc_content = this.tempSplitContents[index];
+      });
+      let zipFile = new JSZip();
+      tempFile.map((file) => {
+        zipFile.file(file.filename, file.doc_content);
+      });
+      zipFile.generateAsync({ type: "blob" }).then(function (content) {
+        // see FileSaver.js
+        // saveAs(content, "example.zip");
+
+        let url = URL.createObjectURL(content);
+        const timeNow = new Date();
+        let element = document.createElement("a");
+        let filename = `${timeNow.toLocaleString()}_備份.zip`;
+        element.setAttribute("href", url);
+        element.setAttribute("download", filename);
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      });
+      console.log("wow");
+
+      // //   console.log(outCsvString);
     },
     combineOrigin: function () {
       this.releaseGate();
@@ -1294,9 +1404,9 @@ export default {
       );
     },
     confirmOrder: function () {
-      this.tempSplitContents = this.splitCompleteWikiContents.map((element)=>{
+      this.tempSplitContents = this.splitCompleteWikiContents.map((element) => {
         return element.doc_content;
-      })
+      });
       for (let i = 0; i < this.splitCompleteWikiContents.length; i++) {
         this.splitCompleteWikiContents[i].fileOrder = i + 1;
         this.splitCompleteWikiContents[i].filename = `${

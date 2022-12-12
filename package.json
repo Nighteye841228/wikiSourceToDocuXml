@@ -1,6 +1,6 @@
 {
   "name": "WikiToDocuXml",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -21,6 +21,7 @@
     "core-js": "^3.6.5",
     "handsontable": "^9.0.0",
     "jquery": "^3.6.0",
+    "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "neat-csv": "^7.0.0",
