@@ -1644,6 +1644,16 @@ export default {
   padding-top: inherit;
 }
 
+@media screen and (max-width: 1440px) {
+  .wow {
+    max-width: 100%;
+    height: 65vh;
+    padding-top: 20px;
+    overflow: auto;
+    padding-top: inherit;
+  }
+}
+
 .handsontable.htRowHeaders.htColumnHeaders {
   box-shadow: 10px 5px 7px grey;
 }
